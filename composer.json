@@ -1,0 +1,28 @@
+{
+    "name": "polis/polis-laravel",
+    "description": "Polis Laravel Package",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Polis\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Polis\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.3.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "phpstan/phpstan": "^2.0"
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-text",
+        "test-coverage-html": "phpunit --coverage-html coverage"
+    }
+}

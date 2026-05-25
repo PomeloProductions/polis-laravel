@@ -1,0 +1,56 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Services;
+
+<<<<<<< HEAD
+use App\Contracts\Models\IsAnEntityContract;
+=======
+use App\Contracts\Models\IsAnEntity;
+>>>>>>> main
+use App\Contracts\Repositories\AssetRepositoryContract;
+use App\Contracts\Services\AssetImportServiceContract;
+use App\Models\Asset;
+
+class AssetImportService implements AssetImportServiceContract
+{
+    /**
+     * @param AssetRepositoryContract $assetRepository
+     */
+    public function __construct(private AssetRepositoryContract $assetRepository) {}
+
+    /**
+     * imports an asset from a url and returns the data model
+     *
+<<<<<<< HEAD
+     * @param IsAnEntityContract $owner
+=======
+     * @param IsAnEntity $owner
+>>>>>>> main
+     * @param string $url
+     * @return Asset|null
+     * @throws \ImagickException
+     */
+<<<<<<< HEAD
+    public function importAsset(IsAnEntityContract $owner, string $url): ?Asset
+=======
+    public function importAsset(IsAnEntity $owner, string $url): ?Asset
+>>>>>>> main
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+        $fileInformation = pathinfo($path);
+
+        $assetContent = file_get_contents($url);
+
+        return ($assetContent && isset($fileInformation['extension'])) ? $this->assetRepository->create([
+<<<<<<< HEAD
+=======
+            'source' => $url,
+>>>>>>> main
+            'file_contents' => $assetContent,
+            'file_extension' => $fileInformation['extension'],
+            'owner_type' => $owner->morphRelationName(),
+            'owner_id' => $owner->id,
+        ]) : null;
+    }
+}
