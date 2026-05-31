@@ -1,30 +1,11 @@
 <?php
 
 declare(strict_types=1);
+
 use DG\BypassFinals;
-use Illuminate\Foundation\Application;
 use Polis\Tests\CustomMockInterface;
 
-// Find and load the autoloader if not already loaded
-if (! class_exists(Application::class)) {
-    $autoloadPaths = [
-        __DIR__.'/../../../apps/api/code/vendor/autoload.php', // from packages/ dir
-        __DIR__.'/../../../../vendor/autoload.php',             // from vendor symlink
-    ];
-
-    $autoloaded = false;
-    foreach ($autoloadPaths as $autoloadPath) {
-        if (file_exists($autoloadPath)) {
-            require $autoloadPath;
-            $autoloaded = true;
-            break;
-        }
-    }
-
-    if (! $autoloaded) {
-        throw new RuntimeException('Cannot locate autoloader. Run composer install in the app.');
-    }
-}
+require __DIR__.'/../vendor/autoload.php';
 
 BypassFinals::enable();
 
