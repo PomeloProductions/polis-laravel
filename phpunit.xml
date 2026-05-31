@@ -11,14 +11,59 @@
         backupStaticProperties="false"
 >
   <testsuites>
-    <testsuite name="Feature">
-      <directory suffix="Test.php">./tests/Feature</directory>
-    </testsuite>
-    <testsuite name="Integration">
-      <directory suffix="Test.php">./tests/Integration</directory>
-    </testsuite>
+    <!--
+      Unit: standalone-runnable tests that do not depend on consumer-app
+      (App\*) classes. These run in CI on every PR via Orchestra Testbench.
+    -->
     <testsuite name="Unit">
+      <file>./tests/Unit/Exceptions/HandlerTest.php</file>
+      <file>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</file>
+      <file>./tests/Unit/Http/Middleware/JWTGetUserFromTokenProtectedRouteMiddlewareTest.php</file>
+      <file>./tests/Unit/Http/Middleware/JWTGetUserFromTokenUnprotectedRouteMiddlewareTest.php</file>
+      <file>./tests/Unit/Http/Middleware/LogMiddlewareTest.php</file>
+      <file>./tests/Unit/Jobs/CanDisplayOutputAbstractJobTest.php</file>
+      <file>./tests/Unit/Models/Traits/HasValidationRulesTest.php</file>
+      <file>./tests/Unit/Services/ArchiveHelperServiceTest.php</file>
+      <file>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</file>
+      <file>./tests/Unit/Services/DirectoryCopyServiceTest.php</file>
+      <file>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</file>
+      <file>./tests/Unit/Services/StringHelperServiceTest.php</file>
+      <file>./tests/Unit/Services/TokenGenerationServiceTest.php</file>
+      <file>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</file>
+      <file>./tests/Unit/ThreadSecurity/ThreadSubjectGateProviderTest.php</file>
+      <file>./tests/Unit/Validators/BaseValidatorAbstractTest.php</file>
+      <file>./tests/Unit/Validators/NotPresentValidatorTest.php</file>
+    </testsuite>
+
+    <!--
+      Consumer-Only: tests extracted from PolisOS that still reference
+      consumer-app classes (App\Models\*, App\Policies\*, App\Listeners\*,
+      etc.). These cannot run inside this package alone; they're intended
+      to be executed by a consuming application's CI. NOT run by this
+      repo's CI workflow. Listed here so they remain discoverable and can
+      be migrated one-by-one to fixture-backed tests in the Unit suite.
+    -->
+    <testsuite name="Consumer-Only">
+      <directory suffix="Test.php">./tests/Feature</directory>
+      <directory suffix="Test.php">./tests/Integration</directory>
       <directory suffix="Test.php">./tests/Unit</directory>
+      <exclude>./tests/Unit/Exceptions/HandlerTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/JWTGetUserFromTokenProtectedRouteMiddlewareTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/JWTGetUserFromTokenUnprotectedRouteMiddlewareTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/LogMiddlewareTest.php</exclude>
+      <exclude>./tests/Unit/Jobs/CanDisplayOutputAbstractJobTest.php</exclude>
+      <exclude>./tests/Unit/Models/Traits/HasValidationRulesTest.php</exclude>
+      <exclude>./tests/Unit/Services/ArchiveHelperServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/DirectoryCopyServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/StringHelperServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/TokenGenerationServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</exclude>
+      <exclude>./tests/Unit/ThreadSecurity/ThreadSubjectGateProviderTest.php</exclude>
+      <exclude>./tests/Unit/Validators/BaseValidatorAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Validators/NotPresentValidatorTest.php</exclude>
     </testsuite>
   </testsuites>
   <php>
@@ -26,7 +71,8 @@
     <env name="CACHE_DRIVER" value="array"/>
     <env name="SESSION_DRIVER" value="array"/>
     <env name="QUEUE_DRIVER" value="sync"/>
-    <env name="DB_CONNECTION" value="mysql-test"/>
+    <env name="DB_CONNECTION" value="sqlite"/>
+    <env name="DB_DATABASE" value=":memory:"/>
     <env name="APP_DEBUG" value="false"/>
   </php>
   <source>
