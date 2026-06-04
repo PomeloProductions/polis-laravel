@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 use NotificationChannels\Twilio\Twilio;
 use Polis\Contracts\Repositories\AssetRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\EmailTemplateRepositoryContract;
+use Polis\Contracts\Repositories\Messaging\PushTemplateRepositoryContract;
 use Polis\Contracts\Repositories\Organization\OrganizationRepositoryContract;
 use Polis\Contracts\Repositories\Payment\LineItemRepositoryContract;
 use Polis\Contracts\Repositories\Payment\PaymentMethodRepositoryContract;
@@ -31,6 +32,7 @@ use Polis\Contracts\Services\EntitySubscriptionCreationServiceContract;
 use Polis\Contracts\Services\Indexing\ResourceRepositoryServiceContract;
 use Polis\Contracts\Services\Messaging\EmailTemplateRenderingServiceContract;
 use Polis\Contracts\Services\Messaging\MessageSendingSelectionServiceContract;
+use Polis\Contracts\Services\Messaging\PushTemplateRenderingServiceContract;
 use Polis\Contracts\Services\Messaging\SendEmailServiceContract;
 use Polis\Contracts\Services\Messaging\SendPushNotificationServiceContract;
 use Polis\Contracts\Services\Messaging\SendSlackNotificationServiceContract;
@@ -45,6 +47,7 @@ use Polis\Contracts\Services\StripePaymentServiceContract;
 use Polis\Contracts\Services\TokenGenerationServiceContract;
 use Polis\Contracts\Services\Wiki\ArticleVersionCalculationServiceContract;
 use Polis\Mail\DefaultEmailTemplates;
+use Polis\Push\DefaultPushTemplates;
 use Polis\Services\ArchiveHelperService;
 use Polis\Services\Asset\AssetConfigurationService;
 use Polis\Services\Asset\AssetImportService;
@@ -53,6 +56,7 @@ use Polis\Services\DirectoryCopyService;
 use Polis\Services\EntitySubscriptionCreationService;
 use Polis\Services\Messaging\EmailTemplateRenderingService;
 use Polis\Services\Messaging\MessageSendingSelectionService;
+use Polis\Services\Messaging\PushTemplateRenderingService;
 use Polis\Services\Messaging\MessageSendingServiceNotImplemented;
 use Polis\Services\Messaging\SendEmailService;
 use Polis\Services\Messaging\SendPushNotificationService;
@@ -83,6 +87,7 @@ abstract class BaseServiceProvider extends ServiceProvider
             ItemInEntityCollectionServiceContract::class,
             MessageSendingSelectionServiceContract::class,
             ProratingCalculationServiceContract::class,
+            PushTemplateRenderingServiceContract::class,
             RelationTraversalServiceContract::class,
             ResourceRepositoryServiceContract::class,
             SendEmailServiceContract::class,
@@ -149,6 +154,10 @@ abstract class BaseServiceProvider extends ServiceProvider
         );
         $this->app->bind(ProratingCalculationServiceContract::class, fn () => new ProratingCalculationService
         );
+        $this->app->bind(PushTemplateRenderingServiceContract::class, fn () => new PushTemplateRenderingService(
+            $this->app->make(PushTemplateRepositoryContract::class),
+            DefaultPushTemplates::TEMPLATES,
+        ));
         $this->app->bind(ResourceRepositoryServiceContract::class, fn () => new ResourceRepositoryService($this->app)
         );
         $this->app->bind(SendEmailServiceContract::class, fn () => new SendEmailService($this->app->make(Mailer::class))

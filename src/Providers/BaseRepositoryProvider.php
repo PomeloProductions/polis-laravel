@@ -54,6 +54,7 @@ use Polis\Contracts\Repositories\Collection\CollectionRepositoryContract;
 use Polis\Contracts\Repositories\FeatureRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\EmailTemplateRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
+use Polis\Contracts\Repositories\Messaging\PushTemplateRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\ThreadRepositoryContract;
 use Polis\Contracts\Repositories\Organization\OrganizationManagerRepositoryContract;
 use Polis\Contracts\Repositories\Organization\OrganizationRepositoryContract;
@@ -88,6 +89,7 @@ use Polis\Contracts\Repositories\Wiki\ArticleVersionRepositoryContract;
 use Polis\Contracts\Services\Asset\AssetConfigurationServiceContract;
 use Polis\Contracts\Services\TokenGenerationServiceContract;
 use Polis\Models\Messaging\EmailTemplate;
+use Polis\Models\Messaging\PushTemplate;
 use Polis\Repositories\AssetRepository;
 use Polis\Repositories\CategoryRepository;
 use Polis\Repositories\Collection\CollectionItemRepository;
@@ -95,6 +97,7 @@ use Polis\Repositories\Collection\CollectionRepository;
 use Polis\Repositories\FeatureRepository;
 use Polis\Repositories\Messaging\EmailTemplateRepository;
 use Polis\Repositories\Messaging\MessageRepository;
+use Polis\Repositories\Messaging\PushTemplateRepository;
 use Polis\Repositories\Messaging\ThreadRepository;
 use Polis\Repositories\Organization\OrganizationManagerRepository;
 use Polis\Repositories\Organization\OrganizationRepository;
@@ -167,6 +170,7 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             PaymentRepositoryContract::class,
             PaymentMethodRepositoryContract::class,
             ProfileImageRepositoryContract::class,
+            PushTemplateRepositoryContract::class,
             ResourceRepositoryContract::class,
             RoleRepositoryContract::class,
             StatisticRepositoryContract::class,
@@ -381,6 +385,12 @@ abstract class BaseRepositoryProvider extends ServiceProvider
                 $this->app->make('log'),
                 $this->app->make(FilesystemManager::class),
                 $this->app->make(AssetConfigurationServiceContract::class)
+            );
+        });
+        $this->app->bind(PushTemplateRepositoryContract::class, function () {
+            return new PushTemplateRepository(
+                new PushTemplate,
+                $this->app->make('log'),
             );
         });
         $this->app->bind(ResourceRepositoryContract::class, function () {
