@@ -28,7 +28,9 @@
     "scripts": {
         "test": "phpunit",
         "test-coverage": "phpunit --coverage-text",
-        "test-coverage-html": "phpunit --coverage-html coverage"
+        "test-coverage-html": "phpunit --coverage-html coverage",
+        "test:coverage": "phpunit --testsuite=Unit --coverage-clover=coverage.xml --coverage-html=coverage-html",
+        "test:coverage:text": "phpunit --testsuite=Unit --coverage-text"
     },
     "config": {
         "sort-packages": true

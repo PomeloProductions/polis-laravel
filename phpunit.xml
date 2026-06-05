@@ -17,25 +17,53 @@
     -->
     <testsuite name="Unit">
       <file>./tests/Unit/Console/Commands/ChargeRenewalTest.php</file>
+      <file>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</file>
+      <file>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</file>
+      <file>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</file>
+      <file>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</file>
+      <file>./tests/Unit/Http/Middleware/Issue404IfPageAfterPaginationMiddlewareTest.php</file>
       <file>./tests/Unit/Http/Middleware/JWTGetUserFromTokenProtectedRouteMiddlewareTest.php</file>
       <file>./tests/Unit/Http/Middleware/JWTGetUserFromTokenUnprotectedRouteMiddlewareTest.php</file>
+      <file>./tests/Unit/Http/Middleware/JWTMiddlewareTestingEnvBypassTest.php</file>
       <file>./tests/Unit/Http/Middleware/LogMiddlewareTest.php</file>
+      <file>./tests/Unit/Http/Middleware/LogMiddlewareTestingEnvTest.php</file>
+      <file>./tests/Unit/Http/Middleware/SearchFilterParsingMiddlewareTest.php</file>
+      <file>./tests/Unit/Http/Middleware/TrimStringsTest.php</file>
       <file>./tests/Unit/Jobs/CanDisplayOutputAbstractJobTest.php</file>
+      <file>./tests/Unit/Listeners/Organization/OrganizationManagerCreatedListenerStandaloneTest.php</file>
+      <file>./tests/Unit/Listeners/Statistic/StatisticListenersTest.php</file>
+      <file>./tests/Unit/Listeners/User/SignUpListenerStandaloneTest.php</file>
+      <file>./tests/Unit/Mail/DefaultEmailTemplatesTest.php</file>
+      <file>./tests/Unit/Mail/RenderedEmailTest.php</file>
+      <file>./tests/Unit/Mail/TemplatedMailableTest.php</file>
+      <file>./tests/Unit/Models/Traits/HasValidationRulesAppendAndPrependTest.php</file>
       <file>./tests/Unit/Models/Traits/HasValidationRulesTest.php</file>
+      <file>./tests/Unit/Push/DefaultPushTemplatesTest.php</file>
+      <file>./tests/Unit/Providers/BaseAuthServiceProviderTest.php</file>
+      <file>./tests/Unit/Providers/BaseValidatorProviderTest.php</file>
+      <file>./tests/Unit/Push/RenderedPushNotificationTest.php</file>
       <file>./tests/Unit/Services/ArchiveHelperServiceTest.php</file>
       <file>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</file>
       <file>./tests/Unit/Services/DirectoryCopyServiceTest.php</file>
       <file>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</file>
+      <file>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</file>
+      <file>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</file>
       <file>./tests/Unit/Services/StringHelperServiceTest.php</file>
       <file>./tests/Unit/Services/TokenGenerationServiceTest.php</file>
       <file>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</file>
       <file>./tests/Unit/ThreadSecurity/ThreadSubjectGateProviderTest.php</file>
+      <file>./tests/Unit/Traits/CanGetAndUnsetTest.php</file>
+      <file>./tests/Unit/Validators/ArticleVersion/SelectedIterationValidatorEarlyReturnsTest.php</file>
       <file>./tests/Unit/Validators/BaseValidatorAbstractTest.php</file>
+      <file>./tests/Unit/Validators/ForgotPassword/ForgotPasswordValidatorsEarlyReturnsTest.php</file>
+      <file>./tests/Unit/Validators/InvitationTokenIsValidValidatorStandaloneTest.php</file>
       <file>./tests/Unit/Validators/NotPresentValidatorTest.php</file>
+      <file>./tests/Unit/Validators/OwnedByValidatorStandaloneTest.php</file>
     </testsuite>
 
     <!--
@@ -51,25 +79,53 @@
       <directory suffix="Test.php">./tests/Integration</directory>
       <directory suffix="Test.php">./tests/Unit</directory>
       <exclude>./tests/Unit/Console/Commands/ChargeRenewalTest.php</exclude>
+      <exclude>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</exclude>
+      <exclude>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</exclude>
+      <exclude>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/Issue404IfPageAfterPaginationMiddlewareTest.php</exclude>
       <exclude>./tests/Unit/Http/Middleware/JWTGetUserFromTokenProtectedRouteMiddlewareTest.php</exclude>
       <exclude>./tests/Unit/Http/Middleware/JWTGetUserFromTokenUnprotectedRouteMiddlewareTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/JWTMiddlewareTestingEnvBypassTest.php</exclude>
       <exclude>./tests/Unit/Http/Middleware/LogMiddlewareTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/LogMiddlewareTestingEnvTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/SearchFilterParsingMiddlewareTest.php</exclude>
+      <exclude>./tests/Unit/Http/Middleware/TrimStringsTest.php</exclude>
       <exclude>./tests/Unit/Jobs/CanDisplayOutputAbstractJobTest.php</exclude>
+      <exclude>./tests/Unit/Listeners/Organization/OrganizationManagerCreatedListenerStandaloneTest.php</exclude>
+      <exclude>./tests/Unit/Listeners/Statistic/StatisticListenersTest.php</exclude>
+      <exclude>./tests/Unit/Listeners/User/SignUpListenerStandaloneTest.php</exclude>
+      <exclude>./tests/Unit/Mail/DefaultEmailTemplatesTest.php</exclude>
+      <exclude>./tests/Unit/Mail/RenderedEmailTest.php</exclude>
+      <exclude>./tests/Unit/Mail/TemplatedMailableTest.php</exclude>
+      <exclude>./tests/Unit/Models/Traits/HasValidationRulesAppendAndPrependTest.php</exclude>
       <exclude>./tests/Unit/Models/Traits/HasValidationRulesTest.php</exclude>
+      <exclude>./tests/Unit/Push/DefaultPushTemplatesTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseAuthServiceProviderTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseValidatorProviderTest.php</exclude>
+      <exclude>./tests/Unit/Push/RenderedPushNotificationTest.php</exclude>
       <exclude>./tests/Unit/Services/ArchiveHelperServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/DirectoryCopyServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</exclude>
+      <exclude>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</exclude>
       <exclude>./tests/Unit/Services/StringHelperServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/TokenGenerationServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</exclude>
       <exclude>./tests/Unit/ThreadSecurity/ThreadSubjectGateProviderTest.php</exclude>
+      <exclude>./tests/Unit/Traits/CanGetAndUnsetTest.php</exclude>
+      <exclude>./tests/Unit/Validators/ArticleVersion/SelectedIterationValidatorEarlyReturnsTest.php</exclude>
       <exclude>./tests/Unit/Validators/BaseValidatorAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Validators/ForgotPassword/ForgotPasswordValidatorsEarlyReturnsTest.php</exclude>
+      <exclude>./tests/Unit/Validators/InvitationTokenIsValidValidatorStandaloneTest.php</exclude>
       <exclude>./tests/Unit/Validators/NotPresentValidatorTest.php</exclude>
+      <exclude>./tests/Unit/Validators/OwnedByValidatorStandaloneTest.php</exclude>
     </testsuite>
   </testsuites>
   <php>

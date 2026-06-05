@@ -6,4 +6,8 @@ composer.lock
 .vscode/
 .DS_Store
 coverage/
+coverage-html/
+coverage.xml
+coverage-baseline.txt
+coverage-final.txt
 .phpstan-cache/
