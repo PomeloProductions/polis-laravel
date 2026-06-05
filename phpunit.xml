@@ -29,6 +29,7 @@
       <file>./tests/Unit/Services/DirectoryCopyServiceTest.php</file>
       <file>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</file>
+      <file>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</file>
       <file>./tests/Unit/Services/StringHelperServiceTest.php</file>
       <file>./tests/Unit/Services/TokenGenerationServiceTest.php</file>
       <file>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</file>
@@ -62,6 +63,7 @@
       <exclude>./tests/Unit/Services/DirectoryCopyServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/StringHelperServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/TokenGenerationServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</exclude>
