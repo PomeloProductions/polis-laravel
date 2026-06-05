@@ -13,6 +13,7 @@ use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\ServiceProvider;
 use NotificationChannels\Twilio\Twilio;
 use Polis\Contracts\Repositories\AssetRepositoryContract;
+use Polis\Contracts\Repositories\Messaging\EmailTemplateRepositoryContract;
 use Polis\Contracts\Repositories\Organization\OrganizationRepositoryContract;
 use Polis\Contracts\Repositories\Payment\LineItemRepositoryContract;
 use Polis\Contracts\Repositories\Payment\PaymentMethodRepositoryContract;
@@ -28,6 +29,7 @@ use Polis\Contracts\Services\Collection\ItemInEntityCollectionServiceContract;
 use Polis\Contracts\Services\DirectoryCopyServiceContract;
 use Polis\Contracts\Services\EntitySubscriptionCreationServiceContract;
 use Polis\Contracts\Services\Indexing\ResourceRepositoryServiceContract;
+use Polis\Contracts\Services\Messaging\EmailTemplateRenderingServiceContract;
 use Polis\Contracts\Services\Messaging\MessageSendingSelectionServiceContract;
 use Polis\Contracts\Services\Messaging\SendEmailServiceContract;
 use Polis\Contracts\Services\Messaging\SendPushNotificationServiceContract;
@@ -40,16 +42,16 @@ use Polis\Contracts\Services\Statistic\TargetStatisticProcessingServiceContract;
 use Polis\Contracts\Services\StringHelperServiceContract;
 use Polis\Contracts\Services\StripeCustomerServiceContract;
 use Polis\Contracts\Services\StripePaymentServiceContract;
-use Polis\Contracts\Repositories\User\UserPageComponentRepositoryContract;
-use Polis\Contracts\Repositories\User\UserPageRepositoryContract;
 use Polis\Contracts\Services\TokenGenerationServiceContract;
 use Polis\Contracts\Services\Wiki\ArticleVersionCalculationServiceContract;
+use Polis\Mail\DefaultEmailTemplates;
 use Polis\Services\ArchiveHelperService;
 use Polis\Services\Asset\AssetConfigurationService;
 use Polis\Services\Asset\AssetImportService;
 use Polis\Services\Collection\ItemInEntityCollectionService;
 use Polis\Services\DirectoryCopyService;
 use Polis\Services\EntitySubscriptionCreationService;
+use Polis\Services\Messaging\EmailTemplateRenderingService;
 use Polis\Services\Messaging\MessageSendingSelectionService;
 use Polis\Services\Messaging\MessageSendingServiceNotImplemented;
 use Polis\Services\Messaging\SendEmailService;
@@ -76,6 +78,7 @@ abstract class BaseServiceProvider extends ServiceProvider
             AssetConfigurationServiceContract::class,
             AssetImportServiceContract::class,
             DirectoryCopyServiceContract::class,
+            EmailTemplateRenderingServiceContract::class,
             EntitySubscriptionCreationServiceContract::class,
             ItemInEntityCollectionServiceContract::class,
             MessageSendingSelectionServiceContract::class,
@@ -125,6 +128,10 @@ abstract class BaseServiceProvider extends ServiceProvider
         );
         $this->app->bind(DirectoryCopyServiceContract::class, fn () => new DirectoryCopyService
         );
+        $this->app->bind(EmailTemplateRenderingServiceContract::class, fn () => new EmailTemplateRenderingService(
+            $this->app->make(EmailTemplateRepositoryContract::class),
+            DefaultEmailTemplates::TEMPLATES,
+        ));
         $this->app->bind(EntitySubscriptionCreationServiceContract::class, fn () => new EntitySubscriptionCreationService(
             $this->app->make(ProratingCalculationServiceContract::class),
             $this->app->make(SubscriptionRepositoryContract::class),

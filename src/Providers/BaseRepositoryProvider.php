@@ -52,6 +52,7 @@ use Polis\Contracts\Repositories\CategoryRepositoryContract;
 use Polis\Contracts\Repositories\Collection\CollectionItemRepositoryContract;
 use Polis\Contracts\Repositories\Collection\CollectionRepositoryContract;
 use Polis\Contracts\Repositories\FeatureRepositoryContract;
+use Polis\Contracts\Repositories\Messaging\EmailTemplateRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\ThreadRepositoryContract;
 use Polis\Contracts\Repositories\Organization\OrganizationManagerRepositoryContract;
@@ -86,11 +87,13 @@ use Polis\Contracts\Repositories\Wiki\ArticleSummaryRepositoryContract;
 use Polis\Contracts\Repositories\Wiki\ArticleVersionRepositoryContract;
 use Polis\Contracts\Services\Asset\AssetConfigurationServiceContract;
 use Polis\Contracts\Services\TokenGenerationServiceContract;
+use Polis\Models\Messaging\EmailTemplate;
 use Polis\Repositories\AssetRepository;
 use Polis\Repositories\CategoryRepository;
 use Polis\Repositories\Collection\CollectionItemRepository;
 use Polis\Repositories\Collection\CollectionRepository;
 use Polis\Repositories\FeatureRepository;
+use Polis\Repositories\Messaging\EmailTemplateRepository;
 use Polis\Repositories\Messaging\MessageRepository;
 use Polis\Repositories\Messaging\ThreadRepository;
 use Polis\Repositories\Organization\OrganizationManagerRepository;
@@ -151,6 +154,7 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             CollectionRepositoryContract::class,
             CollectionItemRepositoryContract::class,
             ContactRepositoryContract::class,
+            EmailTemplateRepositoryContract::class,
             FeatureRepositoryContract::class,
             InvitationTokenRepositoryContract::class,
             LineItemRepositoryContract::class,
@@ -291,6 +295,12 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             return new ContactRepository(
                 new Contact,
                 $this->app->make('log')
+            );
+        });
+        $this->app->bind(EmailTemplateRepositoryContract::class, function () {
+            return new EmailTemplateRepository(
+                new EmailTemplate,
+                $this->app->make('log'),
             );
         });
         $this->app->bind(FeatureRepositoryContract::class, function () {
