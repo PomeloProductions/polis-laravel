@@ -37,6 +37,7 @@ use Polis\Contracts\Services\Messaging\SendEmailServiceContract;
 use Polis\Contracts\Services\Messaging\SendPushNotificationServiceContract;
 use Polis\Contracts\Services\Messaging\SendSlackNotificationServiceContract;
 use Polis\Contracts\Services\Messaging\SendSMSServiceContract;
+use Polis\Contracts\Services\ModelCacheServiceContract;
 use Polis\Contracts\Services\ProratingCalculationServiceContract;
 use Polis\Contracts\Services\Relations\RelationTraversalServiceContract;
 use Polis\Contracts\Services\Statistic\StatisticSynchronizationServiceContract;
@@ -51,6 +52,7 @@ use Polis\Push\DefaultPushTemplates;
 use Polis\Services\ArchiveHelperService;
 use Polis\Services\Asset\AssetConfigurationService;
 use Polis\Services\Asset\AssetImportService;
+use Polis\Services\BaseModelCacheService;
 use Polis\Services\Collection\ItemInEntityCollectionService;
 use Polis\Services\DirectoryCopyService;
 use Polis\Services\EntitySubscriptionCreationService;
@@ -124,6 +126,7 @@ abstract class BaseServiceProvider extends ServiceProvider
             EntitySubscriptionCreationServiceContract::class,
             ItemInEntityCollectionServiceContract::class,
             MessageSendingSelectionServiceContract::class,
+            ModelCacheServiceContract::class,
             ProratingCalculationServiceContract::class,
             PushTemplateRenderingServiceContract::class,
             RelationTraversalServiceContract::class,
@@ -194,6 +197,19 @@ abstract class BaseServiceProvider extends ServiceProvider
             $messageClass::VIA_SLACK => $this->app->make(SendSlackNotificationServiceContract::class),
         ])
         );
+        // The generic ModelCacheServiceContract needs a per-model cache key,
+        // so the package can't pick a sensible default — consumers bind
+        // their own model-specific subclass of BaseModelCacheService
+        // against a model-specific contract. The binding below is a
+        // signpost: it surfaces the misuse with a clear message instead of
+        // a cryptic "no entry found for ..." container failure.
+        $this->app->bind(ModelCacheServiceContract::class, function () {
+            throw new \RuntimeException(
+                'polis-laravel: ModelCacheServiceContract is abstract — bind a '
+                .'concrete subclass of '.BaseModelCacheService::class.' against '
+                .'a model-specific contract in your application service provider.'
+            );
+        });
         $this->app->bind(ProratingCalculationServiceContract::class, fn () => new ProratingCalculationService
         );
         $this->app->bind(PushTemplateRenderingServiceContract::class, fn () => new PushTemplateRenderingService(

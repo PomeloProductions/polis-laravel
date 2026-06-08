@@ -42,6 +42,8 @@
       <file>./tests/Unit/Mail/DefaultEmailTemplatesTest.php</file>
       <file>./tests/Unit/Mail/RenderedEmailTest.php</file>
       <file>./tests/Unit/Mail/TemplatedMailableTest.php</file>
+      <file>./tests/Unit/Models/Traits/HasModelCacheTest.php</file>
+      <file>./tests/Unit/Observers/BaseModelCacheObserverTest.php</file>
       <file>./tests/Unit/Policies/AssetPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/BasePolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</file>
@@ -67,6 +69,7 @@
       <file>./tests/Unit/Push/RenderedPushNotificationTest.php</file>
       <file>./tests/Unit/Services/ArchiveHelperServiceTest.php</file>
       <file>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</file>
+      <file>./tests/Unit/Services/BaseModelCacheServiceTest.php</file>
       <file>./tests/Unit/Services/DirectoryCopyServiceTest.php</file>
       <file>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</file>
@@ -125,6 +128,8 @@
       <exclude>./tests/Unit/Mail/DefaultEmailTemplatesTest.php</exclude>
       <exclude>./tests/Unit/Mail/RenderedEmailTest.php</exclude>
       <exclude>./tests/Unit/Mail/TemplatedMailableTest.php</exclude>
+      <exclude>./tests/Unit/Models/Traits/HasModelCacheTest.php</exclude>
+      <exclude>./tests/Unit/Observers/BaseModelCacheObserverTest.php</exclude>
       <exclude>./tests/Unit/Policies/AssetPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/BasePolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</exclude>
@@ -150,6 +155,7 @@
       <exclude>./tests/Unit/Push/RenderedPushNotificationTest.php</exclude>
       <exclude>./tests/Unit/Services/ArchiveHelperServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/BaseModelCacheServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/DirectoryCopyServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</exclude>
