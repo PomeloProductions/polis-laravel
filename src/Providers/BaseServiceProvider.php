@@ -146,10 +146,37 @@ abstract class BaseServiceProvider extends ServiceProvider
     abstract public function appProviders(): array;
 
     /**
+     * Absolute path to the package's default `config/polis.php` shipped
+     * with this library. Centralized so register() (merge) and boot()
+     * (publish) cannot drift.
+     */
+    private function packageConfigPath(): string
+    {
+        return dirname(__DIR__, 2).'/config/polis.php';
+    }
+
+    /**
+     * Publish the package's config file so consumers can override the
+     * defaults via their own `config/polis.php`.
+     */
+    public function boot(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                $this->packageConfigPath() => $this->app->configPath('polis.php'),
+            ], 'polis-config');
+        }
+    }
+
+    /**
      * Register any application services.
      */
     public function register(): void
     {
+        // Merge the package's default config so consumers that have not
+        // published `config/polis.php` still get the defaults at runtime.
+        $this->mergeConfigFrom($this->packageConfigPath(), 'polis');
+
         $this->registerEnvironmentSpecificProviders();
 
         $this->app->bind(ArchiveHelperServiceContract::class, fn () => new ArchiveHelperService(

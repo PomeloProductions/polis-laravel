@@ -138,6 +138,7 @@
       <file>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</file>
+      <file>./tests/Unit/Services/Messaging/SendSlackNotificationServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</file>
       <file>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</file>
       <file>./tests/Unit/Services/ProratingCalculationServiceUpgradeChargeTest.php</file>
@@ -288,6 +289,7 @@
       <exclude>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/Messaging/SendSlackNotificationServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</exclude>
       <exclude>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</exclude>
       <exclude>./tests/Unit/Services/ProratingCalculationServiceUpgradeChargeTest.php</exclude>
