@@ -34,20 +34,27 @@ use Polis\Mail\RenderedEmail;
  * and trivially testable — and the syntax remains Blade-compatible should
  * we choose to upgrade later.
  *
- * Email-safe HTML: this service does NOT execute scripts. Both literal
- * template content AND interpolated variable values are passed through a
- * conservative HTML sanitizer before being emitted, which strips:
- *   - <script>, <iframe>, <object>, <embed>, <style> tags
- *   - event-handler attributes (onclick=, onload=, etc.)
- *   - javascript:, data:, vbscript: URLs
+ * Email-safe HTML: this service does NOT execute scripts. Template body HTML
+ * (with variables already interpolated and escaped) is passed through
+ * HTMLPurifier with an allowlist of email-safe tags and attributes. Anything
+ * outside the allowlist — including <script>, <iframe>, <object>, <embed>,
+ * <style>, event-handler attributes, and javascript:/vbscript:/data: URL
+ * schemes — is removed.
  *
- * Template authors should still favor a small allowlist of safe HTML
- * (paragraphs, links, basic formatting). Untrusted variable values are
- * additionally HTML-escaped before substitution to prevent script injection
- * through interpolation.
+ * Untrusted variable values are additionally HTML-escaped before substitution
+ * (interpolation pass) so that malicious values cannot inject markup at all;
+ * HTMLPurifier then acts as a defense-in-depth pass over the final body.
  */
 class EmailTemplateRenderingService implements EmailTemplateRenderingServiceContract
 {
+    /**
+     * Cached HTMLPurifier_Config instance. Building the config from the
+     * allowlist is the expensive step (HTMLPurifier parses the spec on
+     * first build), so we reuse it across render() calls on the same
+     * service instance.
+     */
+    private ?\HTMLPurifier_Config $purifierConfig = null;
+
     /**
      * @param  array<string, array{subject: string, body_html: string}>  $defaultTemplates
      */
@@ -104,21 +111,46 @@ class EmailTemplateRenderingService implements EmailTemplateRenderingServiceCont
     }
 
     /**
-     * Conservative HTML sanitizer for email body output. Strips dangerous
-     * elements and attributes. NOT a full HTML allowlist — template authors
-     * should still write only safe HTML.
+     * Allowlist-based HTML sanitizer for email body output. Uses
+     * ezyang/htmlpurifier to enforce a fixed set of email-safe tags and
+     * attributes. Anything outside the allowlist (script/iframe/object/embed/
+     * style tags, on* event handlers, javascript:/vbscript:/data: URLs,
+     * unknown elements, etc.) is removed.
      */
     private function sanitizeHtml(string $html): string
     {
-        // Strip dangerous tags (script/iframe/object/embed/style) including content
-        $html = preg_replace('#<(script|iframe|object|embed|style)\b[^>]*>.*?</\1>#is', '', $html) ?? $html;
-        // Strip self-closing/unterminated dangerous tags
-        $html = preg_replace('#<(script|iframe|object|embed|style)\b[^>]*>#i', '', $html) ?? $html;
-        // Strip on* event handlers (onclick=..., onload=..., etc.)
-        $html = preg_replace('#\s+on[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $html) ?? $html;
-        // Strip javascript:/vbscript:/data: URL schemes (defang)
-        $html = preg_replace('#(href|src|action|formaction|xlink:href)\s*=\s*("|\')\s*(?:javascript|vbscript|data)\s*:#i', '$1=$2#', $html) ?? $html;
+        $config = $this->purifierConfig ??= $this->buildPurifierConfig();
+        $purifier = new \HTMLPurifier($config);
 
-        return $html;
+        return $purifier->purify($html);
+    }
+
+    /**
+     * Build (and cache on the instance) the HTMLPurifier configuration.
+     * Disables the on-disk definition cache because emails are rendered
+     * live and we don't want to require a writable filesystem path.
+     */
+    private function buildPurifierConfig(): \HTMLPurifier_Config
+    {
+        $config = \HTMLPurifier_Config::createDefault();
+        // Skip on-disk cache; emails are rendered live and the package
+        // should not require a writable cache dir on consumers.
+        $config->set('Cache.DefinitionImpl', null);
+        // Allowlist: standard email-safe tags + attributes.
+        $config->set('HTML.Allowed',
+            'p,br,strong,em,b,i,u,a[href|title|target],'
+            .'h1,h2,h3,h4,h5,h6,'
+            .'ul,ol,li,'
+            .'blockquote,code,pre,'
+            .'img[src|alt|title|width|height],'
+            .'table,thead,tbody,tr,td,th'
+        );
+        // Force target=_blank + rel=noopener/nofollow on all anchors so a
+        // hijacked link in a template body cannot navigate the host frame
+        // or leak referrer-credentials to attacker-controlled pages.
+        $config->set('HTML.TargetBlank', true);
+        $config->set('HTML.Nofollow', true);
+
+        return $config;
     }
 }

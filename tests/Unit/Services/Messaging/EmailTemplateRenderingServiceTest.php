@@ -181,6 +181,31 @@ final class EmailTemplateRenderingServiceTest extends TestCase
         $this->assertStringContainsString('&lt;script&gt;', $rendered->bodyHtml);
     }
 
+    public function test_html_sanitization_strips_unknown_tags(): void
+    {
+        // HTMLPurifier's allowlist rejects any tag not in HTML.Allowed.
+        // Unknown elements (custom Web Components, made-up tags, etc.) must
+        // be removed so a template author cannot smuggle in markup that
+        // bypasses the configured allowlist.
+        $repo = Mockery::mock(EmailTemplateRepositoryContract::class);
+        $repo->shouldReceive('findByKey')
+            ->with('unknown', null)
+            ->andReturn($this->makeEmailTemplate(
+                'OK',
+                '<p>Hi</p><custom-element data-x="1">payload</custom-element><p>End</p>',
+            ));
+        $svc = new EmailTemplateRenderingService($repo, []);
+
+        $rendered = $svc->render('unknown', []);
+
+        $this->assertStringNotContainsString('<custom-element', $rendered->bodyHtml);
+        $this->assertStringNotContainsString('</custom-element>', $rendered->bodyHtml);
+        $this->assertStringNotContainsString('data-x', $rendered->bodyHtml);
+        // Surrounding allowed markup survives.
+        $this->assertStringContainsString('<p>Hi</p>', $rendered->bodyHtml);
+        $this->assertStringContainsString('<p>End</p>', $rendered->bodyHtml);
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();
