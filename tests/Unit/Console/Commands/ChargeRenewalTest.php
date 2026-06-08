@@ -4,41 +4,46 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Console\Commands;
 
+use Carbon\Carbon;
+use Cartalyst\Stripe\Exception\CardErrorException;
+use Cartalyst\Stripe\Exception\NotFoundException;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Mail\PendingMail;
+use Mockery;
 use Polis\Console\Commands\ChargeRenewal;
+use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
 use Polis\Contracts\Services\StripePaymentServiceContract;
 use Polis\Mail\TemplatedMailable;
+use Polis\Tests\Fixtures\Models\Message as MessageFixture;
+use Polis\Tests\Fixtures\Models\Payment as PaymentFixture;
+use Polis\Tests\Fixtures\Models\PaymentMethod as PaymentMethodFixture;
+use Polis\Tests\Fixtures\Models\Subscription as SubscriptionFixture;
+use Polis\Tests\Fixtures\Models\User as UserFixture;
 use Polis\Tests\TestCase;
 use ReflectionClass;
 use ReflectionNamedType;
+use stdClass;
 
 /**
  * Class ChargeRenewalTest
  *
- * Minimal Unit coverage for the migrated ChargeRenewal command. We verify
- * (1) the class lives in the polis-laravel namespace and extends the
- * Laravel Console Command base, (2) it depends only on Polis-namespaced
- * contracts plus framework abstractions (no `App\*` constructor types),
- * (3) the success path imports TemplatedMailable so the renewal_receipt
- * template can be dispatched, and (4) the command exposes the documented
- * console signature/description constants.
+ * Coverage for the migrated ChargeRenewal command. Combines structural
+ * assertions (constructor signature, namespace, etc.) with behavioural
+ * tests of the command's branch logic (Stripe success → renewal receipt,
+ * card-error → failure email, non-recurring → expiration email, etc.).
  *
- * Deeper behavioural coverage (Stripe success → renewal_receipt dispatch,
- * failure → MessageRepository fallback, exit codes) requires fakes for the
- * App\Models\Subscription\* graph and is a follow-up — those models live in
- * the consumer application. The pre-existing rich integration test at
+ * The behavioural tests rely on fixture stubs registered in tests/bootstrap.php
+ * so that App\Models\* type hints in the Polis contracts resolve inside this
+ * package's standalone Testbench harness. See tests/Fixtures/README.md.
+ *
+ * The pre-existing integration test at
  * tests/Integration/Console/Commands/ChargeRenewalTest.php still exercises
- * the old (App-namespaced) command inside PolisOS's Consumer-Only suite;
- * migrating it to the new Polis-namespaced class is a follow-up PR.
- *
- * Why no direct `new ChargeRenewal(...)` smoke: MessageRepositoryContract
- * and StripePaymentServiceContract both reference App\Models\* types in
- * their method signatures, which prevents Mockery from generating proxies
- * inside this package's standalone (no consumer-app) Testbench harness.
+ * the old (App-namespaced) command inside PolisOS's Consumer-Only suite.
  */
 final class ChargeRenewalTest extends TestCase
 {
@@ -99,5 +104,357 @@ final class ChargeRenewalTest extends TestCase
             'Attempts to charge all recurring renewals due today.',
             $defaults['description'],
         );
+    }
+
+    /* ----------------------------------------------------------------
+     * Behavioural tests below. Each builds a subscription stub via
+     * stdClass (cheap, no Eloquent), wires up mocks for the three
+     * contracts + Mailer, and drives `handle()` end-to-end.
+     * ---------------------------------------------------------------- */
+
+    public function test_handle_charges_stripe_subscription_and_dispatches_renewal_receipt(): void
+    {
+        $subscription = $this->buildRecurringStripeSubscription();
+
+        $paymentService = Mockery::mock(StripePaymentServiceContract::class);
+        $paymentService->shouldReceive('createPayment')
+            ->once()
+            ->with(
+                $subscription->subscriber,
+                $subscription->paymentMethod,
+                Mockery::pattern('/^Subscription renewal for Pro Plan$/'),
+                Mockery::on(function (array $lineItems) use ($subscription) {
+                    return count($lineItems) === 1
+                        && $lineItems[0]['item_id'] === $subscription->id
+                        && $lineItems[0]['item_type'] === 'subscription'
+                        && $lineItems[0]['amount'] === 99.0;
+                }),
+            )
+            ->andReturn(new PaymentFixture);
+
+        $subscriptionRepo = Mockery::mock(SubscriptionRepositoryContract::class);
+        $subscriptionRepo->shouldReceive('findExpiring')
+            ->once()
+            ->andReturn(new EloquentCollection([$subscription]));
+        $subscriptionRepo->shouldReceive('update')
+            ->once()
+            ->with(
+                $subscription,
+                Mockery::on(function (array $data): bool {
+                    return array_key_exists('last_renewed_at', $data)
+                        && $data['last_renewed_at'] instanceof Carbon
+                        && array_key_exists('expires_at', $data)
+                        && $data['expires_at'] instanceof Carbon
+                        && $data['is_trial'] === false;
+                }),
+            )
+            ->andReturn($this->buildUpdatedSubscription($subscription));
+
+        $messageRepo = Mockery::mock(MessageRepositoryContract::class);
+        $messageRepo->shouldNotReceive('sendEmailToUser');
+
+        $pending = Mockery::mock(PendingMail::class);
+        $pending->shouldReceive('send')
+            ->once()
+            ->withArgs(function (TemplatedMailable $m): bool {
+                return $m->templateKey === 'renewal_receipt'
+                    && $m->variables['user']['first_name'] === 'Ada'
+                    && $m->variables['user']['last_name'] === 'Lovelace'
+                    && $m->variables['app']['name'] === 'TestApp'
+                    && $m->variables['membership_name'] === 'Pro Plan';
+            });
+
+        $mailer = Mockery::mock(Mailer::class);
+        $mailer->shouldReceive('to')->once()->with('ada@example.com')->andReturn($pending);
+
+        $config = $this->configMock('TestApp');
+
+        $command = new ChargeRenewal($paymentService, $subscriptionRepo, $messageRepo, $mailer, $config);
+        $this->assertSame(Command::SUCCESS, $command->handle());
+    }
+
+    public function test_handle_stripe_card_error_routes_to_failure_email_via_message_repository(): void
+    {
+        $subscription = $this->buildRecurringStripeSubscription();
+
+        $paymentService = Mockery::mock(StripePaymentServiceContract::class);
+        $paymentService->shouldReceive('createPayment')
+            ->once()
+            ->andThrow(new CardErrorException('Your card was declined'));
+
+        $subscriptionRepo = Mockery::mock(SubscriptionRepositoryContract::class);
+        $subscriptionRepo->shouldReceive('findExpiring')
+            ->once()
+            ->andReturn(new EloquentCollection([$subscription]));
+        $subscriptionRepo->shouldNotReceive('update');
+
+        $messageRepo = Mockery::mock(MessageRepositoryContract::class);
+        $messageRepo->shouldReceive('sendEmailToUser')
+            ->once()
+            ->with(
+                $subscription->subscriber,
+                'TestApp Membership Renewal Failed',
+                'membership-renewal-failure',
+                Mockery::on(function (array $data): bool {
+                    return $data['membership_name'] === 'Pro Plan'
+                        && $data['reason'] === 'Your card was declined.';
+                }),
+            )
+            ->andReturn(new MessageFixture);
+
+        $mailer = Mockery::mock(Mailer::class);
+        $mailer->shouldNotReceive('to');
+
+        $config = $this->configMock('TestApp');
+
+        $command = new ChargeRenewal($paymentService, $subscriptionRepo, $messageRepo, $mailer, $config);
+        $this->assertSame(Command::SUCCESS, $command->handle());
+    }
+
+    public function test_handle_stripe_not_found_uses_card_no_longer_on_file_message(): void
+    {
+        $subscription = $this->buildRecurringStripeSubscription();
+
+        $paymentService = Mockery::mock(StripePaymentServiceContract::class);
+        $paymentService->shouldReceive('createPayment')
+            ->once()
+            ->andThrow(new NotFoundException('Stripe customer missing'));
+
+        $subscriptionRepo = Mockery::mock(SubscriptionRepositoryContract::class);
+        $subscriptionRepo->shouldReceive('findExpiring')
+            ->once()
+            ->andReturn(new EloquentCollection([$subscription]));
+
+        $messageRepo = Mockery::mock(MessageRepositoryContract::class);
+        $messageRepo->shouldReceive('sendEmailToUser')
+            ->once()
+            ->withArgs(function ($user, string $subject, string $template, array $data): bool {
+                return $template === 'membership-renewal-failure'
+                    && $data['reason'] === 'Renewal card no longer on file.';
+            })
+            ->andReturn(new MessageFixture);
+
+        $mailer = Mockery::mock(Mailer::class);
+
+        $command = new ChargeRenewal(
+            $paymentService,
+            $subscriptionRepo,
+            $messageRepo,
+            $mailer,
+            $this->configMock('TestApp'),
+        );
+        $this->assertSame(Command::SUCCESS, $command->handle());
+    }
+
+    public function test_handle_non_recurring_subscription_sends_expiration_email(): void
+    {
+        $subscription = $this->buildNonRecurringSubscription();
+
+        $paymentService = Mockery::mock(StripePaymentServiceContract::class);
+        $paymentService->shouldNotReceive('createPayment');
+
+        $subscriptionRepo = Mockery::mock(SubscriptionRepositoryContract::class);
+        $subscriptionRepo->shouldReceive('findExpiring')
+            ->once()
+            ->andReturn(new EloquentCollection([$subscription]));
+        $subscriptionRepo->shouldNotReceive('update');
+
+        $messageRepo = Mockery::mock(MessageRepositoryContract::class);
+        $messageRepo->shouldReceive('sendEmailToUser')
+            ->once()
+            ->with(
+                $subscription->subscriber,
+                'TestApp Membership Expired',
+                'membership-expired',
+                Mockery::on(fn (array $data) => $data['membership_name'] === 'Basic Plan'),
+            )
+            ->andReturn(new MessageFixture);
+
+        $mailer = Mockery::mock(Mailer::class);
+
+        $command = new ChargeRenewal(
+            $paymentService,
+            $subscriptionRepo,
+            $messageRepo,
+            $mailer,
+            $this->configMock('TestApp'),
+        );
+        $this->assertSame(Command::SUCCESS, $command->handle());
+    }
+
+    public function test_handle_skips_subscription_when_subscriber_already_has_renewed_membership(): void
+    {
+        $subscription = $this->buildRecurringStripeSubscription();
+        // Simulate the subscriber already having a current subscription
+        // for tomorrow (the early-skip branch in handle()).
+        $subscription->subscriber
+            ->shouldReceive('currentSubscription')
+            ->andReturn(new SubscriptionFixture);
+
+        $paymentService = Mockery::mock(StripePaymentServiceContract::class);
+        $paymentService->shouldNotReceive('createPayment');
+
+        $subscriptionRepo = Mockery::mock(SubscriptionRepositoryContract::class);
+        $subscriptionRepo->shouldReceive('findExpiring')
+            ->once()
+            ->andReturn(new EloquentCollection([$subscription]));
+        $subscriptionRepo->shouldNotReceive('update');
+
+        $messageRepo = Mockery::mock(MessageRepositoryContract::class);
+        $messageRepo->shouldNotReceive('sendEmailToUser');
+
+        $mailer = Mockery::mock(Mailer::class);
+        $mailer->shouldNotReceive('to');
+
+        $command = new ChargeRenewal(
+            $paymentService,
+            $subscriptionRepo,
+            $messageRepo,
+            $mailer,
+            $this->configMock('TestApp'),
+        );
+        $this->assertSame(Command::SUCCESS, $command->handle());
+    }
+
+    public function test_handle_recurring_paypal_subscription_is_no_op_check_paypal(): void
+    {
+        $subscription = $this->buildRecurringStripeSubscription();
+        $subscription->paymentMethod->payment_method_type = 'paypal';
+
+        $paymentService = Mockery::mock(StripePaymentServiceContract::class);
+        $paymentService->shouldNotReceive('createPayment');
+
+        $subscriptionRepo = Mockery::mock(SubscriptionRepositoryContract::class);
+        $subscriptionRepo->shouldReceive('findExpiring')
+            ->once()
+            ->andReturn(new EloquentCollection([$subscription]));
+        $subscriptionRepo->shouldNotReceive('update');
+
+        $messageRepo = Mockery::mock(MessageRepositoryContract::class);
+        $messageRepo->shouldNotReceive('sendEmailToUser');
+
+        $mailer = Mockery::mock(Mailer::class);
+        $mailer->shouldNotReceive('to');
+
+        $command = new ChargeRenewal(
+            $paymentService,
+            $subscriptionRepo,
+            $messageRepo,
+            $mailer,
+            $this->configMock('TestApp'),
+        );
+        $this->assertSame(Command::SUCCESS, $command->handle());
+    }
+
+    public function test_handle_non_user_subscriber_type_is_silently_skipped_on_expiration(): void
+    {
+        $subscription = $this->buildNonRecurringSubscription();
+        // sendSubscriberEmail() short-circuits for non-`user` subscriber types.
+        $subscription->subscriber_type = 'organization';
+
+        $paymentService = Mockery::mock(StripePaymentServiceContract::class);
+
+        $subscriptionRepo = Mockery::mock(SubscriptionRepositoryContract::class);
+        $subscriptionRepo->shouldReceive('findExpiring')
+            ->once()
+            ->andReturn(new EloquentCollection([$subscription]));
+
+        $messageRepo = Mockery::mock(MessageRepositoryContract::class);
+        $messageRepo->shouldNotReceive('sendEmailToUser');
+
+        $mailer = Mockery::mock(Mailer::class);
+
+        $command = new ChargeRenewal(
+            $paymentService,
+            $subscriptionRepo,
+            $messageRepo,
+            $mailer,
+            $this->configMock('TestApp'),
+        );
+        $this->assertSame(Command::SUCCESS, $command->handle());
+    }
+
+    /* --------------------------- helpers ----------------------------- */
+
+    /**
+     * Builds a fixture-backed subscription stub that exposes every
+     * property + nested object ChargeRenewal touches. We instantiate the
+     * SubscriptionFixture (aliased to App\Models\Subscription\Subscription)
+     * so the command's `Subscription $subscription` type hint passes; for
+     * everything else we lean on stdClass / a small anonymous wrapper to
+     * stay out of Eloquent's __set/setAttribute path. Avoids needing the
+     * consumer-app's BaseModelAbstract (which itself depends on AdminUI
+     * EloquentJoin — not in this package's composer.json).
+     */
+    private function buildRecurringStripeSubscription(): SubscriptionFixture
+    {
+        // Subscriber needs to satisfy two type hints:
+        //   - sendEmailToUser($user) expects App\Models\User\User
+        //   - createPayment($entity) expects IsAnEntityContract
+        // Build a Mockery mock of the User fixture that also implements
+        // the entity contract; expose `currentSubscription()` so the
+        // early-skip branch in handle() resolves to null by default.
+        $subscriber = Mockery::mock(UserFixture::class, IsAnEntityContract::class);
+        $subscriber->shouldReceive('currentSubscription')->andReturnNull()->byDefault();
+        $subscriber->email = 'ada@example.com';
+        $subscriber->first_name = 'Ada';
+        $subscriber->last_name = 'Lovelace';
+
+        $plan = new stdClass;
+        $plan->name = 'Pro Plan';
+
+        $rate = new stdClass;
+        $rate->cost = 99.0;
+        $rate->membershipPlan = $plan;
+
+        $paymentMethod = new PaymentMethodFixture;
+        $paymentMethod->payment_method_type = 'stripe';
+
+        $subscription = new SubscriptionFixture;
+        $subscription->id = 42;
+        $subscription->recurring = true;
+        $subscription->subscriber_type = 'user';
+        $subscription->subscriber = $subscriber;
+        $subscription->paymentMethod = $paymentMethod;
+        $subscription->membershipPlanRate = $rate;
+        $subscription->formatted_cost = '99.00';
+        $subscription->formatted_expires_at = 'July 1st 2027';
+
+        return $subscription;
+    }
+
+    private function buildNonRecurringSubscription(): SubscriptionFixture
+    {
+        $subscription = $this->buildRecurringStripeSubscription();
+        $subscription->recurring = false;
+        $subscription->membershipPlanRate->membershipPlan->name = 'Basic Plan';
+
+        return $subscription;
+    }
+
+    /**
+     * Mirrors the post-update subscription returned by
+     * SubscriptionRepository::update() — used by handleSuccess() to fan
+     * out variables into the TemplatedMailable.
+     */
+    private function buildUpdatedSubscription(SubscriptionFixture $subscription): SubscriptionFixture
+    {
+        // Reuse the same graph; handleSuccess() only reads
+        // ->subscriber, ->membershipPlanRate->membershipPlan, etc.
+        return $subscription;
+    }
+
+    private function configMock(string $appName): Repository
+    {
+        $config = Mockery::mock(Repository::class);
+        $config->shouldReceive('get')->with('app.name', 'Polis')->andReturn($appName);
+
+        return $config;
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

@@ -47,3 +47,30 @@ if (! function_exists('getProperty')) {
         return $property->getValue($object);
     }
 }
+
+/*
+ * Load fixture stubs.
+ *
+ * Polis contracts type-hint App\Models\* concrete classes (User, Subscription,
+ * PaymentMethod, etc.) in their method signatures, and Polis source catches
+ * Cartalyst\Stripe\Exception\* exceptions and uses an AdminUI EloquentJoin
+ * trait on its base model. None of these namespaces are provided by this
+ * package's composer.json — they live in the consumer application. To
+ * unblock Mockery proxying of those contracts and to exercise the relevant
+ * branches inside the package's own test suite, each fixture defines a
+ * minimal stub and registers a class_alias under the expected FQCN. See
+ * tests/Fixtures/README.md for the full pattern.
+ *
+ * Order matters: Vendor fixtures (e.g. the EloquentJoin trait stub) must
+ * load before any Model fixture that triggers loading
+ * Polis\Models\BaseModelAbstract.
+ */
+foreach (glob(__DIR__.'/Fixtures/Vendor/*.php') as $fixture) {
+    require_once $fixture;
+}
+foreach (glob(__DIR__.'/Fixtures/Stripe/*.php') as $fixture) {
+    require_once $fixture;
+}
+foreach (glob(__DIR__.'/Fixtures/Models/*.php') as $fixture) {
+    require_once $fixture;
+}
