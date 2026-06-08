@@ -20,12 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP ${{ matrix.php }}
+      - name: Setup PHP ${{ matrix.php }} with pcov
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: pdo_mysql, intl, gd, zip, mbstring, bcmath, redis, imagick, xml, curl, sqlite, pdo_sqlite
-          coverage: none
+          coverage: pcov
           tools: composer:v2
 
       - name: Get composer cache directory
@@ -43,8 +43,32 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Run Unit tests
-        run: ./vendor/bin/phpunit --testsuite=Unit
+      - name: Run Unit tests with coverage
+        run: ./vendor/bin/phpunit --testsuite=Unit --coverage-clover=coverage.xml --coverage-text
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.php }}
+          path: coverage.xml
+
+      - name: Coverage summary
+        if: success()
+        run: |
+          echo "### Coverage (PHP ${{ matrix.php }})" >> "$GITHUB_STEP_SUMMARY"
+          php -r '
+            $xml = new SimpleXMLElement(file_get_contents("coverage.xml"));
+            $metrics = $xml->project->metrics;
+            $total = (int)$metrics["statements"];
+            $covered = (int)$metrics["coveredstatements"];
+            $pct = $total > 0 ? round($covered / $total * 100, 2) : 0;
+            echo "- Lines covered: {$covered}/{$total} ({$pct}%)\n";
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Coverage threshold check (PHP 8.4 only)
+        if: matrix.php == '8.4'
+        run: php tools/check-coverage-threshold.php coverage.xml
 
       # Integration and Feature testsuites are intentionally not present
       # in phpunit.xml yet: all tests currently in tests/Integration and
