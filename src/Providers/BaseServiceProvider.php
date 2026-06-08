@@ -7,6 +7,8 @@ namespace Polis\Providers;
 use App\Models\Messaging\Message;
 use App\Services\Indexing\ResourceRepositoryService;
 use GuzzleHttp\Client;
+use Illuminate\Cache\RateLimiter;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +27,7 @@ use Polis\Contracts\Services\Asset\AssetImportServiceContract;
 use Polis\Contracts\Services\Collection\ItemInEntityCollectionServiceContract;
 use Polis\Contracts\Services\DirectoryCopyServiceContract;
 use Polis\Contracts\Services\EntitySubscriptionCreationServiceContract;
+use Polis\Contracts\Services\ExternalRateLimiterContract;
 use Polis\Contracts\Services\Indexing\ResourceRepositoryServiceContract;
 use Polis\Contracts\Services\Messaging\EmailTemplateRenderingServiceContract;
 use Polis\Contracts\Services\Messaging\MessageSendingSelectionServiceContract;
@@ -52,6 +55,7 @@ use Polis\Services\BaseModelCacheService;
 use Polis\Services\Collection\ItemInEntityCollectionService;
 use Polis\Services\DirectoryCopyService;
 use Polis\Services\EntitySubscriptionCreationService;
+use Polis\Services\ExternalRateLimiter;
 use Polis\Services\Messaging\EmailTemplateRenderingService;
 use Polis\Services\Messaging\MessageSendingSelectionService;
 use Polis\Services\Messaging\MessageSendingServiceNotImplemented;
@@ -120,6 +124,7 @@ abstract class BaseServiceProvider extends ServiceProvider
             DirectoryCopyServiceContract::class,
             EmailTemplateRenderingServiceContract::class,
             EntitySubscriptionCreationServiceContract::class,
+            ExternalRateLimiterContract::class,
             ItemInEntityCollectionServiceContract::class,
             MessageSendingSelectionServiceContract::class,
             ModelCacheServiceContract::class,
@@ -205,6 +210,13 @@ abstract class BaseServiceProvider extends ServiceProvider
             $this->app->make(ProratingCalculationServiceContract::class),
             $this->app->make(SubscriptionRepositoryContract::class),
             $this->app->make(StripePaymentServiceContract::class),
+        )
+        );
+        $this->app->bind(ExternalRateLimiterContract::class, fn () => new ExternalRateLimiter(
+            $this->app->make(RateLimiter::class),
+            $this->app->make(Repository::class),
+            $this->app->make('log'),
+            (int) (env('EXTERNAL_REQUEST_MIN_GAP_SECONDS', 20) ?: 20),
         )
         );
         $this->app->bind(ItemInEntityCollectionServiceContract::class, fn () => new ItemInEntityCollectionService

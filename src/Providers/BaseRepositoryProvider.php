@@ -24,6 +24,7 @@ use App\Models\Subscription\MembershipPlanRate;
 use App\Models\Subscription\Subscription;
 use App\Models\User\ArticleNote;
 use App\Models\User\Contact;
+use App\Models\User\ExternalAccountConnection;
 use App\Models\User\InvitationToken;
 use App\Models\User\PasswordToken;
 use App\Models\User\ProfileImage;
@@ -69,6 +70,7 @@ use Polis\Contracts\Repositories\Subscription\MembershipPlanRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
 use Polis\Contracts\Repositories\User\ArticleNoteRepositoryContract;
 use Polis\Contracts\Repositories\User\ContactRepositoryContract;
+use Polis\Contracts\Repositories\User\ExternalAccountConnectionRepositoryContract;
 use Polis\Contracts\Repositories\User\InvitationTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\PasswordTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\ProfileImageRepositoryContract;
@@ -113,6 +115,7 @@ use Polis\Repositories\Subscription\MembershipPlanRepository;
 use Polis\Repositories\Subscription\SubscriptionRepository;
 use Polis\Repositories\User\ArticleNoteRepository;
 use Polis\Repositories\User\ContactRepository;
+use Polis\Repositories\User\ExternalAccountConnectionRepository;
 use Polis\Repositories\User\InvitationTokenRepository;
 use Polis\Repositories\User\PasswordTokenRepository;
 use Polis\Repositories\User\ProfileImageRepository;
@@ -175,6 +178,7 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             CollectionItemRepositoryContract::class,
             ContactRepositoryContract::class,
             EmailTemplateRepositoryContract::class,
+            ExternalAccountConnectionRepositoryContract::class,
             FeatureRepositoryContract::class,
             InvitationTokenRepositoryContract::class,
             LineItemRepositoryContract::class,
@@ -279,6 +283,10 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             'contact' => BaseServiceProvider::resolveConsumerOrPackage(
                 Contact::class,
                 \Polis\Models\User\Contact::class,
+            ),
+            'externalAccountConnection' => BaseServiceProvider::resolveConsumerOrPackage(
+                ExternalAccountConnection::class,
+                \Polis\Models\User\ExternalAccountConnection::class,
             ),
             'feature' => BaseServiceProvider::resolveConsumerOrPackage(
                 Feature::class,
@@ -482,6 +490,12 @@ abstract class BaseRepositoryProvider extends ServiceProvider
         $this->app->bind(ContactRepositoryContract::class, function () use ($models) {
             return new ContactRepository(
                 new $models['contact'],
+                $this->app->make('log')
+            );
+        });
+        $this->app->bind(ExternalAccountConnectionRepositoryContract::class, function () use ($models) {
+            return new ExternalAccountConnectionRepository(
+                new $models['externalAccountConnection'],
                 $this->app->make('log')
             );
         });
