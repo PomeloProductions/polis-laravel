@@ -49,7 +49,19 @@ use Polis\Observers\IndexableModelObserver;
 use Polis\Observers\Payment\PaymentMethodObserver;
 
 /**
- * Class EventServiceProvider
+ * Base event service provider for polis-laravel.
+ *
+ * Auto-bind behaviour
+ * -------------------
+ * Observer registrations (`Article::observe(...)` etc.) resolve the model
+ * FQN via {@see BaseServiceProvider::resolveConsumerOrPackage()}: the
+ * consumer's `App\Models\...` subclass is preferred and the package's
+ * `Polis\Models\...` concrete is used as the fallback.
+ *
+ * All listener FQNs in this provider reference `Polis\Listeners\...` only
+ * (the package ships concrete listeners and consumer apps add their own
+ * via {@see BaseEventServiceProvider::getAppListenerMapping()}). No
+ * listener-side shimming is required.
  */
 abstract class BaseEventServiceProvider extends ServiceProvider
 {
@@ -131,11 +143,32 @@ abstract class BaseEventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        Article::observe(IndexableModelObserver::class);
-        User::observe(IndexableModelObserver::class);
-        PaymentMethod::observe(PaymentMethodObserver::class);
-        CollectionItem::observe(AggregatedModelObserver::class);
-        ArticleNote::observe(AggregatedModelObserver::class);
+        $articleClass = BaseServiceProvider::resolveConsumerOrPackage(
+            Article::class,
+            \Polis\Models\Wiki\Article::class,
+        );
+        $userClass = BaseServiceProvider::resolveConsumerOrPackage(
+            User::class,
+            \Polis\Models\User\User::class,
+        );
+        $paymentMethodClass = BaseServiceProvider::resolveConsumerOrPackage(
+            PaymentMethod::class,
+            \Polis\Models\Payment\PaymentMethod::class,
+        );
+        $collectionItemClass = BaseServiceProvider::resolveConsumerOrPackage(
+            CollectionItem::class,
+            \Polis\Models\Collection\CollectionItem::class,
+        );
+        $articleNoteClass = BaseServiceProvider::resolveConsumerOrPackage(
+            ArticleNote::class,
+            \Polis\Models\User\ArticleNote::class,
+        );
+
+        $articleClass::observe(IndexableModelObserver::class);
+        $userClass::observe(IndexableModelObserver::class);
+        $paymentMethodClass::observe(PaymentMethodObserver::class);
+        $collectionItemClass::observe(AggregatedModelObserver::class);
+        $articleNoteClass::observe(AggregatedModelObserver::class);
 
         $this->registerObservers();
     }

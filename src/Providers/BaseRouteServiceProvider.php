@@ -24,7 +24,23 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Route;
 
 /**
- * Class RouteServiceProvider
+ * Base route service provider for polis-laravel.
+ *
+ * Auto-bind behaviour
+ * -------------------
+ * Route::model() bindings resolve consumer overrides first and fall back to
+ * the package concrete via {@see BaseServiceProvider::resolveConsumerOrPackage()}.
+ * If a consumer hasn't supplied an `App\Models\...` subclass for any of the
+ * package models, the package `Polis\Models\...` concrete is used instead.
+ *
+ * Still requires a consumer shim
+ * ------------------------------
+ * The route namespace `App\Http\<VERSION>\Controllers\...` is still
+ * controller-driven, and every base controller in this package is abstract
+ * (e.g. `Polis\Http\Core\Controllers\UserControllerAbstract`). Consumers
+ * MUST therefore provide concrete subclasses at the resolved namespace
+ * for each route registered in their routes/api-v1.php files. Bodies can
+ * be empty.
  */
 abstract class BaseRouteServiceProvider extends ServiceProvider
 {
@@ -36,27 +52,78 @@ abstract class BaseRouteServiceProvider extends ServiceProvider
     ];
 
     /**
-     * Gets all model placeholders for the app
+     * Gets all model placeholders for the app.
+     *
+     * For each placeholder, the consumer-supplied `App\Models\...` class is
+     * preferred; if absent, the package's `Polis\Models\...` concrete is used.
      */
     public function getModelPlaceholders(): array
     {
         return array_merge([
-            'article' => Article::class,
-            'article_iteration' => ArticleIteration::class,
-            'ballot' => Ballot::class,
-            'ballot_completion' => BallotCompletion::class,
-            'category' => Category::class,
-            'collection' => Collection::class,
-            'collection_item' => CollectionItem::class,
-            'feature' => Feature::class,
-            'membership_plan' => MembershipPlan::class,
-            'organization' => Organization::class,
-            'organization_manager' => OrganizationManager::class,
-            'payment_method' => PaymentMethod::class,
-            'role' => Role::class,
-            'statistic' => Statistic::class,
-            'subscription' => Subscription::class,
-            'user' => User::class,
+            'article' => BaseServiceProvider::resolveConsumerOrPackage(
+                Article::class,
+                \Polis\Models\Wiki\Article::class,
+            ),
+            'article_iteration' => BaseServiceProvider::resolveConsumerOrPackage(
+                ArticleIteration::class,
+                \Polis\Models\Wiki\ArticleIteration::class,
+            ),
+            'ballot' => BaseServiceProvider::resolveConsumerOrPackage(
+                Ballot::class,
+                \Polis\Models\Vote\Ballot::class,
+            ),
+            'ballot_completion' => BaseServiceProvider::resolveConsumerOrPackage(
+                BallotCompletion::class,
+                \Polis\Models\Vote\BallotCompletion::class,
+            ),
+            'category' => BaseServiceProvider::resolveConsumerOrPackage(
+                Category::class,
+                \Polis\Models\Category::class,
+            ),
+            'collection' => BaseServiceProvider::resolveConsumerOrPackage(
+                Collection::class,
+                \Polis\Models\Collection\Collection::class,
+            ),
+            'collection_item' => BaseServiceProvider::resolveConsumerOrPackage(
+                CollectionItem::class,
+                \Polis\Models\Collection\CollectionItem::class,
+            ),
+            'feature' => BaseServiceProvider::resolveConsumerOrPackage(
+                Feature::class,
+                \Polis\Models\Feature::class,
+            ),
+            'membership_plan' => BaseServiceProvider::resolveConsumerOrPackage(
+                MembershipPlan::class,
+                \Polis\Models\Subscription\MembershipPlan::class,
+            ),
+            'organization' => BaseServiceProvider::resolveConsumerOrPackage(
+                Organization::class,
+                \Polis\Models\Organization\Organization::class,
+            ),
+            'organization_manager' => BaseServiceProvider::resolveConsumerOrPackage(
+                OrganizationManager::class,
+                \Polis\Models\Organization\OrganizationManager::class,
+            ),
+            'payment_method' => BaseServiceProvider::resolveConsumerOrPackage(
+                PaymentMethod::class,
+                \Polis\Models\Payment\PaymentMethod::class,
+            ),
+            'role' => BaseServiceProvider::resolveConsumerOrPackage(
+                Role::class,
+                \Polis\Models\Role::class,
+            ),
+            'statistic' => BaseServiceProvider::resolveConsumerOrPackage(
+                Statistic::class,
+                \Polis\Models\Statistic\Statistic::class,
+            ),
+            'subscription' => BaseServiceProvider::resolveConsumerOrPackage(
+                Subscription::class,
+                \Polis\Models\Subscription\Subscription::class,
+            ),
+            'user' => BaseServiceProvider::resolveConsumerOrPackage(
+                User::class,
+                \Polis\Models\User\User::class,
+            ),
         ], $this->getAppModelPlaceholders());
     }
 

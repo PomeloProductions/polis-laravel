@@ -44,6 +44,10 @@
       <file>./tests/Unit/Models/Wiki/ArticleKeyUniquenessTest.php</file>
       <file>./tests/Unit/Push/DefaultPushTemplatesTest.php</file>
       <file>./tests/Unit/Providers/BaseAuthServiceProviderTest.php</file>
+      <file>./tests/Unit/Providers/BaseRepositoryProviderResolveTest.php</file>
+      <file>./tests/Unit/Providers/BaseRouteServiceProviderResolveTest.php</file>
+      <file>./tests/Unit/Providers/BaseServiceProviderAbstractFallbackTest.php</file>
+      <file>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseValidatorProviderTest.php</file>
       <file>./tests/Unit/Push/RenderedPushNotificationTest.php</file>
       <file>./tests/Unit/Services/ArchiveHelperServiceTest.php</file>
@@ -107,6 +111,10 @@
       <exclude>./tests/Unit/Models/Wiki/ArticleKeyUniquenessTest.php</exclude>
       <exclude>./tests/Unit/Push/DefaultPushTemplatesTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseAuthServiceProviderTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseRepositoryProviderResolveTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseRouteServiceProviderResolveTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseServiceProviderAbstractFallbackTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseValidatorProviderTest.php</exclude>
       <exclude>./tests/Unit/Push/RenderedPushNotificationTest.php</exclude>
       <exclude>./tests/Unit/Services/ArchiveHelperServiceTest.php</exclude>
