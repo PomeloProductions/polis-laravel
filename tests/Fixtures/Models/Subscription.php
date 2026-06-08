@@ -23,7 +23,10 @@ use Polis\Models\BaseModelAbstract;
  * purposes — Eloquent's __get falls back to the attributes array when no
  * matching relation/method exists, so reads continue to work.
  */
-class Subscription extends BaseModelAbstract {}
+class Subscription extends BaseModelAbstract
+{
+    use \Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+}
 
 if (! class_exists(\App\Models\Subscription\Subscription::class, false)) {
     class_alias(

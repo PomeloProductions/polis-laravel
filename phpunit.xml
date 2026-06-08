@@ -65,6 +65,35 @@
       <file>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseValidatorProviderTest.php</file>
       <file>./tests/Unit/Push/RenderedPushNotificationTest.php</file>
+      <file>./tests/Unit/Repositories/BaseRepositoryAbstractFixtureTest.php</file>
+      <file>./tests/Unit/Repositories/BaseRepositoryAbstractTest.php</file>
+      <file>./tests/Unit/Repositories/RoleRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/ThinWrapperRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Collection/CollectionRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Messaging/EmailTemplateRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Messaging/MessageRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Messaging/PushNotificationKeyRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Messaging/PushTemplateRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Messaging/ThreadRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Payment/PaymentRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Statistic/StatisticRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Statistic/TargetStatisticRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Subscription/MembershipPlanRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Subscription/MembershipPlanUpdateTest.php</file>
+      <file>./tests/Unit/Repositories/Subscription/SubscriptionRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/ArticleNoteRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/ContactRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/InvitationTokenRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/PasswordTokenRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/UserRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Vote/BallotCompletionRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Vote/BallotItemRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Vote/BallotRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Wiki/ArticleIterationRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Wiki/ArticleRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/Wiki/ArticleVersionRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/AssetRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/ProfileImageRepositoryTest.php</file>
       <file>./tests/Unit/Services/ArchiveHelperServiceTest.php</file>
       <file>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</file>
       <file>./tests/Unit/Services/DirectoryCopyServiceTest.php</file>
@@ -148,6 +177,35 @@
       <exclude>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseValidatorProviderTest.php</exclude>
       <exclude>./tests/Unit/Push/RenderedPushNotificationTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/BaseRepositoryAbstractFixtureTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/BaseRepositoryAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/RoleRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/ThinWrapperRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Collection/CollectionRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Messaging/EmailTemplateRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Messaging/MessageRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Messaging/PushNotificationKeyRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Messaging/PushTemplateRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Messaging/ThreadRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Payment/PaymentRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Statistic/StatisticRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Statistic/TargetStatisticRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Subscription/MembershipPlanRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Subscription/MembershipPlanUpdateTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Subscription/SubscriptionRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/User/ArticleNoteRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/User/ContactRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/User/InvitationTokenRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/User/PasswordTokenRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/User/UserRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Vote/BallotCompletionRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Vote/BallotItemRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Vote/BallotRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Wiki/ArticleIterationRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Wiki/ArticleRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/Wiki/ArticleVersionRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/AssetRepositoryTest.php</exclude>
+      <exclude>./tests/Unit/Repositories/User/ProfileImageRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Services/ArchiveHelperServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/DirectoryCopyServiceTest.php</exclude>

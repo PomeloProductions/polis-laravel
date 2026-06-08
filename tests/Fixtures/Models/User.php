@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\User\User.
  *
@@ -14,21 +17,22 @@ namespace Polis\Tests\Fixtures\Models;
  * blocks Mockery from proxying the contracts. This fixture provides a
  * minimal class at the expected FQCN so the type hints resolve.
  *
- * Why a plain class (no parent)?
- *   1. Polis\Models\BaseModelAbstract pulls in
- *      AdminUI\Laravel\EloquentJoin\Traits\EloquentJoin, which is a
- *      consumer-provided dependency and not in this package's composer.json.
- *   2. Extending Illuminate\Database\Eloquent\Model directly inherits a
- *      __set magic that routes property assignment through setAttribute(),
- *      which collides with Mockery mocks that need to set arbitrary dynamic
- *      properties (e.g. $user->first_name = 'Ada' inside a test).
- * Keeping the fixture parentless makes it loadable in any standalone
- * context and friendly to Mockery's dynamic property handling.
+ * Extends BaseModelAbstract so repository tests that pass User instances
+ * to methods typed `BaseModelAbstract` (e.g. UserRepository::update,
+ * MessageRepository::create's $relatedModel) succeed without a
+ * multi-class Mockery hack. The real consumer-app User does extend
+ * BaseModelAbstract via Authenticatable, so this matches the production
+ * shape.
+ *
+ * Mixes in MockeryFriendlyAttributesTrait so legacy policy/validator tests'
+ * `$mock->id = 5` patterns continue to work without triggering Eloquent's
+ * setAttribute() on Mockery type-mocks. See the trait for details.
  */
-class User
+class User extends BaseModelAbstract
 {
-    // Intentionally empty. Used purely for type-hint satisfaction in
-    // standalone tests. Add no consumer-specific logic here.
+    use MockeryFriendlyAttributesTrait;
+
+    protected $guarded = [];
 }
 
 if (! class_exists(\App\Models\User\User::class, false)) {

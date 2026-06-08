@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+
 /**
  * Fixture stub for App\Models\Subscription\MembershipPlanRate.
  *
- * AllowDynamicProperties so tests can populate ->cost (and any other
- * domain-specific fields) directly on instances. See User.php.
+ * Extends BaseModelAbstract for parity with the real consumer-app type,
+ * so repository tests that pass a rate to methods typed `BaseModelAbstract`
+ * (e.g. `MembershipPlanRateRepositoryContract::update($rate, ...)`) work
+ * without a multi-class Mockery hack. See MembershipPlan.php for the
+ * broader pattern. Eloquent's dynamic attribute getter/setter handles
+ * ->cost and other domain fields.
  */
-#[\AllowDynamicProperties]
-class MembershipPlanRate {}
+class MembershipPlanRate extends BaseModelAbstract
+{
+    use \Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+}
 
 if (! class_exists(\App\Models\Subscription\MembershipPlanRate::class, false)) {
     class_alias(
