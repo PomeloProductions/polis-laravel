@@ -27,7 +27,14 @@ final class SignUpListenerStandaloneTest extends TestCase
 {
     public function test_handle_sends_templated_welcome_email_to_user(): void
     {
-        $user = Mockery::mock('App\\Models\\User\\User');
+        // Use a real fixture User instance (which now extends
+        // BaseModelAbstract) rather than a Mockery double — Mockery wraps
+        // Eloquent's ArrayAccess implementation in a way that requires
+        // stubbing offsetExists (triggered by `$user->first_name ??
+        // ''`), and a concrete instance handles all of that
+        // automatically.
+        $userClass = 'App\\Models\\User\\User';
+        $user = new $userClass;
         $user->first_name = 'Ada';
         $user->last_name = 'Lovelace';
         $user->email = 'ada@example.com';

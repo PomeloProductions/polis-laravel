@@ -23,6 +23,9 @@ class Message
      */
     public const VIA_EMAIL = 'email';
 
+    /** Mirror of Polis\Models\Messaging\Message::VIA_SMS for sendTextMessage. */
+    public const VIA_SMS = 'sms';
+
     public ?int $id = null;
 
     public ?int $thread_id = null;

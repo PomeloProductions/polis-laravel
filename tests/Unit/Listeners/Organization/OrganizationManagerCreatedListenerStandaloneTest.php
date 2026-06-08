@@ -26,7 +26,12 @@ final class OrganizationManagerCreatedListenerStandaloneTest extends TestCase
 {
     public function test_handle_sends_templated_email_with_organization_id_for_org_scoped_lookup(): void
     {
-        $user = Mockery::mock('App\\Models\\User\\User');
+        // Use a real fixture User instance (which now extends
+        // BaseModelAbstract) — Mockery doubles of Eloquent models require
+        // stubbing the ArrayAccess methods triggered by `??`, and a real
+        // instance handles all of that automatically.
+        $userClass = 'App\\Models\\User\\User';
+        $user = new $userClass;
         $user->first_name = 'Bob';
         $user->last_name = 'Builder';
         $user->email = 'bob@org.test';

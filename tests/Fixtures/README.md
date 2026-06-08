@@ -40,6 +40,11 @@ bucket.
 - `Policies/` — empty concrete subclasses of every `*PolicyAbstract` so
   abstract policy gates can be exercised without referencing
   `App\Policies\*`. See `Policies/README.md`.
+- `Repository/` — eloquent fixture models + base test case for repository
+  tests that exercise BaseRepositoryAbstract against an actual sqlite
+  database. See `Repository/RepositoryTestCase.php`.
+- `database/migrations/` — sqlite migrations creating the tables backing
+  the `Repository/` fixtures (and `articles` for template tests).
 - `Stripe/` — stubs aliased to `Cartalyst\Stripe\Exception\*`
   (`CardErrorException`, `NotFoundException`, `ApiLimitExceededException`).
   The Cartalyst Stripe package is a consumer-side dependency.

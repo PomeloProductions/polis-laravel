@@ -65,8 +65,12 @@ final class StatisticListenersTest extends TestCase
         // subclasses which can't be standalone-mocked (EloquentJoin
         // trait absent in this package). Non-empty iteration coverage
         // lives in the Consumer-Only suite.
-        $statistic = Mockery::mock('App\\Models\\Statistic\\Statistic');
-        $statistic->targetStatistics = [];
+        // Statistic now extends BaseModelAbstract (via fixture) so
+        // property writes go through Eloquent's setAttribute. Use a real
+        // instance to avoid stubbing those.
+        $statisticClass = 'App\\Models\\Statistic\\Statistic';
+        $statistic = new $statisticClass;
+        $statistic->setRelation('targetStatistics', new \Illuminate\Database\Eloquent\Collection);
 
         $repo = Mockery::mock(TargetStatisticRepositoryContract::class);
 
