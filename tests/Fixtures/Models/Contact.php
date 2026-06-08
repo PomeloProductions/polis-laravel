@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\User\Contact.
  *
- * ContactPolicyAbstract reads initiated_by_id / requested_id to validate
- * either party owns the contact relationship.
+ * Extends BaseModelAbstract because ContactRepositoryContract::update()
+ * type-hints BaseModelAbstract. See Category.php for the shared rationale.
  */
-class Contact
+class Contact extends BaseModelAbstract
 {
-    public ?int $id = null;
-
-    public ?int $initiated_by_id = null;
-
-    public ?int $requested_id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\User\Contact::class, false)) {

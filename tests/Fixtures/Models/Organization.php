@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\Organization\Organization.
  *
- * Policy abstracts type-hint App\Models\Organization\Organization in their
- * gate-method signatures. This minimal stub lets the policy tests assign
- * organization-shaped objects without pulling in any consumer-app code.
- * See tests/Fixtures/Models/User.php for the broader rationale.
+ * Extends BaseModelAbstract because OrganizationRepositoryContract::update()
+ * and ::delete() type-hint BaseModelAbstract, and the controller calls
+ * $org->load() in show(). See Category.php for the shared rationale.
  */
-class Organization
+class Organization extends BaseModelAbstract
 {
-    public ?int $id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Organization\Organization::class, false)) {

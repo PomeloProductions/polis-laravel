@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\User\UserPageComponent.
  *
- * UserPageComponentPolicyAbstract reads $user_page_id to validate the
- * component belongs to the named page.
+ * Extends BaseModelAbstract because UserPageComponentRepositoryContract's
+ * update()/delete() type-hint BaseModelAbstract. See Category.php for the
+ * shared rationale.
  */
-class UserPageComponent
+class UserPageComponent extends BaseModelAbstract
 {
-    public ?int $id = null;
-
-    public ?int $user_page_id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\User\UserPageComponent::class, false)) {

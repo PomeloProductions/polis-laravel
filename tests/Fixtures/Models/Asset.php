@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\Asset.
  *
- * AssetPolicyAbstract type-hints this on update/delete to assert the
- * asset's owner matches the requesting entity.
+ * Extends BaseModelAbstract because AssetRepositoryContract::update() and
+ * ::delete() type-hint BaseModelAbstract. See Category.php for the shared
+ * rationale.
  */
-class Asset
+class Asset extends BaseModelAbstract
 {
-    public ?int $id = null;
-
-    public ?string $owner_type = null;
-
-    public ?int $owner_id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Asset::class, false)) {

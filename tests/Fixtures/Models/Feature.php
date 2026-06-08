@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\Feature.
  *
- * Used by FeaturePolicyAbstract::view() — fixture only needs to satisfy
- * the type hint.
+ * Extends BaseModelAbstract so $model->load() round-trips through the
+ * Eloquent stack (FeatureController::show calls it). See Category.php for
+ * the shared rationale.
  */
-class Feature
+class Feature extends BaseModelAbstract
 {
-    public ?int $id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Feature::class, false)) {

@@ -4,33 +4,32 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\Messaging\Message.
  *
  * Required because MessageRepositoryContract methods reference
- * App\Models\Messaging\Message as both parameter and return type, and the
- * contract also uses the Message::VIA_EMAIL class constant as a default
- * argument. See User.php for the rationale.
+ * App\Models\Messaging\Message as both parameter and return type. The
+ * contract also uses Message::VIA_EMAIL as a default argument, and the
+ * Thread\MessageControllerAbstract::store uses Message::VIA_PUSH_NOTIFICATION.
+ *
+ * Extends BaseModelAbstract so it can pass through the repository's
+ * update() (Thread\MessageController::update calls it).
  */
-class Message
+class Message extends BaseModelAbstract
 {
-    /**
-     * Mirror of Polis\Models\Messaging\Message::VIA_EMAIL.
-     *
-     * The constant is referenced as a default argument value in
-     * MessageRepositoryContract::sendEmailToUser(); reflection of that
-     * signature requires the constant to exist on the type being aliased.
-     */
+    use MockeryFriendlyAttributesTrait;
+
+    /** Mirror of Polis\Models\Messaging\Message::VIA_EMAIL. */
     public const VIA_EMAIL = 'email';
+
+    /** Mirror of Polis\Models\Messaging\Message::VIA_PUSH_NOTIFICATION. */
+    public const VIA_PUSH_NOTIFICATION = 'push';
 
     /** Mirror of Polis\Models\Messaging\Message::VIA_SMS for sendTextMessage. */
     public const VIA_SMS = 'sms';
-
-    public ?int $id = null;
-
-    public ?int $thread_id = null;
-
-    public ?int $to_id = null;
 }
 
 if (! class_exists(\App\Models\Messaging\Message::class, false)) {
