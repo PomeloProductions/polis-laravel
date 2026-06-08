@@ -8,7 +8,6 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Mail\Mailer;
 use Polis\Console\Commands\ChargeRenewal;
-use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
 use Polis\Contracts\Services\StripePaymentServiceContract;
 use Polis\Mail\TemplatedMailable;
@@ -23,22 +22,18 @@ use ReflectionNamedType;
  * (1) the class lives in the polis-laravel namespace and extends the
  * Laravel Console Command base, (2) it depends only on Polis-namespaced
  * contracts plus framework abstractions (no `App\*` constructor types),
- * (3) the success path imports TemplatedMailable so the renewal_receipt
- * template can be dispatched, and (4) the command exposes the documented
- * console signature/description constants.
+ * (3) all three email paths reference TemplatedMailable and the matching
+ * template keys (renewal_receipt, renewal_failure, membership_expired),
+ * and (4) the command exposes the documented signature/description.
  *
  * Deeper behavioural coverage (Stripe success → renewal_receipt dispatch,
- * failure → MessageRepository fallback, exit codes) requires fakes for the
- * App\Models\Subscription\* graph and is a follow-up — those models live in
- * the consumer application. The pre-existing rich integration test at
+ * failure → renewal_failure dispatch, expiration → membership_expired
+ * dispatch, exit codes) requires fakes for the App\Models\Subscription\*
+ * graph and is a follow-up — those models live in the consumer
+ * application. The pre-existing rich integration test at
  * tests/Integration/Console/Commands/ChargeRenewalTest.php still exercises
  * the old (App-namespaced) command inside PolisOS's Consumer-Only suite;
  * migrating it to the new Polis-namespaced class is a follow-up PR.
- *
- * Why no direct `new ChargeRenewal(...)` smoke: MessageRepositoryContract
- * and StripePaymentServiceContract both reference App\Models\* types in
- * their method signatures, which prevents Mockery from generating proxies
- * inside this package's standalone (no consumer-app) Testbench harness.
  */
 final class ChargeRenewalTest extends TestCase
 {
@@ -56,7 +51,6 @@ final class ChargeRenewalTest extends TestCase
         $expectedTypes = [
             StripePaymentServiceContract::class,
             SubscriptionRepositoryContract::class,
-            MessageRepositoryContract::class,
             Mailer::class,
             Repository::class,
         ];
@@ -71,7 +65,7 @@ final class ChargeRenewalTest extends TestCase
         $this->assertSame($expectedTypes, $actualTypes);
     }
 
-    public function test_command_imports_templated_mailable_for_renewal_receipt_dispatch(): void
+    public function test_command_dispatches_all_three_email_paths_via_templated_mailable(): void
     {
         $source = file_get_contents(
             (new ReflectionClass(ChargeRenewal::class))->getFileName(),
@@ -80,12 +74,22 @@ final class ChargeRenewalTest extends TestCase
         $this->assertStringContainsString(
             'use '.TemplatedMailable::class.';',
             $source,
-            'ChargeRenewal must import TemplatedMailable to dispatch the renewal_receipt template.',
+            'ChargeRenewal must import TemplatedMailable to dispatch templated emails.',
         );
         $this->assertStringContainsString(
             "'renewal_receipt'",
             $source,
             'ChargeRenewal must reference the renewal_receipt template key on the success path.',
+        );
+        $this->assertStringContainsString(
+            "'renewal_failure'",
+            $source,
+            'ChargeRenewal must reference the renewal_failure template key on the Stripe-failure path.',
+        );
+        $this->assertStringContainsString(
+            "'membership_expired'",
+            $source,
+            'ChargeRenewal must reference the membership_expired template key on the expiration path.',
         );
     }
 

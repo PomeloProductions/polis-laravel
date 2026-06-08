@@ -65,5 +65,26 @@ final class DefaultEmailTemplates
                 .'<p>Your new expiration date is {{ expiration_date }}.</p>'
                 .'<p>Thank you for your continued support!</p>',
         ],
+        'renewal_failure' => [
+            'subject' => '{{ app.name }} Membership Renewal Failed',
+            'body_html' => '<p>Hi {{ user.first_name }},</p>'
+                .'<p>We were unable to renew your {{ membership_name }} subscription.</p>'
+                .'<p>Reason: {{ failure_reason }}</p>'
+                .'<p>Your membership is currently set to expire on {{ expiration_date }}. '
+                .'To keep your access uninterrupted, please log in and update your payment method.</p>'
+                .'<p>If you believe this is an error, please contact support.</p>'
+                .'<p>Thanks,</p>'
+                .'<p>{{ app.name }}</p>',
+        ],
+        'membership_expired' => [
+            'subject' => '{{ app.name }} Membership Expired',
+            'body_html' => '<p>Hi {{ user.first_name }},</p>'
+                .'<p>Your {{ membership_name }} subscription expired on {{ expiration_date }} '
+                .'and has not been renewed.</p>'
+                .'<p>We would love to have you back. Please log in to renew your membership '
+                .'and restore your access.</p>'
+                .'<p>Thanks,</p>'
+                .'<p>{{ app.name }}</p>',
+        ],
     ];
 }
