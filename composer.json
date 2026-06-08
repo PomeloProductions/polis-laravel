@@ -15,9 +15,29 @@
     },
     "require": {
         "php": ">=8.3.0",
-        "ezyang/htmlpurifier": "^4.19"
+        "adminui/laravel-eloquent-joins": "^12.0",
+        "cartalyst/stripe-laravel": "^15.0 || ^16.0 || ^17.0",
+        "ezyang/htmlpurifier": "^4.19",
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/cache": "^11.0 || ^12.0",
+        "illuminate/console": "^11.0 || ^12.0",
+        "illuminate/contracts": "^11.0 || ^12.0",
+        "illuminate/database": "^11.0 || ^12.0",
+        "illuminate/events": "^11.0 || ^12.0",
+        "illuminate/http": "^11.0 || ^12.0",
+        "illuminate/mail": "^11.0 || ^12.0",
+        "illuminate/notifications": "^11.0 || ^12.0",
+        "illuminate/queue": "^11.0 || ^12.0",
+        "illuminate/support": "^11.0 || ^12.0",
+        "illuminate/validation": "^11.0 || ^12.0",
+        "jolicode/slack-php-api": "^4.0",
+        "laravel-notification-channels/twilio": "^4.0",
+        "php-open-source-saver/jwt-auth": "^2.0",
+        "sebastian/diff": "^5.0 || ^6.0 || ^7.0",
+        "xantios/mimey": "^2.0"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.0",
         "dg/bypass-finals": "^1.6",
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.6",
@@ -25,6 +45,9 @@
         "orchestra/testbench": "^10.0",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^10.5 || ^11.0"
+    },
+    "suggest": {
+        "benwilkins/laravel-fcm-notification": "Required when polis.messaging_services.push_enabled=true. Note: upstream is currently incompatible with Laravel 11+; consumers must point to a maintained fork until that is resolved."
     },
     "scripts": {
         "test": "phpunit",

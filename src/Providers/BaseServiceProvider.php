@@ -6,7 +6,6 @@ namespace Polis\Providers;
 
 use App\Models\Messaging\Message;
 use App\Services\Indexing\ResourceRepositoryService;
-use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Mail\Mailer;
@@ -294,8 +293,10 @@ abstract class BaseServiceProvider extends ServiceProvider
      */
     public function registerEnvironmentSpecificProviders(): void
     {
-        if ($this->app->environment() == 'local') {
-            $this->app->register(IdeHelperServiceProvider::class);
+        if ($this->app->environment() == 'local'
+            && class_exists(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class)
+        ) {
+            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         }
     }
 
