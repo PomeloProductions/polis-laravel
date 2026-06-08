@@ -14,7 +14,6 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\Str;
-use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
 use Polis\Contracts\Services\StripePaymentServiceContract;
 use Polis\Mail\TemplatedMailable;
@@ -27,17 +26,15 @@ use Polis\Mail\TemplatedMailable;
  * (b) emails the user to let them know the membership has lapsed
  * (non-recurring).
  *
- * Migrated from PolisOS's app/Console/Commands/ChargeRenewal.php. The
- * success email path was switched from MessageRepository->sendEmailToUser
- * (hardcoded blade view) to TemplatedMailable using the `renewal_receipt`
- * key in DefaultEmailTemplates, matching the pattern established by
- * SendRenewalReminders in PR #2.
+ * Migrated from PolisOS's app/Console/Commands/ChargeRenewal.php. All three
+ * email paths (success, failure, expiration) now go through
+ * TemplatedMailable + the runtime-editable template system:
+ *   - success:    `renewal_receipt`
+ *   - failure:    `renewal_failure`
+ *   - expiration: `membership_expired`
  *
- * Failure + expiration paths still use MessageRepositoryContract because
- * the corresponding template keys (`renewal_failure`, `membership_expired`)
- * have not been added to DefaultEmailTemplates yet. Migrating those is a
- * follow-up; the wiring here will swap to TemplatedMailable once the
- * template keys land.
+ * MessageRepositoryContract is no longer used here; the previous fallback
+ * to hardcoded blade views has been removed.
  */
 class ChargeRenewal extends Command
 {
@@ -55,7 +52,6 @@ class ChargeRenewal extends Command
     public function __construct(
         private readonly StripePaymentServiceContract $paymentService,
         private readonly SubscriptionRepositoryContract $subscriptionRepository,
-        private readonly MessageRepositoryContract $messageRepository,
         private readonly Mailer $mailer,
         Repository $config,
     ) {
@@ -100,8 +96,8 @@ class ChargeRenewal extends Command
 
     /**
      * Charges a subscription's stored Stripe payment method. On success,
-     * emits the templated renewal receipt; on failure, falls back to
-     * the legacy failure email path.
+     * emits the `renewal_receipt` templated email; on failure, emits the
+     * `renewal_failure` templated email.
      */
     public function chargeStripe(Subscription $subscription): void
     {
@@ -185,44 +181,69 @@ class ChargeRenewal extends Command
     }
 
     /**
-     * Notifies a user whose non-recurring membership has just lapsed.
+     * Notifies a user whose non-recurring membership has just lapsed by
+     * dispatching the `membership_expired` templated email.
      *
-     * @todo migrate to TemplatedMailable once a `membership_expired`
-     *       default template lands in DefaultEmailTemplates.
+     * Skipped for non-user subscribers, preserving PolisOS behaviour.
      */
     public function sendExpirationEmail(Subscription $subscription): void
     {
-        $this->sendSubscriberEmail($subscription, $this->appName.' Membership Expired', 'membership-expired', [
-            'membership_name' => $subscription->membershipPlanRate->membershipPlan->name,
-        ]);
+        if ($subscription->subscriber_type !== 'user') {
+            return;
+        }
+
+        $this->mailer->to($subscription->subscriber->email)->send(new TemplatedMailable(
+            templateKey: 'membership_expired',
+            variables: $this->buildSubscriberVariables($subscription),
+        ));
     }
 
     /**
-     * Notifies a user that an auto-renewal charge failed.
+     * Notifies a user that an auto-renewal charge failed by dispatching the
+     * `renewal_failure` templated email.
      *
-     * @todo migrate to TemplatedMailable once a `renewal_failure` default
-     *       template lands in DefaultEmailTemplates.
+     * Skipped for non-user subscribers, preserving PolisOS behaviour.
      */
     public function sendFailureEmail(Subscription $subscription, string $reason): void
     {
+        if ($subscription->subscriber_type !== 'user') {
+            return;
+        }
+
         if (! Str::endsWith($reason, '.')) {
             $reason .= '.';
         }
-        $this->sendSubscriberEmail($subscription, $this->appName.' Membership Renewal Failed', 'membership-renewal-failure', [
-            'membership_name' => $subscription->membershipPlanRate->membershipPlan->name,
-            'reason' => $reason,
-        ]);
+
+        $variables = $this->buildSubscriberVariables($subscription);
+        $variables['failure_reason'] = $reason;
+
+        $this->mailer->to($subscription->subscriber->email)->send(new TemplatedMailable(
+            templateKey: 'renewal_failure',
+            variables: $variables,
+        ));
     }
 
     /**
-     * Routes a legacy (non-template-key) email through the message
-     * repository, but only for `user` subscribers. Other subscriber types
-     * are silently skipped, preserving PolisOS behaviour.
+     * Builds the shared variable shape consumed by the renewal_failure and
+     * membership_expired templates.
+     *
+     * @return array<string, mixed>
      */
-    private function sendSubscriberEmail(Subscription $subscription, string $subject, string $template, array $baseData): void
+    private function buildSubscriberVariables(Subscription $subscription): array
     {
-        if ($subscription->subscriber_type === 'user') {
-            $this->messageRepository->sendEmailToUser($subscription->subscriber, $subject, $template, $baseData);
-        }
+        $subscriber = $subscription->subscriber;
+        $plan = $subscription->membershipPlanRate->membershipPlan ?? null;
+
+        return [
+            'user' => [
+                'first_name' => $subscriber->first_name ?? '',
+                'last_name' => $subscriber->last_name ?? '',
+            ],
+            'app' => [
+                'name' => $this->appName,
+            ],
+            'membership_name' => $plan->name ?? '',
+            'expiration_date' => $subscription->formatted_expires_at ?? '',
+        ];
     }
 }
