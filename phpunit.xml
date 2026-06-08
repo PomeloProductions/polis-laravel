@@ -18,6 +18,7 @@
     <testsuite name="Unit">
       <file>./tests/Unit/Console/Commands/ChargeRenewalTest.php</file>
       <file>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</file>
+      <file>./tests/Unit/Database/MigrationsTest.php</file>
       <file>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerTest.php</file>
@@ -41,9 +42,21 @@
       <file>./tests/Unit/Mail/DefaultEmailTemplatesTest.php</file>
       <file>./tests/Unit/Mail/RenderedEmailTest.php</file>
       <file>./tests/Unit/Mail/TemplatedMailableTest.php</file>
+      <file>./tests/Unit/Policies/AssetPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/BasePolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/CollectionPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/MessagingPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/OrganizationPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/PaymentPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/SimpleAbstractPolicyTest.php</file>
+      <file>./tests/Unit/Policies/StatisticPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/SubscriptionPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/UserPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/VotePolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/WikiPolicyAbstractTest.php</file>
       <file>./tests/Unit/Models/Traits/HasValidationRulesAppendAndPrependTest.php</file>
       <file>./tests/Unit/Models/Traits/HasValidationRulesTest.php</file>
-      <file>./tests/Unit/Models/Wiki/ArticleKeyUniquenessTest.php</file>
       <file>./tests/Unit/Push/DefaultPushTemplatesTest.php</file>
       <file>./tests/Unit/Providers/BaseAuthServiceProviderTest.php</file>
       <file>./tests/Unit/Providers/BaseRepositoryProviderResolveTest.php</file>
@@ -60,6 +73,7 @@
       <file>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</file>
       <file>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</file>
+      <file>./tests/Unit/Services/ProratingCalculationServiceUpgradeChargeTest.php</file>
       <file>./tests/Unit/Services/StringHelperServiceTest.php</file>
       <file>./tests/Unit/Services/TokenGenerationServiceTest.php</file>
       <file>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</file>
@@ -87,6 +101,7 @@
       <directory suffix="Test.php">./tests/Unit</directory>
       <exclude>./tests/Unit/Console/Commands/ChargeRenewalTest.php</exclude>
       <exclude>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</exclude>
+      <exclude>./tests/Unit/Database/MigrationsTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerTest.php</exclude>
@@ -110,9 +125,21 @@
       <exclude>./tests/Unit/Mail/DefaultEmailTemplatesTest.php</exclude>
       <exclude>./tests/Unit/Mail/RenderedEmailTest.php</exclude>
       <exclude>./tests/Unit/Mail/TemplatedMailableTest.php</exclude>
+      <exclude>./tests/Unit/Policies/AssetPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/BasePolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/CollectionPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/MessagingPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/OrganizationPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/PaymentPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/SimpleAbstractPolicyTest.php</exclude>
+      <exclude>./tests/Unit/Policies/StatisticPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/SubscriptionPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/UserPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/VotePolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/WikiPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Models/Traits/HasValidationRulesAppendAndPrependTest.php</exclude>
       <exclude>./tests/Unit/Models/Traits/HasValidationRulesTest.php</exclude>
-      <exclude>./tests/Unit/Models/Wiki/ArticleKeyUniquenessTest.php</exclude>
       <exclude>./tests/Unit/Push/DefaultPushTemplatesTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseAuthServiceProviderTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseRepositoryProviderResolveTest.php</exclude>
@@ -129,6 +156,7 @@
       <exclude>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</exclude>
       <exclude>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</exclude>
+      <exclude>./tests/Unit/Services/ProratingCalculationServiceUpgradeChargeTest.php</exclude>
       <exclude>./tests/Unit/Services/StringHelperServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/TokenGenerationServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</exclude>

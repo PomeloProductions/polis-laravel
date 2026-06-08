@@ -22,6 +22,12 @@ class Message
      * signature requires the constant to exist on the type being aliased.
      */
     public const VIA_EMAIL = 'email';
+
+    public ?int $id = null;
+
+    public ?int $thread_id = null;
+
+    public ?int $to_id = null;
 }
 
 if (! class_exists(\App\Models\Messaging\Message::class, false)) {

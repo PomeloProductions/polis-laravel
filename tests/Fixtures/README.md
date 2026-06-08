@@ -37,6 +37,9 @@ bucket.
 
 - `Models/` — stubs aliased to `App\Models\*` (e.g. `User`, `Subscription`,
   `PaymentMethod`).
+- `Policies/` — empty concrete subclasses of every `*PolicyAbstract` so
+  abstract policy gates can be exercised without referencing
+  `App\Policies\*`. See `Policies/README.md`.
 - `Stripe/` — stubs aliased to `Cartalyst\Stripe\Exception\*`
   (`CardErrorException`, `NotFoundException`, `ApiLimitExceededException`).
   The Cartalyst Stripe package is a consumer-side dependency.
