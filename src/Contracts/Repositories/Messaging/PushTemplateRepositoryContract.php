@@ -35,4 +35,40 @@ interface PushTemplateRepositoryContract extends BaseRepositoryContract
      * model.
      */
     public function findByKey(string $key, ?int $organizationId = null): ?PushTemplateContract;
+
+    /**
+     * Look up the org-scoped PushTemplate row for the given key — without
+     * falling back to the global row. Returns null when no override
+     * exists. Mirrors EmailTemplateRepositoryContract::findOrgScopedByKey.
+     */
+    public function findOrgScopedByKey(string $key, int $organizationId): ?PushTemplateContract;
+
+    /**
+     * Upsert the org-scoped PushTemplate row for the given key. Mirrors
+     * EmailTemplateRepositoryContract::upsertOrgScoped: push templates
+     * carry a `title` and plain-text `body` (no HTML).
+     */
+    public function upsertOrgScoped(
+        string $key,
+        int $organizationId,
+        string $title,
+        string $body,
+    ): PushTemplateContract;
+
+    /**
+     * Delete the org-scoped PushTemplate row for ($key, $organizationId)
+     * if it exists. Returns true when a row was found + deleted, false
+     * when no row existed.
+     */
+    public function deleteOrgScoped(string $key, int $organizationId): bool;
+
+    /**
+     * Return the set of distinct `key` values that have at least one row
+     * in the `articles` table scoped to the given organization OR to the
+     * global (null organization_id) bucket. Used by the admin API to
+     * surface every key the org could potentially edit.
+     *
+     * @return list<string>
+     */
+    public function listKeysForOrganization(int $organizationId): array;
 }

@@ -21,6 +21,8 @@
       <file>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Messaging/EmailTemplateControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Messaging/PushTemplateControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</file>
       <file>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</file>
@@ -88,6 +90,8 @@
       <exclude>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Messaging/EmailTemplateControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Messaging/PushTemplateControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</exclude>
       <exclude>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</exclude>
