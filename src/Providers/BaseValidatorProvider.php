@@ -17,6 +17,13 @@ use Polis\Validators\Subscription\PaymentMethodIsOwnedByEntityValidator;
 
 /**
  * Class AppValidatorProvider
+ *
+ * Auto-bind behaviour
+ * -------------------
+ * This provider only references package-internal validator classes
+ * (`Polis\Validators\...`); it does not look up any `App\...` classes. No
+ * consumer-side shims are required for it to operate. Consumer-specific
+ * validators are registered via {@see registerValidators()}.
  */
 abstract class BaseValidatorProvider extends ServiceProvider
 {

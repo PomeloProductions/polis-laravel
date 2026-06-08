@@ -16,6 +16,25 @@ use Polis\ThreadSecurity\ThreadSubjectGateProvider;
 
 /**
  * Class AuthServiceProvider
+ *
+ * Auto-bind behaviour
+ * -------------------
+ * This provider does NOT auto-bind policies. Every package policy
+ * (`Polis\Policies\*PolicyAbstract`) is abstract by design — consumer
+ * applications must enumerate the abilities and authorization logic that
+ * apply to their own model classes. As a result the consumer MUST provide
+ * concrete policy classes at:
+ *
+ *   App\Policies\<...>\<Model>Policy
+ *
+ * extending the corresponding `Polis\Policies\<...>\<Model>PolicyAbstract`.
+ * Policy bodies can be empty one-liners if the abstract already covers the
+ * needed abilities.
+ *
+ * The {@see guessPolicyName()} method below tells Laravel's gate to look
+ * for `App\Policies\...Policy` (NOT `Polis\Policies\...Policy`), so failing
+ * to ship those concretes will surface a "class not found" error from the
+ * gate at first authorisation check rather than silently no-op.
  */
 abstract class BaseAuthServiceProvider extends ServiceProvider
 {
