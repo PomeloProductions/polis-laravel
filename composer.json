@@ -14,7 +14,8 @@
         }
     },
     "require": {
-        "php": ">=8.3.0"
+        "php": ">=8.3.0",
+        "ezyang/htmlpurifier": "^4.19"
     },
     "require-dev": {
         "dg/bypass-finals": "^1.6",
