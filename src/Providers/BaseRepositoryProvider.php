@@ -16,7 +16,6 @@ use App\Models\Organization\OrganizationManager;
 use App\Models\Payment\LineItem;
 use App\Models\Payment\Payment;
 use App\Models\Payment\PaymentMethod;
-use App\Models\Resource;
 use App\Models\Role;
 use App\Models\Statistic\Statistic;
 use App\Models\Statistic\TargetStatistic;
@@ -132,7 +131,25 @@ use Polis\Repositories\Wiki\ArticleSummaryRepository;
 use Polis\Repositories\Wiki\ArticleVersionRepository;
 
 /**
- * Class AtheniaRepositoryProvider
+ * Base repository provider for polis-laravel.
+ *
+ * Auto-bind behaviour
+ * -------------------
+ * Every model instantiation and morph-map entry resolves via
+ * {@see BaseServiceProvider::resolveConsumerOrPackage()}: if the consumer
+ * application has supplied a concrete `App\Models\...` subclass, that
+ * subclass is used; otherwise the `Polis\Models\...` concrete shipped with
+ * this package is used.
+ *
+ * As a result, consumers no longer need to maintain empty shim classes at
+ * `App\Models\...` simply to satisfy provider bindings. All repository
+ * concretes (`Polis\Repositories\...`) are non-abstract so no shimming is
+ * required at the repository layer either.
+ *
+ * Required consumer-side artifacts
+ * --------------------------------
+ * None. Every binding in this provider works against package concretes
+ * out of the box and only switches when a consumer subclass is detected.
  */
 abstract class BaseRepositoryProvider extends ServiceProvider
 {
@@ -190,271 +207,442 @@ abstract class BaseRepositoryProvider extends ServiceProvider
     abstract public function appProviders(): array;
 
     /**
+     * Returns the FQN map of every model used by this provider, with each
+     * value resolved to the consumer's `App\Models\...` override if one
+     * exists, otherwise falling back to the package `Polis\Models\...`
+     * concrete.
+     *
+     * Centralising the mapping here keeps the binding closures readable and
+     * means new models only need to be added in one place.
+     *
+     * @return array<string, class-string>
+     */
+    protected function resolvedModelMap(): array
+    {
+        return [
+            'article' => BaseServiceProvider::resolveConsumerOrPackage(
+                Article::class,
+                \Polis\Models\Wiki\Article::class,
+            ),
+            'articleIteration' => BaseServiceProvider::resolveConsumerOrPackage(
+                ArticleIteration::class,
+                \Polis\Models\Wiki\ArticleIteration::class,
+            ),
+            'articleModification' => BaseServiceProvider::resolveConsumerOrPackage(
+                ArticleModification::class,
+                \Polis\Models\Wiki\ArticleModification::class,
+            ),
+            'articleSummary' => BaseServiceProvider::resolveConsumerOrPackage(
+                ArticleSummary::class,
+                \Polis\Models\Wiki\ArticleSummary::class,
+            ),
+            'articleVersion' => BaseServiceProvider::resolveConsumerOrPackage(
+                ArticleVersion::class,
+                \Polis\Models\Wiki\ArticleVersion::class,
+            ),
+            'articleNote' => BaseServiceProvider::resolveConsumerOrPackage(
+                ArticleNote::class,
+                \Polis\Models\User\ArticleNote::class,
+            ),
+            'asset' => BaseServiceProvider::resolveConsumerOrPackage(
+                Asset::class,
+                \Polis\Models\Asset::class,
+            ),
+            'ballot' => BaseServiceProvider::resolveConsumerOrPackage(
+                Ballot::class,
+                \Polis\Models\Vote\Ballot::class,
+            ),
+            'ballotCompletion' => BaseServiceProvider::resolveConsumerOrPackage(
+                BallotCompletion::class,
+                \Polis\Models\Vote\BallotCompletion::class,
+            ),
+            'ballotItem' => BaseServiceProvider::resolveConsumerOrPackage(
+                BallotItem::class,
+                \Polis\Models\Vote\BallotItem::class,
+            ),
+            'ballotItemOption' => BaseServiceProvider::resolveConsumerOrPackage(
+                BallotItemOption::class,
+                \Polis\Models\Vote\BallotItemOption::class,
+            ),
+            'category' => BaseServiceProvider::resolveConsumerOrPackage(
+                Category::class,
+                \Polis\Models\Category::class,
+            ),
+            'collection' => BaseServiceProvider::resolveConsumerOrPackage(
+                Collection::class,
+                \Polis\Models\Collection\Collection::class,
+            ),
+            'collectionItem' => BaseServiceProvider::resolveConsumerOrPackage(
+                CollectionItem::class,
+                \Polis\Models\Collection\CollectionItem::class,
+            ),
+            'contact' => BaseServiceProvider::resolveConsumerOrPackage(
+                Contact::class,
+                \Polis\Models\User\Contact::class,
+            ),
+            'feature' => BaseServiceProvider::resolveConsumerOrPackage(
+                Feature::class,
+                \Polis\Models\Feature::class,
+            ),
+            'invitationToken' => BaseServiceProvider::resolveConsumerOrPackage(
+                InvitationToken::class,
+                \Polis\Models\User\InvitationToken::class,
+            ),
+            'lineItem' => BaseServiceProvider::resolveConsumerOrPackage(
+                LineItem::class,
+                \Polis\Models\Payment\LineItem::class,
+            ),
+            'membershipPlan' => BaseServiceProvider::resolveConsumerOrPackage(
+                MembershipPlan::class,
+                \Polis\Models\Subscription\MembershipPlan::class,
+            ),
+            'membershipPlanRate' => BaseServiceProvider::resolveConsumerOrPackage(
+                MembershipPlanRate::class,
+                \Polis\Models\Subscription\MembershipPlanRate::class,
+            ),
+            'message' => BaseServiceProvider::resolveConsumerOrPackage(
+                Message::class,
+                \Polis\Models\Messaging\Message::class,
+            ),
+            'organization' => BaseServiceProvider::resolveConsumerOrPackage(
+                Organization::class,
+                \Polis\Models\Organization\Organization::class,
+            ),
+            'organizationManager' => BaseServiceProvider::resolveConsumerOrPackage(
+                OrganizationManager::class,
+                \Polis\Models\Organization\OrganizationManager::class,
+            ),
+            'passwordToken' => BaseServiceProvider::resolveConsumerOrPackage(
+                PasswordToken::class,
+                \Polis\Models\User\PasswordToken::class,
+            ),
+            'payment' => BaseServiceProvider::resolveConsumerOrPackage(
+                Payment::class,
+                \Polis\Models\Payment\Payment::class,
+            ),
+            'paymentMethod' => BaseServiceProvider::resolveConsumerOrPackage(
+                PaymentMethod::class,
+                \Polis\Models\Payment\PaymentMethod::class,
+            ),
+            'profileImage' => BaseServiceProvider::resolveConsumerOrPackage(
+                ProfileImage::class,
+                \Polis\Models\User\ProfileImage::class,
+            ),
+            'resource' => BaseServiceProvider::resolveConsumerOrPackage(
+                \App\Models\Resource::class,
+                \Polis\Models\Resource::class,
+            ),
+            'role' => BaseServiceProvider::resolveConsumerOrPackage(
+                Role::class,
+                \Polis\Models\Role::class,
+            ),
+            'statistic' => BaseServiceProvider::resolveConsumerOrPackage(
+                Statistic::class,
+                \Polis\Models\Statistic\Statistic::class,
+            ),
+            'subscription' => BaseServiceProvider::resolveConsumerOrPackage(
+                Subscription::class,
+                \Polis\Models\Subscription\Subscription::class,
+            ),
+            'targetStatistic' => BaseServiceProvider::resolveConsumerOrPackage(
+                TargetStatistic::class,
+                \Polis\Models\Statistic\TargetStatistic::class,
+            ),
+            'thread' => BaseServiceProvider::resolveConsumerOrPackage(
+                Thread::class,
+                \Polis\Models\Messaging\Thread::class,
+            ),
+            'user' => BaseServiceProvider::resolveConsumerOrPackage(
+                User::class,
+                \Polis\Models\User\User::class,
+            ),
+            'userPage' => BaseServiceProvider::resolveConsumerOrPackage(
+                UserPage::class,
+                \Polis\Models\User\UserPage::class,
+            ),
+            'userPageComponent' => BaseServiceProvider::resolveConsumerOrPackage(
+                UserPageComponent::class,
+                \Polis\Models\User\UserPageComponent::class,
+            ),
+            'vote' => BaseServiceProvider::resolveConsumerOrPackage(
+                Vote::class,
+                \Polis\Models\Vote\Vote::class,
+            ),
+        ];
+    }
+
+    /**
      * Register the repositories.
      */
     final public function register(): void
     {
+        $models = $this->resolvedModelMap();
+
         Relation::morphMap(array_merge([
-            'article' => Article::class,
-            'organization' => Organization::class,
-            'subscription' => Subscription::class,
-            'user' => User::class,
-            'collection' => Collection::class,
+            'article' => $models['article'],
+            'organization' => $models['organization'],
+            'subscription' => $models['subscription'],
+            'user' => $models['user'],
+            'collection' => $models['collection'],
         ], $this->appMorphMaps()));
 
-        $this->app->bind(ArticleRepositoryContract::class, function () {
+        $this->app->bind(ArticleRepositoryContract::class, function () use ($models) {
             return new ArticleRepository(
-                new Article,
+                new $models['article'],
                 $this->app->make('log'),
                 $this->app->make(StatisticRepositoryContract::class),
             );
         });
-        $this->app->bind(ArticleIterationRepositoryContract::class, function () {
+        $this->app->bind(ArticleIterationRepositoryContract::class, function () use ($models) {
             return new ArticleIterationRepository(
-                new ArticleIteration,
+                new $models['articleIteration'],
                 $this->app->make('log'),
             );
         });
-        $this->app->bind(ArticleModificationRepositoryContract::class, function () {
+        $this->app->bind(ArticleModificationRepositoryContract::class, function () use ($models) {
             return new ArticleModificationRepository(
-                new ArticleModification,
+                new $models['articleModification'],
                 $this->app->make('log'),
             );
         });
-        $this->app->bind(ArticleSummaryRepositoryContract::class, function () {
+        $this->app->bind(ArticleSummaryRepositoryContract::class, function () use ($models) {
             return new ArticleSummaryRepository(
-                new ArticleSummary,
+                new $models['articleSummary'],
                 $this->app->make('log'),
             );
         });
-        $this->app->bind(ArticleVersionRepositoryContract::class, function () {
+        $this->app->bind(ArticleVersionRepositoryContract::class, function () use ($models) {
             return new ArticleVersionRepository(
-                new ArticleVersion,
+                new $models['articleVersion'],
                 $this->app->make('log'),
                 $this->app->make(Dispatcher::class),
             );
         });
-        $this->app->bind(ArticleNoteRepositoryContract::class, function () {
+        $this->app->bind(ArticleNoteRepositoryContract::class, function () use ($models) {
             return new ArticleNoteRepository(
-                new ArticleNote,
+                new $models['articleNote'],
                 $this->app->make('log'),
                 $this->app->make(Dispatcher::class),
             );
         });
-        $this->app->bind(AssetRepositoryContract::class, function () {
+        $this->app->bind(AssetRepositoryContract::class, function () use ($models) {
             return new AssetRepository(
-                new Asset,
+                new $models['asset'],
                 $this->app->make('log'),
                 $this->app->make('filesystem'),
                 $this->app->make(AssetConfigurationServiceContract::class)
             );
         });
-        $this->app->bind(BallotRepositoryContract::class, function () {
+        $this->app->bind(BallotRepositoryContract::class, function () use ($models) {
             return new BallotRepository(
-                new Ballot,
+                new $models['ballot'],
                 $this->app->make('log'),
                 $this->app->make(BallotItemRepositoryContract::class)
             );
         });
-        $this->app->bind(BallotCompletionRepositoryContract::class, function () {
+        $this->app->bind(BallotCompletionRepositoryContract::class, function () use ($models) {
             return new BallotCompletionRepository(
-                new BallotCompletion,
+                new $models['ballotCompletion'],
                 $this->app->make('log'),
                 $this->app->make(VoteRepositoryContract::class)
             );
         });
-        $this->app->bind(BallotItemRepositoryContract::class, function () {
+        $this->app->bind(BallotItemRepositoryContract::class, function () use ($models) {
             return new BallotItemRepository(
-                new BallotItem,
+                new $models['ballotItem'],
                 $this->app->make('log'),
                 $this->app->make(BallotItemOptionRepositoryContract::class)
             );
         });
-        $this->app->bind(BallotItemOptionRepositoryContract::class, function () {
+        $this->app->bind(BallotItemOptionRepositoryContract::class, function () use ($models) {
             return new BallotItemOptionRepository(
-                new BallotItemOption,
+                new $models['ballotItemOption'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(CategoryRepositoryContract::class, function () {
+        $this->app->bind(CategoryRepositoryContract::class, function () use ($models) {
             return new CategoryRepository(
-                new Category,
+                new $models['category'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(CollectionRepositoryContract::class, function () {
+        $this->app->bind(CollectionRepositoryContract::class, function () use ($models) {
             return new CollectionRepository(
-                new Collection,
+                new $models['collection'],
                 $this->app->make('log'),
                 $this->app->make(CollectionItemRepositoryContract::class)
             );
         });
-        $this->app->bind(CollectionItemRepositoryContract::class, function () {
+        $this->app->bind(CollectionItemRepositoryContract::class, function () use ($models) {
             return new CollectionItemRepository(
-                new CollectionItem,
+                new $models['collectionItem'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(ContactRepositoryContract::class, function () {
+        $this->app->bind(ContactRepositoryContract::class, function () use ($models) {
             return new ContactRepository(
-                new Contact,
+                new $models['contact'],
                 $this->app->make('log')
             );
         });
         $this->app->bind(EmailTemplateRepositoryContract::class, function () {
+            // EmailTemplate is a package-only model; there is no consumer
+            // override slot for it.
             return new EmailTemplateRepository(
                 new EmailTemplate,
                 $this->app->make('log'),
             );
         });
-        $this->app->bind(FeatureRepositoryContract::class, function () {
+        $this->app->bind(FeatureRepositoryContract::class, function () use ($models) {
             return new FeatureRepository(
-                new Feature,
+                new $models['feature'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(LineItemRepositoryContract::class, function () {
+        $this->app->bind(LineItemRepositoryContract::class, function () use ($models) {
             return new LineItemRepository(
-                new LineItem,
+                new $models['lineItem'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(MembershipPlanRepositoryContract::class, function () {
+        $this->app->bind(MembershipPlanRepositoryContract::class, function () use ($models) {
             return new MembershipPlanRepository(
-                new MembershipPlan,
+                new $models['membershipPlan'],
                 $this->app->make('log'),
                 $this->app->make(MembershipPlanRateRepositoryContract::class)
             );
         });
-        $this->app->bind(MembershipPlanRateRepositoryContract::class, function () {
+        $this->app->bind(MembershipPlanRateRepositoryContract::class, function () use ($models) {
             return new MembershipPlanRateRepository(
-                new MembershipPlanRate,
+                new $models['membershipPlanRate'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(MessageRepositoryContract::class, function () {
+        $this->app->bind(MessageRepositoryContract::class, function () use ($models) {
             return new MessageRepository(
-                new Message,
+                new $models['message'],
                 $this->app->make('log'),
                 $this->app->make(UserRepositoryContract::class)
             );
         });
-        $this->app->bind(OrganizationRepositoryContract::class, function () {
+        $this->app->bind(OrganizationRepositoryContract::class, function () use ($models) {
             return new OrganizationRepository(
-                new Organization,
+                new $models['organization'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(OrganizationManagerRepositoryContract::class, function () {
+        $this->app->bind(OrganizationManagerRepositoryContract::class, function () use ($models) {
             return new OrganizationManagerRepository(
-                new OrganizationManager,
+                new $models['organizationManager'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(InvitationTokenRepositoryContract::class, function () {
+        $this->app->bind(InvitationTokenRepositoryContract::class, function () use ($models) {
             return new InvitationTokenRepository(
-                new InvitationToken,
+                new $models['invitationToken'],
                 $this->app->make('log'),
                 $this->app->make(TokenGenerationServiceContract::class)
             );
         });
-        $this->app->bind(PasswordTokenRepositoryContract::class, function () {
+        $this->app->bind(PasswordTokenRepositoryContract::class, function () use ($models) {
             return new PasswordTokenRepository(
-                new PasswordToken,
+                new $models['passwordToken'],
                 $this->app->make('log'),
                 $this->app->make(Dispatcher::class),
                 $this->app->make(TokenGenerationServiceContract::class)
             );
         });
-        $this->app->bind(PaymentRepositoryContract::class, function () {
+        $this->app->bind(PaymentRepositoryContract::class, function () use ($models) {
             return new PaymentRepository(
-                new Payment,
+                new $models['payment'],
                 $this->app->make('log'),
                 $this->app->make(LineItemRepositoryContract::class)
             );
         });
-        $this->app->bind(PaymentMethodRepositoryContract::class, function () {
+        $this->app->bind(PaymentMethodRepositoryContract::class, function () use ($models) {
             return new PaymentMethodRepository(
-                new PaymentMethod,
+                new $models['paymentMethod'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(ProfileImageRepositoryContract::class, function () {
+        $this->app->bind(ProfileImageRepositoryContract::class, function () use ($models) {
             return new ProfileImageRepository(
-                new ProfileImage,
+                new $models['profileImage'],
                 $this->app->make('log'),
                 $this->app->make(FilesystemManager::class),
                 $this->app->make(AssetConfigurationServiceContract::class)
             );
         });
         $this->app->bind(PushTemplateRepositoryContract::class, function () {
+            // PushTemplate is a package-only model; there is no consumer
+            // override slot for it.
             return new PushTemplateRepository(
                 new PushTemplate,
                 $this->app->make('log'),
             );
         });
-        $this->app->bind(ResourceRepositoryContract::class, function () {
+        $this->app->bind(ResourceRepositoryContract::class, function () use ($models) {
             return new ResourceRepository(
-                new Resource,
+                new $models['resource'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(RoleRepositoryContract::class, function () {
+        $this->app->bind(RoleRepositoryContract::class, function () use ($models) {
             return new RoleRepository(
-                new Role,
+                new $models['role'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(StatisticRepositoryContract::class, function () {
+        $this->app->bind(StatisticRepositoryContract::class, function () use ($models) {
             return new StatisticRepository(
-                new Statistic,
+                new $models['statistic'],
                 $this->app->make('log'),
                 $this->app->make(StatisticFilterRepository::class),
                 $this->app->make(Dispatcher::class)
             );
         });
-        $this->app->bind(SubscriptionRepositoryContract::class, function () {
+        $this->app->bind(SubscriptionRepositoryContract::class, function () use ($models) {
             return new SubscriptionRepository(
-                new Subscription,
+                new $models['subscription'],
                 $this->app->make('log'),
                 $this->app->make(MembershipPlanRateRepositoryContract::class)
             );
         });
-        $this->app->bind(TargetStatisticRepositoryContract::class, function () {
+        $this->app->bind(TargetStatisticRepositoryContract::class, function () use ($models) {
             return new TargetStatisticRepository(
-                new TargetStatistic,
+                new $models['targetStatistic'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(ThreadRepositoryContract::class, function () {
+        $this->app->bind(ThreadRepositoryContract::class, function () use ($models) {
             return new ThreadRepository(
-                new Thread,
+                new $models['thread'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(UserPageRepositoryContract::class, function () {
+        $this->app->bind(UserPageRepositoryContract::class, function () use ($models) {
             return new UserPageRepository(
-                new UserPage,
+                new $models['userPage'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(UserPageComponentRepositoryContract::class, function () {
+        $this->app->bind(UserPageComponentRepositoryContract::class, function () use ($models) {
             return new UserPageComponentRepository(
-                new UserPageComponent,
+                new $models['userPageComponent'],
                 $this->app->make('log')
             );
         });
-        $this->app->bind(UserRepositoryContract::class, function () {
+        $this->app->bind(UserRepositoryContract::class, function () use ($models) {
             return new UserRepository(
-                new User,
+                new $models['user'],
                 $this->app->make('log'),
                 $this->app->make(Hasher::class),
                 $this->app->make(Repository::class)
             );
         });
-        $this->app->bind(VoteRepositoryContract::class, function () {
+        $this->app->bind(VoteRepositoryContract::class, function () use ($models) {
             return new VoteRepository(
-                new Vote,
+                new $models['vote'],
                 $this->app->make('log')
             );
         });

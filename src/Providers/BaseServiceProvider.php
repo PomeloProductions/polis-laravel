@@ -56,8 +56,8 @@ use Polis\Services\DirectoryCopyService;
 use Polis\Services\EntitySubscriptionCreationService;
 use Polis\Services\Messaging\EmailTemplateRenderingService;
 use Polis\Services\Messaging\MessageSendingSelectionService;
-use Polis\Services\Messaging\PushTemplateRenderingService;
 use Polis\Services\Messaging\MessageSendingServiceNotImplemented;
+use Polis\Services\Messaging\PushTemplateRenderingService;
 use Polis\Services\Messaging\SendEmailService;
 use Polis\Services\Messaging\SendPushNotificationService;
 use Polis\Services\Messaging\SendSlackNotificationService;
@@ -72,8 +72,46 @@ use Polis\Services\StripePaymentService;
 use Polis\Services\TokenGenerationService;
 use Polis\Services\Wiki\ArticleVersionCalculationService;
 
+/**
+ * Base service provider for polis-laravel.
+ *
+ * Auto-bind behaviour
+ * -------------------
+ * Where possible, this provider resolves `App\...` consumer overrides and
+ * falls back to a `Polis\...` package concrete via
+ * {@see BaseServiceProvider::resolveConsumerOrPackage()}. The intent is to
+ * let consumer applications drop empty shim classes that previously only
+ * existed to put a name at the right FQN.
+ *
+ * Auto-bound (no consumer shim required):
+ *  - App\Models\Messaging\Message -> Polis\Models\Messaging\Message
+ *
+ * Still requires a consumer-side concrete (the Polis class is abstract):
+ *  - App\Services\Indexing\ResourceRepositoryService must extend
+ *    Polis\Services\Indexing\BaseResourceRepositoryService. Missing this
+ *    class throws a clear RuntimeException at bind time rather than failing
+ *    silently.
+ */
 abstract class BaseServiceProvider extends ServiceProvider
 {
+    /**
+     * Resolve a class name preferring a consumer-app override over the
+     * package-provided concrete fallback.
+     *
+     * This is the core of polis-laravel's auto-bind behaviour: a consumer
+     * application may supply its own `App\...` subclass to override a
+     * package concrete, but if it does not, the provider falls back to the
+     * `Polis\...` concrete shipped with this package.
+     *
+     * @param  class-string  $appClass  Fully-qualified `App\...` class to prefer.
+     * @param  class-string  $polisClass  Fully-qualified `Polis\...` concrete to fall back to.
+     * @return class-string The class name to use for binding/instantiation.
+     */
+    public static function resolveConsumerOrPackage(string $appClass, string $polisClass): string
+    {
+        return class_exists($appClass) ? $appClass : $polisClass;
+    }
+
     public function provides(): array
     {
         return array_merge([
@@ -145,11 +183,15 @@ abstract class BaseServiceProvider extends ServiceProvider
         );
         $this->app->bind(ItemInEntityCollectionServiceContract::class, fn () => new ItemInEntityCollectionService
         );
+        $messageClass = self::resolveConsumerOrPackage(
+            Message::class,
+            \Polis\Models\Messaging\Message::class,
+        );
         $this->app->bind(MessageSendingSelectionServiceContract::class, fn () => new MessageSendingSelectionService([
-            Message::VIA_EMAIL => $this->app->make(SendEmailServiceContract::class),
-            Message::VIA_SMS => $this->app->make(SendSMSServiceContract::class),
-            Message::VIA_PUSH_NOTIFICATION => $this->app->make(SendPushNotificationServiceContract::class),
-            Message::VIA_SLACK => $this->app->make(SendSlackNotificationServiceContract::class),
+            $messageClass::VIA_EMAIL => $this->app->make(SendEmailServiceContract::class),
+            $messageClass::VIA_SMS => $this->app->make(SendSMSServiceContract::class),
+            $messageClass::VIA_PUSH_NOTIFICATION => $this->app->make(SendPushNotificationServiceContract::class),
+            $messageClass::VIA_SLACK => $this->app->make(SendSlackNotificationServiceContract::class),
         ])
         );
         $this->app->bind(ProratingCalculationServiceContract::class, fn () => new ProratingCalculationService
@@ -158,8 +200,26 @@ abstract class BaseServiceProvider extends ServiceProvider
             $this->app->make(PushTemplateRepositoryContract::class),
             DefaultPushTemplates::TEMPLATES,
         ));
-        $this->app->bind(ResourceRepositoryServiceContract::class, fn () => new ResourceRepositoryService($this->app)
-        );
+        $this->app->bind(ResourceRepositoryServiceContract::class, function () {
+            // ResourceRepositoryService has no concrete Polis fallback —
+            // BaseResourceRepositoryService is abstract because consumer
+            // applications must enumerate their own indexable resource
+            // repositories. Consumers MUST provide:
+            //   App\Services\Indexing\ResourceRepositoryService
+            // extending Polis\Services\Indexing\BaseResourceRepositoryService.
+            if (! class_exists(ResourceRepositoryService::class)) {
+                throw new \RuntimeException(
+                    'polis-laravel: missing consumer-side concrete '
+                    .'App\\Services\\Indexing\\ResourceRepositoryService. '
+                    .'Extend Polis\\Services\\Indexing\\BaseResourceRepositoryService '
+                    .'and define availableResourceRepositories().'
+                );
+            }
+
+            $class = ResourceRepositoryService::class;
+
+            return new $class($this->app);
+        });
         $this->app->bind(SendEmailServiceContract::class, fn () => new SendEmailService($this->app->make(Mailer::class))
         );
         $this->app->bind(SendPushNotificationServiceContract::class, function () {
