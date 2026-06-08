@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\User\UserPage.
  *
- * UserPagePolicyAbstract / UserPageComponentPolicyAbstract read user_id
- * for ownership and is_required for delete-protection.
+ * Extends BaseModelAbstract because UserPageRepositoryContract::update()
+ * and ::delete() type-hint BaseModelAbstract. See Category.php for the
+ * shared rationale.
  */
-class UserPage
+class UserPage extends BaseModelAbstract
 {
-    public ?int $id = null;
-
-    public ?int $user_id = null;
-
-    public bool $is_required = false;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\User\UserPage::class, false)) {

@@ -5,23 +5,18 @@ declare(strict_types=1);
 namespace Polis\Tests\Fixtures\Models;
 
 use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
 
 /**
  * Fixture stub for App\Models\Vote\Ballot.
  *
- * Extends BaseModelAbstract so BallotRepository tests can pass Ballot
- * instances/mocks to syncChildModels(BaseModelAbstract $parentModel) and
- * BaseRepositoryAbstract::update(BaseModelAbstract $model). Mixes in
- * MockeryFriendlyAttributesTrait so legacy policy tests' `$mock->id = 5`
- * patterns continue to work on Mockery doubles. See User.php for the
- * broader fixture rationale.
- *
- * BallotPolicyAbstract / BallotCompletionPolicyAbstract only use Ballot
- * as a type hint; the abstract gates do not read any properties off it.
+ * Extends BaseModelAbstract so it can pass through repository calls
+ * (BallotCompletionRepositoryContract::create takes a BaseModelAbstract
+ * for the related-model arg). See Category.php for the shared rationale.
  */
 class Ballot extends BaseModelAbstract
 {
-    use \Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Vote\Ballot::class, false)) {

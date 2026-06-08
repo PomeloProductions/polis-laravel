@@ -71,6 +71,21 @@ foreach (glob(__DIR__.'/Fixtures/Vendor/*.php') as $fixture) {
 foreach (glob(__DIR__.'/Fixtures/Stripe/*.php') as $fixture) {
     require_once $fixture;
 }
+foreach (glob(__DIR__.'/Fixtures/JWT/*.php') as $fixture) {
+    require_once $fixture;
+}
 foreach (glob(__DIR__.'/Fixtures/Models/*.php') as $fixture) {
     require_once $fixture;
 }
+
+/*
+ * Register class aliases that point every consumer-side
+ * App\Http\Core\Requests\* FQCN at a single Polis\Tests\Fixtures\Requests\StubRequest
+ * subclass of BaseRequestAbstract. The controllers in
+ * src/Http/Core/Controllers/* type-hint these App\* request classes; the
+ * aliases make Mockery proxies of those FQCNs satisfy the runtime type
+ * check without requiring a consumer app on the classpath.
+ *
+ * See tests/Fixtures/Requests/StubRequest.php for the full rationale.
+ */
+require_once __DIR__.'/Fixtures/Requests/register_aliases.php';

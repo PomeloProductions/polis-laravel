@@ -22,8 +22,45 @@
       <file>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Article/ArticleVersionControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Article/IterationControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/ArticleControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/AuthenticationControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Ballot/BallotCompletionControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/BallotControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/CategoryControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Collection/CollectionItemControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/CollectionControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/CollectionItemControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Entity/AssetControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Entity/CollectionControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Entity/PaymentControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Entity/PaymentMethodControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Entity/ProfileImageControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Entity/SubscriptionControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/FeatureControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/ForgotPasswordControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/InvitationTokenControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/MembershipPlan/MembershipPlanRateControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/MembershipPlanControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/MessageControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Controllers/Messaging/EmailTemplateControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Controllers/Messaging/PushTemplateControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Organization/OrganizationManagerControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/OrganizationControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/ResourceControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/RoleControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/StatisticControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/StatusControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/User/ArticleNoteControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/User/BallotCompletionControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/User/ContactControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/User/Thread/MessageControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/User/ThreadControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/User/UserPageComponentControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/User/UserPageControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/UserControllerAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</file>
       <file>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</file>
@@ -134,8 +171,45 @@
       <exclude>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Article/ArticleVersionControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Article/IterationControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/ArticleControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/AuthenticationControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Ballot/BallotCompletionControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/BallotControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/CategoryControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Collection/CollectionItemControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/CollectionControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/CollectionItemControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Entity/AssetControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Entity/CollectionControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Entity/PaymentControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Entity/PaymentMethodControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Entity/ProfileImageControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Entity/SubscriptionControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/FeatureControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/ForgotPasswordControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/InvitationTokenControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/MembershipPlan/MembershipPlanRateControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/MembershipPlanControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/MessageControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Controllers/Messaging/EmailTemplateControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Controllers/Messaging/PushTemplateControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Organization/OrganizationManagerControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/OrganizationControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/ResourceControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/RoleControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/StatisticControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/StatusControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/User/ArticleNoteControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/User/BallotCompletionControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/User/ContactControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/User/Thread/MessageControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/User/ThreadControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/User/UserPageComponentControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/User/UserPageControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/UserControllerAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</exclude>
       <exclude>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</exclude>

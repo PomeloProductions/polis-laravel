@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\Messaging\Thread.
  *
- * MessagePolicyAbstract / ThreadPolicyAbstract type-hint this on their
- * gate signatures and read $subject_type to look up the relevant
- * subject-gate provider.
+ * Extends BaseModelAbstract so it can be passed through
+ * MessageRepositoryContract::findAll's $belongsToArray (typed as
+ * BaseModelAbstract[]). See Category.php for the shared rationale.
  */
-class Thread
+class Thread extends BaseModelAbstract
 {
-    public ?int $id = null;
-
-    public ?string $subject_type = null;
-
-    public ?int $subject_id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Messaging\Thread::class, false)) {

@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\User\InvitationToken.
  *
- * The InvitationTokenPolicyAbstract returns false for every gate at the
- * abstract level (only super admins can pass via before()). The fixture
- * only needs to satisfy the type hint.
+ * Extends BaseModelAbstract because InvitationTokenRepositoryContract::update()
+ * and ::delete() type-hint BaseModelAbstract. See Category.php for the
+ * shared rationale.
  */
-class InvitationToken
+class InvitationToken extends BaseModelAbstract
 {
-    public ?int $id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\User\InvitationToken::class, false)) {

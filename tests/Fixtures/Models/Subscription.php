@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Polis\Tests\Fixtures\Models;
 
 use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
 
 /**
  * Fixture stub for App\Models\Subscription\Subscription.
@@ -25,7 +26,7 @@ use Polis\Models\BaseModelAbstract;
  */
 class Subscription extends BaseModelAbstract
 {
-    use \Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Subscription\Subscription::class, false)) {

@@ -17,7 +17,7 @@ declare(strict_types=1);
  * more tests land.
  */
 
-const THRESHOLD = 19.0;
+const THRESHOLD = 19.5;
 
 if ($argc < 2) {
     fwrite(STDERR, "Usage: php {$argv[0]} <clover.xml>\n");

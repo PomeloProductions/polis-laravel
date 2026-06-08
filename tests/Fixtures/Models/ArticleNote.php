@@ -5,24 +5,22 @@ declare(strict_types=1);
 namespace Polis\Tests\Fixtures\Models;
 
 use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
 
 /**
  * Fixture stub for App\Models\User\ArticleNote.
  *
- * Extends BaseModelAbstract so ArticleNoteRepository tests can pass
- * ArticleNote mocks to create()/update() (typed BaseModelAbstract).
- * Mixes in MockeryFriendlyAttributesTrait so legacy policy tests'
- * `$mock->id = 5` / `$mock->user_id = 7` patterns continue to work on
- * Mockery doubles. See User.php for the broader fixture rationale.
+ * Extends BaseModelAbstract so it can pass through
+ * ArticleNoteRepositoryContract::update() and ::delete(). The static
+ * ArticleNote::where(...) call inside randomArticle() is left
+ * un-exercised by the test suite — testing that branch would require
+ * mocking the static query builder which adds disproportionate plumbing.
  *
- * ArticleNotePolicyAbstract reads $user_id off this model to validate
- * the note belongs to the requested user — handled via Eloquent's
- * attribute getter on real instances and the trait's attribute-store
- * fast-path on Mockery mocks.
+ * See Category.php for the shared rationale.
  */
 class ArticleNote extends BaseModelAbstract
 {
-    use \Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\User\ArticleNote::class, false)) {

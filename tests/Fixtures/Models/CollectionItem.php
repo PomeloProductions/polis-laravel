@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+
 /**
  * Fixture stub for App\Models\Collection\CollectionItem.
  *
- * Used in CollectionItemPolicyAbstract view/update/delete gates.
+ * Extends BaseModelAbstract because CollectionItemRepositoryContract::delete()
+ * type-hints BaseModelAbstract. See Category.php for the shared rationale.
  */
-class CollectionItem
+class CollectionItem extends BaseModelAbstract
 {
-    public ?int $id = null;
-
-    public ?int $collection_id = null;
-
-    public ?string $item_type = null;
-
-    public ?int $item_id = null;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Collection\CollectionItem::class, false)) {

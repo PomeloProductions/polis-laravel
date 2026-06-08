@@ -5,25 +5,19 @@ declare(strict_types=1);
 namespace Polis\Tests\Fixtures\Models;
 
 use Polis\Models\BaseModelAbstract;
+use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
 
 /**
  * Fixture stub for App\Models\Collection\Collection.
  *
- * Extends BaseModelAbstract so CollectionRepository tests can pass
- * Collection mocks to update()/syncChildModels(). Mixes in
- * MockeryFriendlyAttributesTrait so legacy policy tests' `$mock->id = 5`
- * patterns continue to work on Mockery doubles. See User.php for the
- * broader fixture rationale.
- *
- * CollectionPolicyAbstract / CollectionItemPolicyAbstract type-hint this
- * for view/update/delete. The `owner` property is read directly (not via
- * a method) for the owner-management checks — Eloquent's attribute getter
- * handles that on real instances; legacy policy tests assign it via the
- * trait's __set fast-path.
+ * Extends BaseModelAbstract because CollectionRepositoryContract::update()
+ * and ::delete() type-hint BaseModelAbstract, and the controller forwards
+ * its Collection parameter directly. See Category.php for the shared
+ * rationale.
  */
 class Collection extends BaseModelAbstract
 {
-    use \Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
+    use MockeryFriendlyAttributesTrait;
 }
 
 if (! class_exists(\App\Models\Collection\Collection::class, false)) {
