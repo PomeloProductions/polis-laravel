@@ -22,7 +22,7 @@ class SendSlackNotificationService implements SendSlackNotificationServiceContra
             $slackClient = ClientFactory::create($receiver->getSlackKey($message));
 
             $data = [
-                'username' => 'Pomelo Productions Monitoring Bot',
+                'username' => config('polis.slack.username', config('app.name', 'Polis')),
                 'channel' => $receiver->getSlackChannel($message),
                 'text' => $message->subject,
             ];

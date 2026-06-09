@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
 
@@ -25,9 +26,25 @@ use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
  *
  * without strict-mode Mockery rejecting the implied setAttribute() call.
  */
-class User extends BaseModelAbstract
+class User extends BaseModelAbstract implements JWTSubject
 {
     use MockeryFriendlyAttributesTrait;
+
+    /**
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getJWTCustomClaims(): array
+    {
+        return [];
+    }
 }
 
 if (! class_exists(\App\Models\User\User::class, false)) {

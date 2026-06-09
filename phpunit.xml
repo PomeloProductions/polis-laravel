@@ -101,6 +101,7 @@
       <file>./tests/Unit/Providers/BaseRepositoryProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseRouteServiceProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseServiceProviderAbstractFallbackTest.php</file>
+      <file>./tests/Unit/Providers/BaseServiceProviderPushBindingTest.php</file>
       <file>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseValidatorProviderTest.php</file>
       <file>./tests/Unit/Push/RenderedPushNotificationTest.php</file>
@@ -140,6 +141,7 @@
       <file>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</file>
+      <file>./tests/Unit/Services/Messaging/SendSlackNotificationServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</file>
       <file>./tests/Unit/Services/NoopStripeCustomerServiceTest.php</file>
       <file>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</file>
@@ -254,6 +256,7 @@
       <exclude>./tests/Unit/Providers/BaseRepositoryProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseRouteServiceProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseServiceProviderAbstractFallbackTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseServiceProviderPushBindingTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseValidatorProviderTest.php</exclude>
       <exclude>./tests/Unit/Push/RenderedPushNotificationTest.php</exclude>
@@ -293,6 +296,7 @@
       <exclude>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</exclude>
+      <exclude>./tests/Unit/Services/Messaging/SendSlackNotificationServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/Messaging/TemplateRenderingBoolAndNullVariableTest.php</exclude>
       <exclude>./tests/Unit/Services/NoopStripeCustomerServiceTest.php</exclude>
       <exclude>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</exclude>
