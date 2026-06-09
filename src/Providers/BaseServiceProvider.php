@@ -15,14 +15,11 @@ use NotificationChannels\Twilio\Twilio;
 use Polis\Contracts\Repositories\AssetRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\EmailTemplateRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\PushTemplateRepositoryContract;
-use Polis\Contracts\Repositories\Organization\OrganizationRepositoryContract;
 use Polis\Contracts\Repositories\Payment\LineItemRepositoryContract;
-use Polis\Contracts\Repositories\Payment\PaymentMethodRepositoryContract;
 use Polis\Contracts\Repositories\Payment\PaymentRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\StatisticRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\TargetStatisticRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
-use Polis\Contracts\Repositories\User\UserRepositoryContract;
 use Polis\Contracts\Services\ArchiveHelperServiceContract;
 use Polis\Contracts\Services\Asset\AssetConfigurationServiceContract;
 use Polis\Contracts\Services\Asset\AssetImportServiceContract;
@@ -62,12 +59,12 @@ use Polis\Services\Messaging\SendEmailService;
 use Polis\Services\Messaging\SendPushNotificationService;
 use Polis\Services\Messaging\SendSlackNotificationService;
 use Polis\Services\Messaging\SendSMSNotificationService;
+use Polis\Services\NoopStripeCustomerService;
 use Polis\Services\ProratingCalculationService;
 use Polis\Services\Relations\RelationTraversalService;
 use Polis\Services\Statistic\StatisticSynchronizationService;
 use Polis\Services\Statistic\TargetStatisticProcessingService;
 use Polis\Services\StringHelperService;
-use Polis\Services\StripeCustomerService;
 use Polis\Services\StripePaymentService;
 use Polis\Services\TokenGenerationService;
 use Polis\Services\Wiki\ArticleVersionCalculationService;
@@ -252,14 +249,12 @@ abstract class BaseServiceProvider extends ServiceProvider
         });
         $this->app->bind(StringHelperServiceContract::class, fn () => new StringHelperService
         );
-        $this->app->bind(StripeCustomerServiceContract::class, fn () => new StripeCustomerService(
-            $this->app->make(UserRepositoryContract::class),
-            $this->app->make(OrganizationRepositoryContract::class),
-            $this->app->make(PaymentMethodRepositoryContract::class),
-            $this->app->make('stripe')->customers(),
-            $this->app->make('stripe')->cards(),
-        )
-        );
+        // Default to a no-op so consumer apps that don't use Stripe can boot
+        // without registering a real implementation. Consumers that DO want
+        // Stripe should register their own binding to StripeCustomerServiceContract
+        // (e.g. \Polis\Services\StripeCustomerService) BEFORE this provider runs,
+        // or in a subclass's registerApp(); bindIf() leaves their binding intact.
+        $this->app->bindIf(StripeCustomerServiceContract::class, fn () => new NoopStripeCustomerService);
         $this->app->bind(StripePaymentServiceContract::class, function () {
             $stripe = $this->app->make('stripe');
 
