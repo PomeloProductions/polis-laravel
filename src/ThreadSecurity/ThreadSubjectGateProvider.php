@@ -11,7 +11,10 @@ use Polis\Contracts\ThreadSecurity\ThreadSubjectGateProviderContract;
 /**
  * Class ThreadSubjectGateProvider
  *
- * @deprecated Inject a reworked version of this into the actual thread policy and set this up as services
+ * Resolves a {@see ThreadSubjectGateContract} for a given thread subject type.
+ * Consumers extend this class (and rebind the container binding in
+ * {@see \Polis\Providers\BaseAuthServiceProvider}) to add application-specific
+ * subject types beyond the package defaults (`general`, `private_message`).
  */
 class ThreadSubjectGateProvider implements ThreadSubjectGateProviderContract
 {
