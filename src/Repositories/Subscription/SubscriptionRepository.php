@@ -37,7 +37,7 @@ class SubscriptionRepository extends BaseRepositoryAbstract implements Subscript
      *
      * @return BaseModelAbstract
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         /** @var MembershipPlanRate $membershipPlanRate */
         $membershipPlanRate = $this->membershipPlanRateRepository->findOrFail($data['membership_plan_rate_id']);

@@ -41,7 +41,7 @@ class UserRepository extends BaseRepositoryAbstract implements UserRepositoryCon
      *
      * @return BaseModelAbstract|User
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $roles = $this->getAndUnset($data, 'roles', []);
 

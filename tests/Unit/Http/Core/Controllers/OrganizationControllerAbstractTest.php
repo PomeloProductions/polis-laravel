@@ -76,7 +76,7 @@ final class OrganizationControllerAbstractTest extends ControllerTestCase
                 'role_id' => Role::ADMINISTRATOR,
                 'user_id' => 9,
             ])
-            ->andReturn(Mockery::mock());
+            ->andReturn(Mockery::mock(\Polis\Models\BaseModelAbstract::class));
 
         $url = Mockery::mock(UrlGenerator::class);
         $url->shouldReceive('route')

@@ -48,7 +48,7 @@ final class CollectionItemControllerAbstractTest extends ControllerTestCase
         );
         $collection = Mockery::mock(CollectionFixture::class);
 
-        $created = Mockery::mock();
+        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

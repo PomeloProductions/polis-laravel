@@ -29,7 +29,7 @@ class ContactRepository extends BaseRepositoryAbstract implements ContactReposit
      * @param  int  $limit
      * @return LengthAwarePaginator|Collection
      */
-    public function findAll(array $filter = [], array $search = [], array $orderBy = [], array $with = [], $limit = 10, array $belongsToArray = [], int $pageNumber = 1)
+    public function findAll(array $filter = [], array $search = [], array $orderBy = [], array $with = [], $limit = 10, array $belongsToArray = [], int $pageNumber = 1): LengthAwarePaginator|Collection
     {
         $query = parent::buildFindAllQuery($filter, $search, $orderBy, $with, []);
 

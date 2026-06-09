@@ -47,7 +47,7 @@ final class ArticleVersionControllerAbstractTest extends ControllerTestCase
         );
         $article = Mockery::mock(ArticleFixture::class);
 
-        $created = Mockery::mock();
+        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

@@ -56,7 +56,7 @@ abstract class BaseRepositoryAbstract implements BaseRepositoryContract
      *
      * @throws ModelNotFoundException
      */
-    public function findOrFail($id, array $with = [])
+    public function findOrFail(int|string $id, array $with = []): BaseModelAbstract
     {
         return $this->model->with($with)->findOrFail($id);
     }
@@ -171,7 +171,7 @@ abstract class BaseRepositoryAbstract implements BaseRepositoryContract
      * @param  array  $belongsToArray  array of models this should belong to
      * @return LengthAwarePaginator|Collection
      */
-    public function findAll(array $filters = [], array $searches = [], array $orderBy = [], array $with = [], $limit = 10, array $belongsToArray = [], int $page = 1)
+    public function findAll(array $filters = [], array $searches = [], array $orderBy = [], array $with = [], $limit = 10, array $belongsToArray = [], int $page = 1): LengthAwarePaginator|Collection
     {
         $query = $this->buildFindAllQuery($filters, $searches, $orderBy, $with, $belongsToArray);
 
@@ -188,7 +188,7 @@ abstract class BaseRepositoryAbstract implements BaseRepositoryContract
      *
      * @throws NotImplementedException
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $newModel = $this->model->newInstance($data);
 
@@ -304,7 +304,7 @@ abstract class BaseRepositoryAbstract implements BaseRepositoryContract
      *
      * @throws \Exception
      */
-    public function delete(BaseModelAbstract $model)
+    public function delete(BaseModelAbstract $model): bool
     {
         if (! $model->delete()) {
             throw new \DomainException(sprintf('%s[%d] failed to delete', get_class($model), $model->id));

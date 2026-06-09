@@ -31,7 +31,7 @@ class ThreadRepository extends BaseRepositoryAbstract implements ThreadRepositor
      *
      * @return BaseModelAbstract|Thread
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $users = $this->getAndUnset($data, 'users', []);
 

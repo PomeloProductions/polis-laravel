@@ -53,7 +53,7 @@ class AssetRepository extends BaseRepositoryAbstract implements AssetRepositoryC
      *
      * @throws \ImagickException
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         if (isset($data['uploaded_file'])) {
             /** @var UploadedFile $file */

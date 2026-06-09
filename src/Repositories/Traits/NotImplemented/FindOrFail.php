@@ -15,11 +15,9 @@ trait FindOrFail
     /**
      * Not Implemented
      *
-     * @return BaseModelAbstract|void
-     *
      * @throws NotImplementedException
      */
-    public function findOrFail($id, array $with = [])
+    public function findOrFail(int|string $id, array $with = []): BaseModelAbstract
     {
         throw new NotImplementedException;
     }
