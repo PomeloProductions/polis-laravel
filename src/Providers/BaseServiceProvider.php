@@ -301,7 +301,7 @@ abstract class BaseServiceProvider extends ServiceProvider
     }
 
     /**
-     * Registers any environment specific rpviders
+     * Registers any environment specific providers
      */
     public function registerEnvironmentSpecificProviders(): void
     {
