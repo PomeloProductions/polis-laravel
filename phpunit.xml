@@ -18,6 +18,7 @@
     <testsuite name="Unit">
       <file>./tests/Unit/Console/Commands/ChargeRenewalTest.php</file>
       <file>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</file>
+      <file>./tests/Unit/Database/ExternalAccountConnectionsMigrationTest.php</file>
       <file>./tests/Unit/Database/MigrationsTest.php</file>
       <file>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</file>
@@ -80,11 +81,14 @@
       <file>./tests/Unit/Mail/RenderedEmailTest.php</file>
       <file>./tests/Unit/Mail/TemplatedMailableTest.php</file>
       <file>./tests/Unit/Models/Traits/HasModelCacheTest.php</file>
+      <file>./tests/Unit/Models/Traits/HasValidationRulesAppendAndPrependTest.php</file>
+      <file>./tests/Unit/Models/Traits/HasValidationRulesTest.php</file>
       <file>./tests/Unit/Observers/BaseModelCacheObserverTest.php</file>
       <file>./tests/Unit/Policies/AssetPolicyAbstractTest.php</file>
-      <file>./tests/Unit/Policies/BasePolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/BasePolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/CollectionPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/ExternalAccountConnectionPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/MessagingPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/OrganizationPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/PaymentPolicyAbstractTest.php</file>
@@ -94,9 +98,6 @@
       <file>./tests/Unit/Policies/UserPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/VotePolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/WikiPolicyAbstractTest.php</file>
-      <file>./tests/Unit/Models/Traits/HasValidationRulesAppendAndPrependTest.php</file>
-      <file>./tests/Unit/Models/Traits/HasValidationRulesTest.php</file>
-      <file>./tests/Unit/Push/DefaultPushTemplatesTest.php</file>
       <file>./tests/Unit/Providers/BaseAuthServiceProviderTest.php</file>
       <file>./tests/Unit/Providers/BaseRepositoryProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseRouteServiceProviderResolveTest.php</file>
@@ -104,11 +105,11 @@
       <file>./tests/Unit/Providers/BaseServiceProviderPushBindingTest.php</file>
       <file>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseValidatorProviderTest.php</file>
+      <file>./tests/Unit/Push/DefaultPushTemplatesTest.php</file>
       <file>./tests/Unit/Push/RenderedPushNotificationTest.php</file>
+      <file>./tests/Unit/Repositories/AssetRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/BaseRepositoryAbstractFixtureTest.php</file>
       <file>./tests/Unit/Repositories/BaseRepositoryAbstractTest.php</file>
-      <file>./tests/Unit/Repositories/RoleRepositoryTest.php</file>
-      <file>./tests/Unit/Repositories/ThinWrapperRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Collection/CollectionRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Messaging/EmailTemplateRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Messaging/MessageRepositoryTest.php</file>
@@ -116,15 +117,19 @@
       <file>./tests/Unit/Repositories/Messaging/PushTemplateRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Messaging/ThreadRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Payment/PaymentRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/RoleRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Statistic/StatisticRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Statistic/TargetStatisticRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Subscription/MembershipPlanRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Subscription/MembershipPlanUpdateTest.php</file>
       <file>./tests/Unit/Repositories/Subscription/SubscriptionRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/ThinWrapperRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/ArticleNoteRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/ContactRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/ExternalAccountConnectionRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/InvitationTokenRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/PasswordTokenRepositoryTest.php</file>
+      <file>./tests/Unit/Repositories/User/ProfileImageRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/UserRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Vote/BallotCompletionRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Vote/BallotItemRepositoryTest.php</file>
@@ -132,12 +137,11 @@
       <file>./tests/Unit/Repositories/Wiki/ArticleIterationRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Wiki/ArticleRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Wiki/ArticleVersionRepositoryTest.php</file>
-      <file>./tests/Unit/Repositories/AssetRepositoryTest.php</file>
-      <file>./tests/Unit/Repositories/User/ProfileImageRepositoryTest.php</file>
       <file>./tests/Unit/Services/ArchiveHelperServiceTest.php</file>
       <file>./tests/Unit/Services/Asset/AssetConfigurationServiceTest.php</file>
       <file>./tests/Unit/Services/BaseModelCacheServiceTest.php</file>
       <file>./tests/Unit/Services/DirectoryCopyServiceTest.php</file>
+      <file>./tests/Unit/Services/ExternalRateLimiterTest.php</file>
       <file>./tests/Unit/Services/Indexing/BaseResourceRepositoryServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/EmailTemplateRenderingServiceTest.php</file>
       <file>./tests/Unit/Services/Messaging/PushTemplateRenderingServiceTest.php</file>

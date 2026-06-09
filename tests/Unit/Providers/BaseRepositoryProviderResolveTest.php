@@ -25,6 +25,7 @@ use Polis\Models\Subscription\MembershipPlanRate;
 use Polis\Models\Subscription\Subscription;
 use Polis\Models\User\ArticleNote;
 use Polis\Models\User\Contact;
+use Polis\Models\User\ExternalAccountConnection;
 use Polis\Models\User\InvitationToken;
 use Polis\Models\User\PasswordToken;
 use Polis\Models\User\ProfileImage;
@@ -83,6 +84,7 @@ final class BaseRepositoryProviderResolveTest extends TestCase
             'collection' => ['collection', Collection::class],
             'collectionItem' => ['collectionItem', CollectionItem::class],
             'contact' => ['contact', Contact::class],
+            'externalAccountConnection' => ['externalAccountConnection', ExternalAccountConnection::class],
             'feature' => ['feature', Feature::class],
             'invitationToken' => ['invitationToken', InvitationToken::class],
             'lineItem' => ['lineItem', LineItem::class],

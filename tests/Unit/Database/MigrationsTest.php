@@ -40,13 +40,47 @@ final class MigrationsTest extends TestCase
      */
     private function discoverMigrations(): array
     {
-        $files = glob(__DIR__.'/../../../database/migrations/*.php');
-        sort($files); // chronological by filename prefix.
+        $files = $this->discoverMigrationFiles();
 
         return array_map(
             fn (string $path) => require $path,
             $files,
         );
+    }
+
+    /**
+     * Migration filenames in chronological order. Returned as a separate
+     * helper so individual tests can pull a specific migration out of the
+     * set by name (e.g. the unique-constraint migration, which is
+     * referenced by name in the down() / re-up() tests below).
+     *
+     * @return string[]
+     */
+    private function discoverMigrationFiles(): array
+    {
+        $files = glob(__DIR__.'/../../../database/migrations/*.php');
+        sort($files); // chronological by filename prefix.
+
+        return $files;
+    }
+
+    /**
+     * Locate the migration file that adds the unique constraint on
+     * (key, organization_id) and require it. The unique-constraint-specific
+     * tests below name this migration explicitly so that adding new
+     * unrelated migrations to database/migrations/ (which then becomes the
+     * lexicographically-last file) does not silently break the test by
+     * pointing end($migrations) at the wrong row.
+     */
+    private function loadUniqueConstraintMigration(): Migration
+    {
+        $needle = 'add_unique_constraint_on_articles_key_organization_id';
+        foreach ($this->discoverMigrationFiles() as $file) {
+            if (str_contains($file, $needle)) {
+                return require $file;
+            }
+        }
+        $this->fail("Could not locate the {$needle} migration.");
     }
 
     private function buildArticlesBaseSchema(): void
@@ -65,6 +99,10 @@ final class MigrationsTest extends TestCase
     protected function tearDown(): void
     {
         Schema::dropIfExists('articles');
+        // Any tables created by the discovered migrations themselves need
+        // to be dropped here too, since this test discovers EVERY migration
+        // in database/migrations/ and some create their own tables.
+        Schema::dropIfExists('external_account_connections');
         parent::tearDown();
     }
 
@@ -154,10 +192,11 @@ final class MigrationsTest extends TestCase
             'title' => 'Welcome', 'key' => 'welcome', 'organization_id' => 22,
         ]);
 
-        // Roll back just the most recent (unique-constraint) migration.
-        // The migration array is in chronological order; the last
-        // element is the unique-constraint migration.
-        end($migrations)->down();
+        // Roll back just the unique-constraint migration. We look it up by
+        // filename rather than by array position so additional migrations
+        // added later (which would become the lexicographically-last
+        // entry) do not silently shift this test onto the wrong row.
+        $this->loadUniqueConstraintMigration()->down();
 
         // After down() the duplicate insert must NOT throw.
         DB::table('articles')->insert([
