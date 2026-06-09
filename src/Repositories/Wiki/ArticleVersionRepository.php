@@ -36,7 +36,7 @@ class ArticleVersionRepository extends BaseRepositoryAbstract implements Article
      * @param  Article|BaseModelAbstract|null  $relatedModel
      * @return BaseModelAbstract
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $oldVersion = $relatedModel->current_version;
         /** @var ArticleVersion $newVersion */

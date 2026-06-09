@@ -43,7 +43,7 @@ final class ThreadControllerAbstractTest extends ControllerTestCase
         $payload = ['users' => [99], 'subject' => 'Hi'];
         $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\Thread\\StoreRequest', $payload);
 
-        $created = Mockery::mock();
+        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{}');
         $repo->shouldReceive('create')
             ->once()

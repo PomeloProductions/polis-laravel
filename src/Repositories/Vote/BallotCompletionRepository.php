@@ -37,7 +37,7 @@ class BallotCompletionRepository extends BaseRepositoryAbstract implements Ballo
      *
      * @return BaseModelAbstract
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $votes = $this->getAndUnset($data, 'votes', []);
 

@@ -16,7 +16,9 @@
       (App\*) classes. These run in CI on every PR via Orchestra Testbench.
     -->
     <testsuite name="Unit">
+      <file>./tests/Unit/Console/Commands/AuditAssetDimensionsCommandTest.php</file>
       <file>./tests/Unit/Console/Commands/ChargeRenewalTest.php</file>
+      <file>./tests/Unit/Console/Commands/ResendMessageCommandTest.php</file>
       <file>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</file>
       <file>./tests/Unit/Database/ExternalAccountConnectionsMigrationTest.php</file>
       <file>./tests/Unit/Database/MigrationsTest.php</file>
@@ -175,7 +177,9 @@
       <directory suffix="Test.php">./tests/Feature</directory>
       <directory suffix="Test.php">./tests/Integration</directory>
       <directory suffix="Test.php">./tests/Unit</directory>
+      <exclude>./tests/Unit/Console/Commands/AuditAssetDimensionsCommandTest.php</exclude>
       <exclude>./tests/Unit/Console/Commands/ChargeRenewalTest.php</exclude>
+      <exclude>./tests/Unit/Console/Commands/ResendMessageCommandTest.php</exclude>
       <exclude>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</exclude>
       <exclude>./tests/Unit/Database/MigrationsTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</exclude>

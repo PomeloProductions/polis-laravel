@@ -15,11 +15,9 @@ trait Delete
     /**
      * Not implemented
      *
-     * @return bool|null|void
-     *
      * @throws NotImplementedException
      */
-    public function delete(BaseModelAbstract $model)
+    public function delete(BaseModelAbstract $model): bool
     {
         throw new NotImplementedException;
     }

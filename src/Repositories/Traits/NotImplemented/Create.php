@@ -12,10 +12,7 @@ use Polis\Models\BaseModelAbstract;
  */
 trait Create
 {
-    /**
-     * @return BaseModelAbstract|void
-     */
-    public function create(array $data = [], ?BaseModelAbstract $parentModel = null, array $forcedData = [])
+    public function create(array $data = [], ?BaseModelAbstract $parentModel = null, array $forcedData = []): BaseModelAbstract
     {
         throw new NotImplementedException;
     }

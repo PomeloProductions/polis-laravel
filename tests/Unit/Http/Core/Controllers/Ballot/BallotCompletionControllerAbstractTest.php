@@ -33,7 +33,7 @@ final class BallotCompletionControllerAbstractTest extends ControllerTestCase
 
         $payload = ['votes' => [['ballot_item_id' => 1, 'value' => 'yes']]];
 
-        $created = Mockery::mock();
+        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
         $created->shouldReceive('load')->once()->with('votes');
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
 

@@ -39,7 +39,7 @@ class BallotRepository extends BaseRepositoryAbstract implements BallotRepositor
      *
      * @return BaseModelAbstract
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $ballotItems = $this->getAndUnset($data, 'ballot_items', []);
         $model = parent::create($data, $relatedModel, $forcedValues);

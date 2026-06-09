@@ -40,7 +40,7 @@ class MessageRepository extends BaseRepositoryAbstract implements MessageReposit
      * @param  User|BaseModelAbstract|null  $relatedModel
      * @return BaseModelAbstract
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         if ($relatedModel) {
             $data['to_id'] = $relatedModel->id;
@@ -73,7 +73,7 @@ class MessageRepository extends BaseRepositoryAbstract implements MessageReposit
      * @param  array  $belongsToArray  array of models this should belong to
      * @return LengthAwarePaginator|Collection
      */
-    public function findAll(array $filters = [], array $searches = [], array $orderBy = [], array $with = [], $limit = 10, array $belongsToArray = [], int $pageNumber = 1)
+    public function findAll(array $filters = [], array $searches = [], array $orderBy = [], array $with = [], $limit = 10, array $belongsToArray = [], int $pageNumber = 1): LengthAwarePaginator|Collection
     {
         $query = $this->buildFindAllQuery($filters, $searches, $orderBy, $with, $belongsToArray);
 

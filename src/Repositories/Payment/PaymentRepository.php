@@ -39,7 +39,7 @@ class PaymentRepository extends BaseRepositoryAbstract implements PaymentReposit
      *
      * @return BaseModelAbstract
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $lineItems = $this->getAndUnset($data, 'line_items', []);
         $model = parent::create($data, $relatedModel, $forcedValues);

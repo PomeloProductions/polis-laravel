@@ -2,6 +2,11 @@ parameters:
     level: 1
     paths:
         - src
+    excludePaths:
+        # These files extend or reference consumer-app (App\*) classes that
+        # don't exist inside the package. Consuming apps will provide them.
+        - src/Models/User/ProfileImage.php
+        - src/Models/User/User.php
     ignoreErrors:
         # Optional dependencies not installed in the package
         - identifier: class.notFound
@@ -12,3 +17,4 @@ parameters:
         -
             message: '#constructor invoked with 6 parameters#'
             path: src/Providers/BaseServiceProvider.php
+    reportUnmatchedIgnoredErrors: false

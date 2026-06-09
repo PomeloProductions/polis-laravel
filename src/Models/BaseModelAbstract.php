@@ -26,7 +26,17 @@ abstract class BaseModelAbstract extends Model
     ];
 
     /**
-     * All models can be mass assigned within our app by default
+     * Mass assignment is intentionally unguarded on every Polis model.
+     *
+     * Polis relies on a layered defence — FormRequest validation, then
+     * policy gates, then repository `$forcedValues` overrides — rather
+     * than per-model `$fillable` lists. See the "Security model" section
+     * of the package README before instantiating a model with raw input.
+     *
+     * Code paths that bypass the request layer (console commands,
+     * listeners, seeders) MUST set attributes individually or pass an
+     * explicit `$forcedValues` array through the repository instead of
+     * forwarding client-supplied data here.
      *
      * @var string[]
      */

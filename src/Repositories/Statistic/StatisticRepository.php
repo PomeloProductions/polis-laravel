@@ -66,7 +66,7 @@ class StatisticRepository extends BaseRepositoryAbstract implements StatisticRep
     /**
      * {@inheritDoc}
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $statisticFilters = $this->getAndUnset($data, 'statistic_filters') ?? [];
 
@@ -85,10 +85,12 @@ class StatisticRepository extends BaseRepositoryAbstract implements StatisticRep
         return $model;
     }
 
-    public function delete(BaseModelAbstract $model): void
+    public function delete(BaseModelAbstract $model): bool
     {
-        parent::delete($model);
+        $result = parent::delete($model);
         $this->dispatcher->dispatch(new StatisticDeletedEvent($model));
+
+        return $result;
     }
 
     /**

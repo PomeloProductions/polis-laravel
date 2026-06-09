@@ -86,7 +86,7 @@ final class EntityCollectionControllerAbstractTest extends ControllerTestCase
         $payload = ['name' => 'New Collection'];
         $request = $this->makeRequest('App\\Http\\Core\\Requests\\Entity\\Collection\\StoreRequest', $payload);
 
-        $created = Mockery::mock();
+        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

@@ -50,7 +50,7 @@ class PasswordTokenRepository extends BaseRepositoryAbstract implements Password
      *
      * @return PasswordToken
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         /** @var PasswordToken $passwordToken */
         $passwordToken = parent::create($data, $relatedModel, $forcedValues);

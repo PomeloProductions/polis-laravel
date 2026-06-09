@@ -41,7 +41,7 @@ final class ProfileImageControllerAbstractTest extends ControllerTestCase
         $request->shouldReceive('getDecodedContents')->once()->andReturn('binary');
         $request->shouldReceive('getFileMimeType')->once()->andReturn('image/jpeg');
 
-        $created = Mockery::mock();
+        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

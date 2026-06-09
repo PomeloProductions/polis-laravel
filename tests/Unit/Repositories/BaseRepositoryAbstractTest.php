@@ -21,7 +21,7 @@ final class BaseRepositoryAbstractTest extends TestCase
 
         $mockModel = mock(User::class)->shouldAllowMockingMethod('findOrFail')->shouldAllowMockingMethod('with');
         $mockModel->shouldReceive('with')->once()->with($withArgs)->andReturn(\Mockery::self());
-        $mockModel->shouldReceive('findOrFail')->once()->with($id);
+        $mockModel->shouldReceive('findOrFail')->once()->with($id)->andReturn($mockModel);
 
         $repository = new class($mockModel, $this->getGenericLogMock()) extends BaseRepositoryAbstract {};
         $repository->findOrFail($id, $withArgs);
@@ -35,7 +35,7 @@ final class BaseRepositoryAbstractTest extends TestCase
             ->shouldAllowMockingMethod('findOrFail')
             ->shouldAllowMockingMethod('with');
         $mockModel->shouldReceive('with')->once()->with([])->andReturn(\Mockery::self());
-        $mockModel->shouldReceive('findOrFail')->once()->with($id);
+        $mockModel->shouldReceive('findOrFail')->once()->with($id)->andReturn($mockModel);
 
         $repository = new class($mockModel, $this->getGenericLogMock()) extends BaseRepositoryAbstract {};
         $repository->findOrFail($id);
@@ -47,6 +47,7 @@ final class BaseRepositoryAbstractTest extends TestCase
         $withArgs = ['with' => 'args'];
         $limitArg = 22;
 
+        $paginator = mock(\Illuminate\Contracts\Pagination\LengthAwarePaginator::class);
         $mockModel = mock(EloquentJoinBuilder::class)
             ->shouldAllowMockingMethod('with')
             ->shouldAllowMockingMethod('where')
@@ -55,7 +56,7 @@ final class BaseRepositoryAbstractTest extends TestCase
             ->shouldAllowMockingMethod('paginate');
         $mockModel->shouldReceive('with')->once()->with($withArgs)->andReturn(\Mockery::self());
         $mockModel->shouldReceive('whereJoin')->once()->with('where', '=', 'args')->andReturn(\Mockery::self());
-        $mockModel->shouldReceive('paginate')->once()->with($limitArg, ['*'], 'page', 1)->andReturn(\Mockery::self());
+        $mockModel->shouldReceive('paginate')->once()->with($limitArg, ['*'], 'page', 1)->andReturn($paginator);
 
         $repository = new class($mockModel, $this->getGenericLogMock()) extends BaseRepositoryAbstract {};
         $repository->findAll($whereArgs, [], [], $withArgs, $limitArg);
@@ -63,12 +64,13 @@ final class BaseRepositoryAbstractTest extends TestCase
 
     public function test_find_all_default_parameters(): void
     {
+        $paginator = mock(\Illuminate\Contracts\Pagination\LengthAwarePaginator::class);
         $mockModel = mock(EloquentJoinBuilder::class)
             ->shouldAllowMockingMethod('with')
             ->shouldAllowMockingMethod('appends')
             ->shouldAllowMockingMethod('paginate');
         $mockModel->shouldReceive('with')->once()->with([])->andReturn(\Mockery::self());
-        $mockModel->shouldReceive('paginate')->once()->with(10, ['*'], 'page', 1)->andReturn(\Mockery::self());
+        $mockModel->shouldReceive('paginate')->once()->with(10, ['*'], 'page', 1)->andReturn($paginator);
 
         $repository = new class($mockModel, $this->getGenericLogMock()) extends BaseRepositoryAbstract {};
         $repository->findAll();

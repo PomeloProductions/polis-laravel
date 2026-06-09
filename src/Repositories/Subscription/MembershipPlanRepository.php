@@ -37,7 +37,7 @@ class MembershipPlanRepository extends BaseRepositoryAbstract implements Members
      *
      * @return BaseModelAbstract
      */
-    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = [])
+    public function create(array $data = [], ?BaseModelAbstract $relatedModel = null, array $forcedValues = []): BaseModelAbstract
     {
         $cost = $this->getAndUnset($data, 'current_cost');
         $features = $this->getAndUnset($data, 'features', []);
