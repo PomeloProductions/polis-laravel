@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Mail;
 
-use App\Models\Messaging\Message;
 use App\Models\User\User;
+use Polis\Models\Messaging\Message;
 use Polis\Mail\MessageMailer;
 use Polis\Tests\TestCase;
 

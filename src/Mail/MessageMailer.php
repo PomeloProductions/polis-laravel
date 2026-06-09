@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Polis\Mail;
 
-use App\Models\Messaging\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Polis\Contracts\Models\Messaging\CanReceiveEmailsContract;
 use Polis\Events\Messaging\MessageSentEvent;
+use Polis\Models\Messaging\Message;
 
 /**
  * Class NotificationMailer
