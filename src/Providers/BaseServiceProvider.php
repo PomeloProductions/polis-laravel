@@ -276,8 +276,7 @@ abstract class BaseServiceProvider extends ServiceProvider
         $this->app->bind(SendPushNotificationServiceContract::class, function () {
             if (config('polis.messaging_services.push_enabled', false)) {
                 return new SendPushNotificationService(
-                    config('app.services.fcm.key', ''),
-                    new Client,
+                    $this->app->make(\Kreait\Firebase\Contract\Messaging::class),
                     $this->app->make('log'),
                 );
             } else {

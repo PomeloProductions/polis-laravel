@@ -31,6 +31,8 @@
         "illuminate/support": "^11.0 || ^12.0",
         "illuminate/validation": "^11.0 || ^12.0",
         "jolicode/slack-php-api": "^4.0",
+        "kreait/laravel-firebase": "^6.0",
+        "laravel-notification-channels/fcm": "^5.1 || ^6.0",
         "laravel-notification-channels/twilio": "^4.0",
         "php-open-source-saver/jwt-auth": "^2.0",
         "sebastian/diff": "^5.0 || ^6.0 || ^7.0",
@@ -45,9 +47,6 @@
         "orchestra/testbench": "^10.0",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^10.5 || ^11.0"
-    },
-    "suggest": {
-        "benwilkins/laravel-fcm-notification": "Required when polis.messaging_services.push_enabled=true. Note: upstream is currently incompatible with Laravel 11+; consumers must point to a maintained fork until that is resolved."
     },
     "scripts": {
         "test": "phpunit",

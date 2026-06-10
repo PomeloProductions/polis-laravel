@@ -119,22 +119,46 @@ Add to your consumer app's `.env`:
 | `MAIL_FROM_NAME` | always | Sender display name on every `TemplatedMailable` |
 | `APP_DEBUG` | always | Read by exception/handler scaffolding for verbose output |
 | `POLIS_PUSH_ENABLED` | push notifications | When `true`, the real `SendPushNotificationService` is bound; when `false` or unset, a no-op is bound |
+| `FIREBASE_CREDENTIALS` | push notifications | Absolute path to the Firebase service-account JSON used to authenticate FCM v1 requests. Required when `POLIS_PUSH_ENABLED=true` unless the host environment provides Google ADC another way |
 | `POLIS_EMAIL_ENABLED` | email notifications | Email plumbing toggle (read by consumer-side wiring) |
 | `POLIS_SLACK_ENABLED` | Slack notifications | When `true`, binds the real `SendSlackNotificationService` |
 | `POLIS_SLACK_USERNAME` | Slack notifications | Slack bot identity. Defaults to `APP_NAME` |
 | `POLIS_SMS_ENABLED` | SMS notifications | When `true`, binds the real `SendSMSNotificationService` (requires Twilio config) |
 | `INVITATION_REQUIRED` | invitation flow | Toggles whether new sign-ups must present an invitation token |
 
-Additional config slots read by the package (set in `config/services.php`
-in the consumer app):
-
-- `app.services.fcm.key` — FCM server key (required when
-  `POLIS_PUSH_ENABLED=true`)
-
 For Stripe-backed subscription flows, bind a consumer-specific
 `StripeCustomerServiceContract` implementation. The 0.2.0 default is the
 shipped `NoopStripeCustomerService` so consumers that do not use Stripe
 get a working no-op without extra wiring.
+
+## Push notifications
+
+Push notifications use the FCM v1 HTTP API via the official community
+package [`laravel-notification-channels/fcm`][lnc-fcm], which in turn
+delegates to [`kreait/laravel-firebase`][kreait]. Authentication uses a
+Firebase service-account JSON (NOT the legacy FCM server key, which
+Google sunset in June 2024).
+
+To enable push notifications in a consumer app:
+
+1. `composer update polis/polis-laravel` — picks up the new channel.
+2. Mint a Firebase service-account JSON in the Firebase console
+   (Project settings → Service accounts → Generate new private key).
+3. Save it locally — e.g. `storage/app/firebase/credentials.json` — and
+   set `FIREBASE_CREDENTIALS=/absolute/path/to/credentials.json` in the
+   consumer app's `.env`.
+4. Set `POLIS_PUSH_ENABLED=true` in `.env`.
+5. Drop the legacy `FCM_SERVER_KEY` env (no longer used) and remove any
+   `app.services.fcm.key` slot from `config/services.php`.
+
+Consumers calling `SendPushNotificationServiceContract::sendMessage(...)`
+do not need to change their call sites — the contract signature is
+stable. Consumers that previously constructed a benwilkins `FcmMessage`
+directly must migrate to the new `NotificationChannels\Fcm\FcmMessage`
+shape; see [the channel's docs][lnc-fcm] for the new API.
+
+[lnc-fcm]: https://github.com/laravel-notification-channels/fcm
+[kreait]: https://github.com/kreait/laravel-firebase
 
 ## Slack notifications
 
