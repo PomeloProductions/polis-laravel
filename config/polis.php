@@ -8,6 +8,20 @@ return [
         'push_enabled' => env('POLIS_PUSH_ENABLED', false),
     ],
 
+    'firebase' => [
+        /*
+         * Absolute path to the Firebase service-account JSON used by the
+         * Firebase Admin SDK to authenticate FCM v1 requests. When null
+         * the kreait/laravel-firebase package falls back to its own
+         * default-discovery chain (GOOGLE_APPLICATION_CREDENTIALS,
+         * gcloud ADC, etc.). Set FIREBASE_CREDENTIALS in .env to override.
+         *
+         * Required when polis.messaging_services.push_enabled=true unless
+         * the host environment already provides credentials another way.
+         */
+        'credentials' => env('FIREBASE_CREDENTIALS'),
+    ],
+
     'slack' => [
         /*
          * Username that the Slack notification client uses when posting

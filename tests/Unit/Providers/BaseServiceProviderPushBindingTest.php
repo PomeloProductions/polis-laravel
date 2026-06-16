@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Providers;
 
-use GuzzleHttp\Client;
+use Kreait\Firebase\Contract\Messaging as FirebaseMessaging;
+use Mockery;
 use Polis\Contracts\Services\Messaging\SendPushNotificationServiceContract;
 use Polis\Services\Messaging\MessageSendingServiceNotImplemented;
 use Polis\Services\Messaging\SendPushNotificationService;
@@ -20,13 +21,15 @@ use ReflectionClass;
  *  1. polis.messaging_services.push_enabled = false (or absent) -> bind a
  *     no-op MessageSendingServiceNotImplemented implementation.
  *  2. polis.messaging_services.push_enabled = true -> bind the real
- *     {@see SendPushNotificationService} with the FCM key read from
- *     `app.services.fcm.key`.
+ *     {@see SendPushNotificationService} wired up to the Firebase Admin
+ *     SDK's Messaging client (provided by kreait/laravel-firebase, which
+ *     reads service-account credentials from FIREBASE_CREDENTIALS).
  *
- * Pre-0.2.0 the enabled branch read `app.services.fcm,key` (comma instead
- * of dot), so every push request silently went out with an empty
- * Authorization key and was rejected by FCM. This test pins the corrected
- * key path so the typo cannot regress.
+ * Pre-0.3.0 this binding wired up benwilkins/laravel-fcm-notification with
+ * a legacy FCM server key from `app.services.fcm.key`. That library is
+ * Laravel-11+ incompatible and the legacy "server key" API was sunset by
+ * Google in June 2024. The new wiring goes through FCM v1 via the
+ * Firebase Admin SDK service-account JSON.
  *
  * The test does not register BaseServiceProvider directly because that
  * provider depends on many consumer-app FQNs (App\Models\*, App\Policies\*)
@@ -43,8 +46,7 @@ final class BaseServiceProviderPushBindingTest extends TestCase
         $this->app->bind(SendPushNotificationServiceContract::class, function () {
             if (config('polis.messaging_services.push_enabled', false)) {
                 return new SendPushNotificationService(
-                    config('app.services.fcm.key', ''),
-                    new Client,
+                    $this->app->make(FirebaseMessaging::class),
                     $this->app->make('log'),
                 );
             }
@@ -57,18 +59,20 @@ final class BaseServiceProviderPushBindingTest extends TestCase
         $this->assertInstanceOf(MessageSendingServiceNotImplemented::class, $resolved);
     }
 
-    public function test_enabled_branch_binds_real_service_with_fcm_key_from_dotted_config_path(): void
+    public function test_enabled_branch_binds_real_service_resolving_firebase_messaging_from_container(): void
     {
-        config([
-            'polis.messaging_services.push_enabled' => true,
-            'app.services.fcm.key' => 'AAAA-real-fcm-server-key-xxxx',
-        ]);
+        config(['polis.messaging_services.push_enabled' => true]);
+
+        // Stub the Firebase Messaging client so we don't need real
+        // credentials in the test environment. The binding under test
+        // is about wiring, not about Firebase round-tripping.
+        $messagingStub = Mockery::mock(FirebaseMessaging::class);
+        $this->app->instance(FirebaseMessaging::class, $messagingStub);
 
         $this->app->bind(SendPushNotificationServiceContract::class, function () {
             if (config('polis.messaging_services.push_enabled', false)) {
                 return new SendPushNotificationService(
-                    config('app.services.fcm.key', ''),
-                    new Client,
+                    $this->app->make(FirebaseMessaging::class),
                     $this->app->make('log'),
                 );
             }
@@ -80,38 +84,19 @@ final class BaseServiceProviderPushBindingTest extends TestCase
 
         $this->assertInstanceOf(SendPushNotificationService::class, $resolved);
 
-        // Inspect the private $fcmKey to assert the dotted key path resolved
-        // to the configured value, NOT the empty-string default. This is the
-        // regression guard against the `fcm,key` typo.
+        // Assert the constructor wired the container-resolved Messaging
+        // instance into the service (vs. constructing a fresh one or
+        // landing on null/a default).
         $reflection = new ReflectionClass($resolved);
-        $property = $reflection->getProperty('fcmKey');
+        $property = $reflection->getProperty('messaging');
         $property->setAccessible(true);
 
-        $this->assertSame('AAAA-real-fcm-server-key-xxxx', $property->getValue($resolved));
+        $this->assertSame($messagingStub, $property->getValue($resolved));
     }
 
-    public function test_enabled_branch_with_typo_config_path_resolves_to_empty_string(): void
+    protected function tearDown(): void
     {
-        // Regression guard: the OLD (typo) path `app.services.fcm,key` is now
-        // a dead, unreachable nested config slot. If the binding accidentally
-        // reverts to that path the configured value above will not flow
-        // through and the fcmKey property will land on the default ''.
-        config([
-            'polis.messaging_services.push_enabled' => true,
-            'app.services.fcm.key' => 'dotted-path-key',
-            // Note we explicitly DON'T set the comma path.
-        ]);
-
-        $resolved = new SendPushNotificationService(
-            config('app.services.fcm.key', ''),
-            new Client,
-            $this->app->make('log'),
-        );
-
-        $reflection = new ReflectionClass($resolved);
-        $property = $reflection->getProperty('fcmKey');
-        $property->setAccessible(true);
-
-        $this->assertSame('dotted-path-key', $property->getValue($resolved));
+        Mockery::close();
+        parent::tearDown();
     }
 }
