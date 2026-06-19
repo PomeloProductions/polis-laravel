@@ -103,6 +103,7 @@ final class MigrationsTest extends TestCase
         // to be dropped here too, since this test discovers EVERY migration
         // in database/migrations/ and some create their own tables.
         Schema::dropIfExists('external_account_connections');
+        Schema::dropIfExists('sources');
         parent::tearDown();
     }
 
