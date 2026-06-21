@@ -9,13 +9,14 @@ use App\Policies\CategoryPolicy;
 use Polis\Http\Core\Requests\BaseAuthenticatedRequestAbstract;
 use Polis\Http\Core\Requests\Traits\HasNoExpands;
 use Polis\Http\Core\Requests\Traits\HasNoPolicyParameters;
+use Polis\Http\Core\Requests\Traits\RejectsUnknownParams;
 
 /**
  * Class StoreRequest
  */
 class StoreRequest extends BaseAuthenticatedRequestAbstract
 {
-    use HasNoExpands, HasNoPolicyParameters;
+    use HasNoExpands, HasNoPolicyParameters, RejectsUnknownParams;
 
     /**
      * Get the policy action for the guard
