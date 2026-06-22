@@ -66,6 +66,8 @@
       <file>./tests/Unit/Http/Core/Controllers/UserControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsFeatureTest.php</file>
+      <file>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</file>
       <file>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</file>
       <file>./tests/Unit/Http/Middleware/Issue404IfPageAfterPaginationMiddlewareTest.php</file>
@@ -228,6 +230,8 @@
       <exclude>./tests/Unit/Http/Core/Controllers/UserControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsFeatureTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</exclude>
       <exclude>./tests/Unit/Http/Middleware/ExpandParsingMiddlewareTest.php</exclude>
       <exclude>./tests/Unit/Http/Middleware/Issue404IfPageAfterPaginationMiddlewareTest.php</exclude>

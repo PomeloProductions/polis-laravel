@@ -8,13 +8,14 @@ use App\Models\User\User;
 use App\Policies\User\UserPolicy;
 use Polis\Http\Core\Requests\BaseAuthenticatedRequestAbstract;
 use Polis\Http\Core\Requests\Traits\HasNoExpands;
+use Polis\Http\Core\Requests\Traits\RejectsUnknownParams;
 
 /**
  * Class UpdateRequest
  */
 class UpdateRequest extends BaseAuthenticatedRequestAbstract
 {
-    use HasNoExpands;
+    use HasNoExpands, RejectsUnknownParams;
 
     /**
      * Get the policy action for the guard
