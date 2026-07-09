@@ -23,11 +23,24 @@ use App\Models\Subscription\MembershipPlan;
 use App\Models\Subscription\MembershipPlanRate;
 use App\Models\Subscription\Subscription;
 use App\Models\User\ArticleNote;
+use App\Models\User\CheckOff;
 use App\Models\User\Contact;
 use App\Models\User\ExternalAccountConnection;
 use App\Models\User\InvitationToken;
 use App\Models\User\PasswordToken;
 use App\Models\User\ProfileImage;
+use App\Models\User\TimeEntry;
+use App\Models\User\TimerSession;
+use App\Models\User\TodoBalance;
+use App\Models\User\TodoBalanceLog;
+use App\Models\User\TodoCalendar;
+use App\Models\User\TodoRotatingGroup;
+use App\Models\User\TodoRotatingItem;
+use App\Models\User\TodoSetting;
+use App\Models\User\TodoSubItem;
+use App\Models\User\TodoTaskNode;
+use App\Models\User\TodoTemplate;
+use App\Models\User\TodoVacationPeriod;
 use App\Models\User\User;
 use App\Models\User\UserPage;
 use App\Models\User\UserPageComponent;
@@ -69,11 +82,24 @@ use Polis\Contracts\Repositories\Subscription\MembershipPlanRateRepositoryContra
 use Polis\Contracts\Repositories\Subscription\MembershipPlanRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
 use Polis\Contracts\Repositories\User\ArticleNoteRepositoryContract;
+use Polis\Contracts\Repositories\User\CheckOffRepositoryContract;
 use Polis\Contracts\Repositories\User\ContactRepositoryContract;
 use Polis\Contracts\Repositories\User\ExternalAccountConnectionRepositoryContract;
 use Polis\Contracts\Repositories\User\InvitationTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\PasswordTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\ProfileImageRepositoryContract;
+use Polis\Contracts\Repositories\User\TimeEntryRepositoryContract;
+use Polis\Contracts\Repositories\User\TimerSessionRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoBalanceLogRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoBalanceRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoCalendarRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoRotatingGroupRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoRotatingItemRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoSettingRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoSubItemRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoTaskNodeRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoTemplateRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoVacationPeriodRepositoryContract;
 use Polis\Contracts\Repositories\User\UserPageComponentRepositoryContract;
 use Polis\Contracts\Repositories\User\UserPageRepositoryContract;
 use Polis\Contracts\Repositories\User\UserRepositoryContract;
@@ -114,11 +140,24 @@ use Polis\Repositories\Subscription\MembershipPlanRateRepository;
 use Polis\Repositories\Subscription\MembershipPlanRepository;
 use Polis\Repositories\Subscription\SubscriptionRepository;
 use Polis\Repositories\User\ArticleNoteRepository;
+use Polis\Repositories\User\CheckOffRepository;
 use Polis\Repositories\User\ContactRepository;
 use Polis\Repositories\User\ExternalAccountConnectionRepository;
 use Polis\Repositories\User\InvitationTokenRepository;
 use Polis\Repositories\User\PasswordTokenRepository;
 use Polis\Repositories\User\ProfileImageRepository;
+use Polis\Repositories\User\TimeEntryRepository;
+use Polis\Repositories\User\TimerSessionRepository;
+use Polis\Repositories\User\TodoBalanceLogRepository;
+use Polis\Repositories\User\TodoBalanceRepository;
+use Polis\Repositories\User\TodoCalendarRepository;
+use Polis\Repositories\User\TodoRotatingGroupRepository;
+use Polis\Repositories\User\TodoRotatingItemRepository;
+use Polis\Repositories\User\TodoSettingRepository;
+use Polis\Repositories\User\TodoSubItemRepository;
+use Polis\Repositories\User\TodoTaskNodeRepository;
+use Polis\Repositories\User\TodoTemplateRepository;
+use Polis\Repositories\User\TodoVacationPeriodRepository;
 use Polis\Repositories\User\UserPageComponentRepository;
 use Polis\Repositories\User\UserPageRepository;
 use Polis\Repositories\User\UserRepository;
@@ -375,6 +414,59 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             'vote' => BaseServiceProvider::resolveConsumerOrPackage(
                 Vote::class,
                 \Polis\Models\Vote\Vote::class,
+            ),
+            // Todo module (models ship in the package; consumers may subclass under App\).
+            'todoTaskNode' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoTaskNode::class,
+                \Polis\Models\User\TodoTaskNode::class,
+            ),
+            'todoBalance' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoBalance::class,
+                \Polis\Models\User\TodoBalance::class,
+            ),
+            'todoBalanceLog' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoBalanceLog::class,
+                \Polis\Models\User\TodoBalanceLog::class,
+            ),
+            'todoSetting' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoSetting::class,
+                \Polis\Models\User\TodoSetting::class,
+            ),
+            'todoTemplate' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoTemplate::class,
+                \Polis\Models\User\TodoTemplate::class,
+            ),
+            'todoSubItem' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoSubItem::class,
+                \Polis\Models\User\TodoSubItem::class,
+            ),
+            'todoRotatingGroup' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoRotatingGroup::class,
+                \Polis\Models\User\TodoRotatingGroup::class,
+            ),
+            'todoRotatingItem' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoRotatingItem::class,
+                \Polis\Models\User\TodoRotatingItem::class,
+            ),
+            'timeEntry' => BaseServiceProvider::resolveConsumerOrPackage(
+                TimeEntry::class,
+                \Polis\Models\User\TimeEntry::class,
+            ),
+            'timerSession' => BaseServiceProvider::resolveConsumerOrPackage(
+                TimerSession::class,
+                \Polis\Models\User\TimerSession::class,
+            ),
+            'todoCalendar' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoCalendar::class,
+                \Polis\Models\User\TodoCalendar::class,
+            ),
+            'todoVacationPeriod' => BaseServiceProvider::resolveConsumerOrPackage(
+                TodoVacationPeriod::class,
+                \Polis\Models\User\TodoVacationPeriod::class,
+            ),
+            'checkOff' => BaseServiceProvider::resolveConsumerOrPackage(
+                CheckOff::class,
+                \Polis\Models\User\CheckOff::class,
             ),
         ];
     }
@@ -660,6 +752,32 @@ abstract class BaseRepositoryProvider extends ServiceProvider
                 $this->app->make('log')
             );
         });
+
+        // Todo module repositories.
+        $todoRepoBindings = [
+            TodoTaskNodeRepositoryContract::class => [TodoTaskNodeRepository::class, 'todoTaskNode'],
+            TodoBalanceRepositoryContract::class => [TodoBalanceRepository::class, 'todoBalance'],
+            TodoBalanceLogRepositoryContract::class => [TodoBalanceLogRepository::class, 'todoBalanceLog'],
+            TodoSettingRepositoryContract::class => [TodoSettingRepository::class, 'todoSetting'],
+            TodoTemplateRepositoryContract::class => [TodoTemplateRepository::class, 'todoTemplate'],
+            TodoSubItemRepositoryContract::class => [TodoSubItemRepository::class, 'todoSubItem'],
+            TodoRotatingGroupRepositoryContract::class => [TodoRotatingGroupRepository::class, 'todoRotatingGroup'],
+            TodoRotatingItemRepositoryContract::class => [TodoRotatingItemRepository::class, 'todoRotatingItem'],
+            TimeEntryRepositoryContract::class => [TimeEntryRepository::class, 'timeEntry'],
+            TimerSessionRepositoryContract::class => [TimerSessionRepository::class, 'timerSession'],
+            TodoCalendarRepositoryContract::class => [TodoCalendarRepository::class, 'todoCalendar'],
+            TodoVacationPeriodRepositoryContract::class => [TodoVacationPeriodRepository::class, 'todoVacationPeriod'],
+            CheckOffRepositoryContract::class => [CheckOffRepository::class, 'checkOff'],
+        ];
+        foreach ($todoRepoBindings as $contract => [$repository, $modelKey]) {
+            $this->app->bind($contract, function () use ($models, $repository, $modelKey) {
+                return new $repository(
+                    new $models[$modelKey],
+                    $this->app->make('log'),
+                );
+            });
+        }
+
         $this->registerApp();
     }
 

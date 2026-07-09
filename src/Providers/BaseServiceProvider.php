@@ -6,12 +6,14 @@ namespace Polis\Providers;
 
 use App\Models\Messaging\Message;
 use App\Services\Indexing\ResourceRepositoryService;
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use GuzzleHttp\Client;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\ServiceProvider;
+use Kreait\Firebase\Contract\Messaging;
 use NotificationChannels\Twilio\Twilio;
 use Polis\Contracts\Repositories\AssetRepositoryContract;
 use Polis\Contracts\Repositories\Messaging\EmailTemplateRepositoryContract;
@@ -21,6 +23,9 @@ use Polis\Contracts\Repositories\Payment\PaymentRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\StatisticRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\TargetStatisticRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
+use Polis\Contracts\Repositories\User\TodoSettingRepositoryContract;
+use Polis\Contracts\Repositories\User\UserPageComponentRepositoryContract;
+use Polis\Contracts\Repositories\User\UserPageRepositoryContract;
 use Polis\Contracts\Services\ArchiveHelperServiceContract;
 use Polis\Contracts\Services\Asset\AssetConfigurationServiceContract;
 use Polis\Contracts\Services\Asset\AssetImportServiceContract;
@@ -37,7 +42,10 @@ use Polis\Contracts\Services\Messaging\SendPushNotificationServiceContract;
 use Polis\Contracts\Services\Messaging\SendSlackNotificationServiceContract;
 use Polis\Contracts\Services\Messaging\SendSMSServiceContract;
 use Polis\Contracts\Services\ModelCacheServiceContract;
+use Polis\Contracts\Services\PeriodComponentCopierContract;
+use Polis\Contracts\Services\PeriodGenerationServiceContract;
 use Polis\Contracts\Services\ProratingCalculationServiceContract;
+use Polis\Contracts\Services\Relations\NodeTreeServiceContract;
 use Polis\Contracts\Services\Relations\RelationTraversalServiceContract;
 use Polis\Contracts\Services\Statistic\StatisticSynchronizationServiceContract;
 use Polis\Contracts\Services\Statistic\TargetStatisticProcessingServiceContract;
@@ -65,12 +73,18 @@ use Polis\Services\Messaging\SendPushNotificationService;
 use Polis\Services\Messaging\SendSlackNotificationService;
 use Polis\Services\Messaging\SendSMSNotificationService;
 use Polis\Services\NoopStripeCustomerService;
+use Polis\Services\PeriodPageGenerationService;
 use Polis\Services\ProratingCalculationService;
+use Polis\Services\Relations\NodeTreeService;
 use Polis\Services\Relations\RelationTraversalService;
 use Polis\Services\Statistic\StatisticSynchronizationService;
 use Polis\Services\Statistic\TargetStatisticProcessingService;
 use Polis\Services\StringHelperService;
 use Polis\Services\StripePaymentService;
+use Polis\Services\Todo\TodoGenerationService;
+use Polis\Services\Todo\TodoPeriodComponentCopier;
+use Polis\Services\Todo\TodoPeriodLadder;
+use Polis\Services\Todo\TodoTaskTreeService;
 use Polis\Services\TokenGenerationService;
 use Polis\Services\Wiki\ArticleVersionCalculationService;
 
@@ -276,7 +290,7 @@ abstract class BaseServiceProvider extends ServiceProvider
         $this->app->bind(SendPushNotificationServiceContract::class, function () {
             if (config('polis.messaging_services.push_enabled', false)) {
                 return new SendPushNotificationService(
-                    $this->app->make(\Kreait\Firebase\Contract\Messaging::class),
+                    $this->app->make(Messaging::class),
                     $this->app->make('log'),
                 );
             } else {
@@ -334,6 +348,49 @@ abstract class BaseServiceProvider extends ServiceProvider
         );
         $this->app->bind(TokenGenerationServiceContract::class, fn () => new TokenGenerationService
         );
+
+        // Generic period / node-tree framework.
+        $this->app->bind(
+            NodeTreeServiceContract::class,
+            fn () => new NodeTreeService,
+        );
+        $this->app->bind(
+            PeriodGenerationServiceContract::class,
+            fn () => new PeriodPageGenerationService(
+                $this->app->make(UserPageRepositoryContract::class),
+                $this->app->make(PeriodComponentCopierContract::class),
+            ),
+        );
+
+        // Todo module services (built on top of the generic framework).
+        $this->app->bind(
+            TodoTaskTreeService::class,
+            fn () => new TodoTaskTreeService(
+                $this->app->make(NodeTreeServiceContract::class),
+            ),
+        );
+        $this->app->bind(
+            TodoPeriodLadder::class,
+            fn () => new TodoPeriodLadder(
+                $this->app->make(TodoSettingRepositoryContract::class),
+            ),
+        );
+        $this->app->bind(
+            PeriodComponentCopierContract::class,
+            fn () => new TodoPeriodComponentCopier(
+                $this->app->make(UserPageComponentRepositoryContract::class),
+                $this->app->make(TodoTaskTreeService::class),
+            ),
+        );
+        $this->app->bind(
+            TodoGenerationService::class,
+            fn () => new TodoGenerationService(
+                $this->app->make(PeriodGenerationServiceContract::class),
+                $this->app->make(TodoPeriodLadder::class),
+                $this->app->make(UserPageRepositoryContract::class),
+            ),
+        );
+
         $this->registerApp();
     }
 
@@ -343,9 +400,9 @@ abstract class BaseServiceProvider extends ServiceProvider
     public function registerEnvironmentSpecificProviders(): void
     {
         if ($this->app->environment() == 'local'
-            && class_exists(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class)
+            && class_exists(IdeHelperServiceProvider::class)
         ) {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+            $this->app->register(IdeHelperServiceProvider::class);
         }
     }
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Models\User;
 
-use App\Models\User\TodoRotatingGroup;
 use Polis\Contracts\Models\HasValidationRulesContract;
+use Polis\Models\User\TodoRotatingGroup;
 use Polis\Tests\TestCase;
 
 final class TodoRotatingGroupTest extends TestCase
@@ -18,28 +18,15 @@ final class TodoRotatingGroupTest extends TestCase
         $this->assertEquals('todo_rotating_groups.todo_task_node_id', $relation->getQualifiedForeignKeyName());
     }
 
-    public function test_parent_group_relationship(): void
+    public function test_child_nodes_relationship(): void
     {
+        // The category-tree-shape refactor replaced the old parentGroup/subGroups/items
+        // relations with a single `childNodes` HasMany of TodoTaskNode keyed on
+        // todo_rotating_group_id.
         $model = new TodoRotatingGroup;
-        $relation = $model->parentGroup();
+        $relation = $model->childNodes();
 
-        $this->assertEquals('todo_rotating_groups.parent_group_id', $relation->getQualifiedForeignKeyName());
-    }
-
-    public function test_sub_groups_relationship(): void
-    {
-        $model = new TodoRotatingGroup;
-        $relation = $model->subGroups();
-
-        $this->assertEquals('todo_rotating_groups.parent_group_id', $relation->getQualifiedForeignKeyName());
-    }
-
-    public function test_items_relationship(): void
-    {
-        $model = new TodoRotatingGroup;
-        $relation = $model->items();
-
-        $this->assertEquals('todo_rotating_items.todo_rotating_group_id', $relation->getQualifiedForeignKeyName());
+        $this->assertEquals('todo_task_nodes.todo_rotating_group_id', $relation->getQualifiedForeignKeyName());
     }
 
     public function test_casts(): void

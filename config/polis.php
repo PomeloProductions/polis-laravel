@@ -1,5 +1,7 @@
 <?php
 
+use Polis\Models\User\TodoTaskNode;
+
 return [
 
     'messaging_services' => [
@@ -34,6 +36,25 @@ return [
     ],
 
     'invitation_required' => env('INVITATION_REQUIRED', false),
+
+    'node_tree' => [
+        /*
+         * The model class that UserPageComponent's node-tree relations
+         * (taskNodes / rootTaskNodes) resolve to. Defaults to the package's
+         * Todo node model; a consumer that subclasses it can point these
+         * relations at their own class here without editing the package.
+         *
+         * This replaces the previous hard `\App\Models\User\TodoTaskNode`
+         * reference so polis-laravel stands alone and no longer reaches into a
+         * consumer namespace.
+         */
+        'node_model' => TodoTaskNode::class,
+
+        /*
+         * The scope column on the node model that binds nodes to a component.
+         */
+        'component_foreign_key' => 'user_page_component_id',
+    ],
 
     'model_cache' => [
         /*

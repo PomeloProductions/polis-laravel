@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Models\User;
 
-use App\Models\User\TodoSubItem;
 use Polis\Contracts\Models\HasValidationRulesContract;
+use Polis\Models\User\TodoSubItem;
 use Polis\Tests\TestCase;
 
 final class TodoSubItemTest extends TestCase
