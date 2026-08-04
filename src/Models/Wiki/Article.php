@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Polis\Models\Wiki;
 
 use App\Models\Category;
+use App\Models\Organization\Organization;
 use App\Models\Resource;
 use App\Models\Statistic\TargetStatistic;
 use App\Models\User\ArticleNote;
@@ -20,11 +21,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Polis\Contracts\Models\BelongsToOrganizationContract;
 use Polis\Contracts\Models\CanBeIndexedContract;
 use Polis\Contracts\Models\CanBeStatisticTargetContract;
 use Polis\Contracts\Models\HasPolicyContract;
 use Polis\Contracts\Models\HasValidationRulesContract;
 use Polis\Models\BaseModelAbstract;
+use Polis\Models\Traits\BelongsToOrganization;
 use Polis\Models\Traits\CanBeIndexed;
 use Polis\Models\Traits\HasStatisticTargets;
 use Polis\Models\Traits\HasValidationRules;
@@ -34,7 +37,9 @@ use Polis\Models\Traits\HasValidationRules;
  *
  * @property int $id
  * @property int $created_by_id
+ * @property int|null $organization_id
  * @property string $title
+ * @property-read Organization|null $organization
  * @property Carbon|null $deleted_at
  * @property mixed|null $created_at
  * @property mixed|null $updated_at
@@ -97,9 +102,9 @@ use Polis\Models\Traits\HasValidationRules;
  *
  * @mixin Eloquent
  */
-class Article extends BaseModelAbstract implements CanBeIndexedContract, CanBeStatisticTargetContract, HasPolicyContract, HasValidationRulesContract
+class Article extends BaseModelAbstract implements BelongsToOrganizationContract, CanBeIndexedContract, CanBeStatisticTargetContract, HasPolicyContract, HasValidationRulesContract
 {
-    use CanBeIndexed, HasStatisticTargets, HasValidationRules;
+    use BelongsToOrganization, CanBeIndexed, HasStatisticTargets, HasValidationRules;
 
     /**
      * Values that are appending on a toArray function call
@@ -232,6 +237,10 @@ class Article extends BaseModelAbstract implements CanBeIndexedContract, CanBeSt
                     'nullable',
                     'string',
                     'url',
+                ],
+                'organization_id' => [
+                    'nullable',
+                    'integer',
                 ],
                 'authors' => [
                     'nullable',

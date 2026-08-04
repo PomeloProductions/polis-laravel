@@ -22,6 +22,7 @@
       <file>./tests/Unit/Console/Commands/SendRenewalRemindersTest.php</file>
       <file>./tests/Unit/Database/ExternalAccountConnectionsMigrationTest.php</file>
       <file>./tests/Unit/Database/MigrationsTest.php</file>
+      <file>./tests/Unit/Database/ArticlesOrganizationIndexMigrationTest.php</file>
       <file>./tests/Unit/Database/SourcesMigrationTest.php</file>
       <file>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</file>
@@ -95,6 +96,7 @@
       <file>./tests/Unit/Policies/CollectionPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/ExternalAccountConnectionPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/MessagingPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/OrganizationArticlePolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/OrganizationPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/PaymentPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/SimpleAbstractPolicyTest.php</file>
@@ -268,6 +270,7 @@
       <exclude>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/CollectionPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/MessagingPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/OrganizationArticlePolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/OrganizationPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/PaymentPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/SimpleAbstractPolicyTest.php</exclude>
