@@ -11,11 +11,13 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Polis\Contracts\Repositories\Organization\OrganizationManagerRepositoryContract;
+use Polis\Contracts\Repositories\User\InvitationTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\UserRepositoryContract;
 use Polis\Events\Organization\OrganizationManagerCreatedEvent;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
 use Polis\Models\BaseModelAbstract;
+use Polis\Models\User\InvitationToken;
 use Polis\Traits\CanGetAndUnset;
 
 /**
@@ -41,15 +43,22 @@ abstract class OrganizationManagerControllerAbstract extends BaseControllerAbstr
     private $dispatcher;
 
     /**
+     * @var InvitationTokenRepositoryContract
+     */
+    private $invitationTokenRepository;
+
+    /**
      * OrganizationController constructor.
      */
     public function __construct(OrganizationManagerRepositoryContract $repository,
         UserRepositoryContract $userRepository,
-        Dispatcher $dispatcher)
+        Dispatcher $dispatcher,
+        InvitationTokenRepositoryContract $invitationTokenRepository)
     {
         $this->repository = $repository;
         $this->userRepository = $userRepository;
         $this->dispatcher = $dispatcher;
+        $this->invitationTokenRepository = $invitationTokenRepository;
     }
 
     /**
@@ -73,13 +82,24 @@ abstract class OrganizationManagerControllerAbstract extends BaseControllerAbstr
 
         $email = $this->getAndUnset($data, 'email');
         $user = $this->userRepository->findByEmail($email);
-        $tempPassword = null;
+        $invitationToken = null;
 
         if (! $user) {
-            $tempPassword = Str::random(12);
+            // The invitee has no account yet. Create a placeholder account with
+            // an unusable random password — they cannot log in until they set
+            // their own password through the accept-invitation flow — and mint
+            // an invitation token carrying the org role so acceptance restores
+            // the correct role. The token is emailed as an accept link (see
+            // OrganizationManagerCreatedListener + InvitationUrlService).
             $user = $this->userRepository->create([
                 'email' => $email,
-                'password' => $tempPassword,
+                'password' => Str::random(32),
+            ]);
+
+            /** @var InvitationToken $invitationToken */
+            $invitationToken = $this->invitationTokenRepository->create([
+                'token' => $this->invitationTokenRepository->generateUniqueToken(),
+                'role_id' => $data['role_id'] ?? null,
             ]);
         }
 
@@ -88,7 +108,12 @@ abstract class OrganizationManagerControllerAbstract extends BaseControllerAbstr
         /** @var OrganizationManager $model */
         $model = $this->repository->create($data, $organization);
 
-        $this->dispatcher->dispatch(new OrganizationManagerCreatedEvent($model, $tempPassword));
+        $inviter = $request->user();
+        $inviterName = $inviter
+            ? trim(($inviter->first_name ?? '').' '.($inviter->last_name ?? '')) ?: ($inviter->email ?? null)
+            : null;
+
+        $this->dispatcher->dispatch(new OrganizationManagerCreatedEvent($model, null, $invitationToken, $inviterName));
 
         return response($model, 201);
     }

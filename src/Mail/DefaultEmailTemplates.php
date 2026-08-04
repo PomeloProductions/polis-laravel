@@ -51,6 +51,17 @@ final class DefaultEmailTemplates
                 .'<p>Your temporary password is: <strong>{{ temp_password }}</strong></p>'
                 .'<p>Please log in and change your password as soon as possible.</p>',
         ],
+        'organization_manager_invited' => [
+            'subject' => 'You have been invited to join {{ organization.name }}.',
+            'body_html' => '<p>Hi {{ user.first_name }},</p>'
+                .'<p>{{ inviter.name }} has invited you to join {{ organization.name }} '
+                .'as {{ organization_role }}.</p>'
+                .'<p>To accept the invitation, set your password and activate your account, '
+                .'please follow the link below:</p>'
+                .'<p><a href="{{ accept_url }}">Accept your invitation</a></p>'
+                .'<p>If the link above does not work, copy and paste this URL into your browser:</p>'
+                .'<p>{{ accept_url }}</p>',
+        ],
         'renewal_reminder' => [
             'subject' => 'Membership Renewal Reminder',
             'body_html' => '<p>Hi {{ user.first_name }},</p>'

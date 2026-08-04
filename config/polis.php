@@ -37,6 +37,37 @@ return [
 
     'invitation_required' => env('INVITATION_REQUIRED', false),
 
+    'invitations' => [
+        /*
+         * Base URL of the consumer application's "accept invitation" page.
+         * The invite email links here with the invitation token appended so
+         * the invitee can set a password and activate their account. This is
+         * deliberately app-agnostic — every consumer points it at their own
+         * frontend/domain via INVITATION_ACCEPT_URL_BASE and NEVER relies on
+         * a hardcoded domain baked into the package.
+         *
+         * Example: https://app.example.com/accept-invitation
+         *
+         * When null, InvitationUrlService falls back to APP_URL + the path
+         * below so a working (if generic) link still ships.
+         */
+        'accept_url_base' => env('INVITATION_ACCEPT_URL_BASE'),
+
+        /*
+         * Path appended to APP_URL when accept_url_base is not set. Only used
+         * as the fallback described above.
+         */
+        'accept_url_fallback_path' => env('INVITATION_ACCEPT_URL_PATH', '/accept-invitation'),
+
+        /*
+         * Query-string parameter name the token is passed under on the accept
+         * URL (e.g. .../accept-invitation?invitation_token=abc123). Consumer
+         * frontends read this param, then POST it back to /auth/sign-up as
+         * `invitation_token` alongside the chosen password.
+         */
+        'accept_url_token_param' => env('INVITATION_ACCEPT_URL_TOKEN_PARAM', 'invitation_token'),
+    ],
+
     'node_tree' => [
         /*
          * The model class that UserPageComponent's node-tree relations

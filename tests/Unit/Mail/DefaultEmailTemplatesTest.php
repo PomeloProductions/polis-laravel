@@ -20,8 +20,20 @@ final class DefaultEmailTemplatesTest extends TestCase
 
         $this->assertContains('welcome', $keys);
         $this->assertContains('organization_manager_added', $keys);
+        $this->assertContains('organization_manager_invited', $keys);
         $this->assertContains('renewal_reminder', $keys);
         $this->assertContains('renewal_receipt', $keys);
+    }
+
+    public function test_invitation_template_references_accept_url_and_role_variables(): void
+    {
+        $template = DefaultEmailTemplates::TEMPLATES['organization_manager_invited'];
+
+        $this->assertStringContainsString('{{ accept_url }}', $template['body_html']);
+        $this->assertStringContainsString('{{ organization.name }}', $template['body_html']);
+        $this->assertStringContainsString('{{ organization_role }}', $template['body_html']);
+        $this->assertStringContainsString('{{ inviter.name }}', $template['body_html']);
+        $this->assertStringContainsString('{{ organization.name }}', $template['subject']);
     }
 
     public function test_every_template_has_subject_and_body_html_keys(): void
