@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Fixtures\Models;
 
-use Polis\Models\BaseModelAbstract;
+use Polis\Models\User\InvitationToken as PolisInvitationToken;
 use Polis\Tests\Fixtures\Traits\MockeryFriendlyAttributesTrait;
 
 /**
  * Fixture stub for App\Models\User\InvitationToken.
  *
- * Extends BaseModelAbstract because InvitationTokenRepositoryContract::update()
- * and ::delete() type-hint BaseModelAbstract. See Category.php for the
- * shared rationale.
+ * Extends the package InvitationToken model (which itself extends
+ * BaseModelAbstract) so it satisfies both the BaseModelAbstract type-hints on
+ * InvitationTokenRepositoryContract::update()/::delete() AND the
+ * Polis\Models\User\InvitationToken type-hint on OrganizationManagerCreatedEvent
+ * / InvitationAcceptedEvent. In a real consumer app,
+ * App\Models\User\InvitationToken likewise subclasses the package model.
  */
-class InvitationToken extends BaseModelAbstract
+class InvitationToken extends PolisInvitationToken
 {
     use MockeryFriendlyAttributesTrait;
 }

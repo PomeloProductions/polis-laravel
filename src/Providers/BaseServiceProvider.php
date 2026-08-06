@@ -34,6 +34,7 @@ use Polis\Contracts\Services\DirectoryCopyServiceContract;
 use Polis\Contracts\Services\EntitySubscriptionCreationServiceContract;
 use Polis\Contracts\Services\ExternalRateLimiterContract;
 use Polis\Contracts\Services\Indexing\ResourceRepositoryServiceContract;
+use Polis\Contracts\Services\InvitationUrlServiceContract;
 use Polis\Contracts\Services\Messaging\EmailTemplateRenderingServiceContract;
 use Polis\Contracts\Services\Messaging\MessageSendingSelectionServiceContract;
 use Polis\Contracts\Services\Messaging\PushTemplateRenderingServiceContract;
@@ -64,6 +65,7 @@ use Polis\Services\Collection\ItemInEntityCollectionService;
 use Polis\Services\DirectoryCopyService;
 use Polis\Services\EntitySubscriptionCreationService;
 use Polis\Services\ExternalRateLimiter;
+use Polis\Services\InvitationUrlService;
 use Polis\Services\Messaging\EmailTemplateRenderingService;
 use Polis\Services\Messaging\MessageSendingSelectionService;
 use Polis\Services\Messaging\MessageSendingServiceNotImplemented;
@@ -233,6 +235,12 @@ abstract class BaseServiceProvider extends ServiceProvider
             (int) (env('EXTERNAL_REQUEST_MIN_GAP_SECONDS', 20) ?: 20),
         )
         );
+        $this->app->bind(InvitationUrlServiceContract::class, fn () => new InvitationUrlService(
+            config('polis.invitations.accept_url_base'),
+            (string) config('app.url', 'http://localhost'),
+            (string) config('polis.invitations.accept_url_fallback_path', '/accept-invitation'),
+            (string) config('polis.invitations.accept_url_token_param', 'invitation_token'),
+        ));
         $this->app->bind(ItemInEntityCollectionServiceContract::class, fn () => new ItemInEntityCollectionService
         );
         $messageClass = self::resolveConsumerOrPackage(
