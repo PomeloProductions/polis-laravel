@@ -43,6 +43,7 @@ use Polis\Models\BaseModelAbstract;
 use Polis\Models\Traits\CanBeIndexed;
 use Polis\Models\Traits\HasValidationRules;
 use Polis\Models\Traits\IsEntity;
+use Polis\Policies\BasePolicyAbstract;
 
 /**
  * Class User
@@ -71,6 +72,7 @@ use Polis\Models\Traits\IsEntity;
  * @property-read Collection|ArticleIteration[] $createdIterations
  * @property-read int|null $created_iterations_count
  * @property-read null|string $profile_image_url
+ * @property-read bool $is_super_admin
  * @property-read Collection|Message[] $messages
  * @property-read int|null $messages_count
  * @property-read Collection|OrganizationManager[] $organizationManagers
@@ -157,6 +159,7 @@ class User extends BaseModelAbstract implements AuthenticatableContract, CanBeIn
      */
     protected $appends = [
         'profile_image_url',
+        'is_super_admin',
     ];
 
     /**
@@ -324,6 +327,20 @@ class User extends BaseModelAbstract implements AuthenticatableContract, CanBeIn
     public function getProfileImageUrlAttribute(): ?string
     {
         return $this->profileImage?->url;
+    }
+
+    /**
+     * Whether this user holds the platform super-admin role.
+     *
+     * Appended to the model's array/JSON form so the dashboard can tell,
+     * from a single `GET /users/me` call, whether the user may manage any
+     * organization (super admins bypass every org-scoped policy via
+     * {@see BasePolicyAbstract::before()}). Consumers may
+     * override this accessor if their app defines super-admin differently.
+     */
+    public function getIsSuperAdminAttribute(): bool
+    {
+        return $this->hasRole(Role::SUPER_ADMIN);
     }
 
     /**

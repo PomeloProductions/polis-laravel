@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Models\User;
 
+use App\Models\Role;
 use App\Models\Subscription\MembershipPlan;
 use App\Models\Subscription\MembershipPlanRate;
 use App\Models\Subscription\Subscription;
@@ -12,6 +13,7 @@ use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Mockery;
 use Polis\Tests\TestCase;
 
 /**
@@ -240,5 +242,29 @@ final class UserTest extends TestCase
         ]);
 
         $this->assertNull($withoutExpirationUser->currentSubscription());
+    }
+
+    public function test_get_is_super_admin_attribute_true(): void
+    {
+        /** @var User $user */
+        $user = Mockery::mock(User::class)->makePartial();
+        $user->shouldReceive('hasRole')->once()->with(Role::SUPER_ADMIN)->andReturn(true);
+
+        $this->assertTrue($user->is_super_admin);
+    }
+
+    public function test_get_is_super_admin_attribute_false(): void
+    {
+        /** @var User $user */
+        $user = Mockery::mock(User::class)->makePartial();
+        $user->shouldReceive('hasRole')->once()->with(Role::SUPER_ADMIN)->andReturn(false);
+
+        $this->assertFalse($user->is_super_admin);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

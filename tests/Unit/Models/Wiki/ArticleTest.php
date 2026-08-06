@@ -21,6 +21,15 @@ final class ArticleTest extends TestCase
         $this->assertEquals('articles.created_by_id', $relation->getQualifiedForeignKeyName());
     }
 
+    public function test_organization(): void
+    {
+        $article = new Article;
+        $relation = $article->organization();
+
+        $this->assertEquals('organizations.id', $relation->getQualifiedOwnerKeyName());
+        $this->assertEquals('articles.organization_id', $relation->getQualifiedForeignKeyName());
+    }
+
     public function test_iterations(): void
     {
         $article = new Article;
