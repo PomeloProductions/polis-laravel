@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Polis\Models\User;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Polis\Models\BaseModelAbstract;
+use Polis\Models\Traits\IsOwnedByEntity;
 
 /**
  * Class ExternalAccountConnection
@@ -30,6 +32,8 @@ use Polis\Models\BaseModelAbstract;
  *
  * @property int $id
  * @property int $user_id
+ * @property int|null $owner_id
+ * @property string|null $owner_type
  * @property string $provider A provider identifier ('discord', 'github', etc.).
  * @property string|null $external_user_id The provider-side user identifier (sub claim, etc.).
  * @property array|null $credentials Decrypted credentials map (access_token, refresh_token, ...).
@@ -41,9 +45,12 @@ use Polis\Models\BaseModelAbstract;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read User $user
+ * @property-read Model|\Eloquent|null $owner
  */
 class ExternalAccountConnection extends BaseModelAbstract
 {
+    use IsOwnedByEntity;
+
     public const STATUS_CONNECTED = 'connected';
 
     public const STATUS_DISCONNECTED = 'disconnected';
@@ -57,6 +64,8 @@ class ExternalAccountConnection extends BaseModelAbstract
      */
     protected $fillable = [
         'user_id',
+        'owner_id',
+        'owner_type',
         'provider',
         'external_user_id',
         'credentials',

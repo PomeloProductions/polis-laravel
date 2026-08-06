@@ -7,6 +7,7 @@ namespace Polis\Models\User;
 use App\Models\User\User;
 use App\Models\Wiki\Article;
 use Eloquent;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -15,12 +16,15 @@ use Polis\Contracts\Models\CanBeAggregatedContract;
 use Polis\Contracts\Models\HasValidationRulesContract;
 use Polis\Models\BaseModelAbstract;
 use Polis\Models\Traits\HasValidationRules;
+use Polis\Models\Traits\IsOwnedByEntity;
 
 /**
  * Class ArticleNote
  *
  * @property int $id
  * @property int $user_id
+ * @property int|null $owner_id
+ * @property string|null $owner_type
  * @property int $article_id
  * @property Carbon|null $completed_at
  * @property string|null $response
@@ -28,6 +32,7 @@ use Polis\Models\Traits\HasValidationRules;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read User $user
+ * @property-read Model|Eloquent|null $owner
  * @property-read Article $article
  *
  * @mixin Eloquent
@@ -67,10 +72,14 @@ use Polis\Models\Traits\HasValidationRules;
  */
 class ArticleNote extends BaseModelAbstract implements CanBeAggregatedContract, HasValidationRulesContract
 {
-    use HasValidationRules, SoftDeletes;
+    use HasValidationRules, IsOwnedByEntity, SoftDeletes;
 
     /**
-     * The user who created this note
+     * The user who created this note.
+     *
+     * Retained for backward-compat; the canonical owner is now the polymorphic
+     * owner() relation (via {@see IsOwnedByEntity}) which points at the same
+     * user for existing rows.
      */
     public function user(): BelongsTo
     {

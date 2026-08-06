@@ -25,7 +25,7 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class ArticleNoteControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_user(): void
+    public function test_index_scopes_find_all_to_parent_user(): void
     {
         $repo = Mockery::mock(ArticleNoteRepositoryContract::class);
         $articleRepo = Mockery::mock(ArticleRepositoryContract::class);
@@ -48,6 +48,7 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
         $articleRepo = Mockery::mock(ArticleRepositoryContract::class);
         $user = Mockery::mock(UserFixture::class);
         $user->id = 21;
+        $user->shouldReceive('morphRelationName')->andReturn('user');
 
         $payload = ['article_id' => 9, 'note' => 'A note'];
         $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\ArticleNote\\StoreRequest', $payload);
@@ -56,7 +57,13 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()
-            ->with(['article_id' => 9, 'note' => 'A note', 'user_id' => 21])
+            ->with([
+                'article_id' => 9,
+                'note' => 'A note',
+                'user_id' => 21,
+                'owner_id' => 21,
+                'owner_type' => 'user',
+            ])
             ->andReturn($created);
 
         $response = (new ArticleNoteController($repo, $articleRepo))->store($request, $user);
