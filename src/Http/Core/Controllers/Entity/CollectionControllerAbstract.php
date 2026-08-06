@@ -5,51 +5,39 @@ declare(strict_types=1);
 namespace Polis\Http\Core\Controllers\Entity;
 
 use App\Http\Core\Requests;
-use App\Models\Role;
-use App\Models\User\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\Collection\CollectionRepositoryContract;
-use Polis\Http\Core\Controllers\BaseControllerAbstract;
-use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests\BaseRequestAbstract;
 
 /**
- * Class ThreadControllerAbstract
+ * Class CollectionControllerAbstract
+ *
+ * Entity-scoped listing/creation of Collections. This is a thin specialization
+ * of {@see EntityResourceControllerAbstract}: it inherits the generic
+ * polymorphic owner scoping + owner stamping, and only layers on the one
+ * Collection-specific wrinkle — non-managers of the entity may only see
+ * `is_public` collections.
  */
-abstract class CollectionControllerAbstract extends BaseControllerAbstract
+abstract class CollectionControllerAbstract extends EntityResourceControllerAbstract
 {
-    use HasIndexRequests;
-
     /**
-     * ThreadController constructor.
+     * CollectionController constructor.
      */
-    public function __construct(protected CollectionRepositoryContract $repository) {}
-
-    /**
-     * @param  User  $user
-     * @return LengthAwarePaginator
-     */
-    public function index(Requests\Entity\Collection\IndexRequest $request, IsAnEntityContract $entity)
+    public function __construct(CollectionRepositoryContract $repository)
     {
-        $filter = $this->filter($request);
+        parent::__construct($repository);
+    }
 
-        $filter[] = [
-            'owner_id',
-            '=',
-            $entity->id,
-        ];
-        $filter[] = [
-            'owner_type',
-            '=',
-            $entity->morphRelationName(),
-        ];
+    /**
+     * Appends the `is_public` gate for viewers who do not manage the entity.
+     */
+    protected function entityFilter(BaseRequestAbstract $request, IsAnEntityContract $entity): array
+    {
+        $filter = parent::entityFilter($request, $entity);
 
-        /** @var User $loggedInUser */
-        $loggedInUser = Auth::user();
-
-        if (! $loggedInUser || ! $entity->canUserManageEntity($loggedInUser, Role::MANAGER)) {
+        if (! $this->loggedInUserManagesEntity($entity)) {
             $filter[] = [
                 'is_public',
                 '=',
@@ -57,19 +45,19 @@ abstract class CollectionControllerAbstract extends BaseControllerAbstract
             ];
         }
 
-        return $this->repository->findAll($filter, $this->search($request), $this->order($request), $this->expand($request), $this->limit($request), [], (int) $request->input('page', 1));
+        return $filter;
     }
 
     /**
-     * @param  User  $user
+     * @return LengthAwarePaginator
      */
+    public function index(Requests\Entity\Collection\IndexRequest $request, IsAnEntityContract $entity)
+    {
+        return $this->indexForEntity($request, $entity);
+    }
+
     public function store(Requests\Entity\Collection\StoreRequest $request, IsAnEntityContract $entity): JsonResponse
     {
-        $data = $request->json()->all();
-
-        $data['owner_id'] = $entity->id;
-        $data['owner_type'] = $entity->morphRelationName();
-
-        return new JsonResponse($this->repository->create($data), 201);
+        return $this->storeForEntity($request, $entity);
     }
 }

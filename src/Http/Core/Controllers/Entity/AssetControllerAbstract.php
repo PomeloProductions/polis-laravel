@@ -13,22 +13,19 @@ use Illuminate\Http\Response;
 use Mimey\MimeTypes;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\AssetRepositoryContract;
-use Polis\Http\Core\Controllers\BaseControllerAbstract;
-use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests\BaseRequestAbstract;
 use Polis\Models\BaseModelAbstract;
 
 /**
  * Class AssetControllerAbstract
+ *
+ * Entity-scoped asset management. A thin specialization of
+ * {@see EntityResourceControllerAbstract}: it inherits the generic polymorphic
+ * owner scoping, owner stamping, update and destroy, and only overrides
+ * {@see storeData()} to attach the decoded file contents + resolved extension.
  */
-abstract class AssetControllerAbstract extends BaseControllerAbstract
+abstract class AssetControllerAbstract extends EntityResourceControllerAbstract
 {
-    use HasIndexRequests;
-
-    /**
-     * @var AssetRepositoryContract
-     */
-    private $repository;
-
     /**
      * @var MimeTypes
      */
@@ -39,51 +36,39 @@ abstract class AssetControllerAbstract extends BaseControllerAbstract
      */
     public function __construct(AssetRepositoryContract $repository, MimeTypes $mimeTypes)
     {
-        $this->repository = $repository;
+        parent::__construct($repository);
         $this->mimeTypes = $mimeTypes;
     }
 
     /**
-     * Gets all assets for a user
+     * Gets all assets for an entity
      *
      * @return LengthAwarePaginator
      */
     public function index(Requests\Entity\Asset\IndexRequest $request, IsAnEntityContract $entity)
     {
-        $filter = $this->filter($request);
-
-        $filter[] = [
-            'owner_id',
-            '=',
-            $entity->id,
-        ];
-        $filter[] = [
-            'owner_type',
-            '=',
-            $entity->morphRelationName(),
-        ];
-
-        return $this->repository->findAll($filter, $this->search($request), $this->order($request), $this->expand($request), $this->limit($request), [], (int) $request->input('page', 1));
+        return $this->indexForEntity($request, $entity);
     }
 
     /**
-     * Creates the new asset for us
-     *
-     * @return JsonResponse
+     * Attaches the decoded file contents and resolved extension to the payload.
      */
-    public function store(Requests\Entity\Asset\StoreRequest $request, IsAnEntityContract $entity)
+    protected function storeData(BaseRequestAbstract $request, IsAnEntityContract $entity): array
     {
-        $data = $request->json()->all();
+        $data = parent::storeData($request, $entity);
 
         $data['file_contents'] = $request->getDecodedContents();
         $data['file_extension'] = $this->mimeTypes->getExtension($request->getFileMimeType());
 
-        $data['owner_id'] = $entity->id;
-        $data['owner_type'] = $entity->morphRelationName();
+        return $data;
+    }
 
-        $model = $this->repository->create($data);
-
-        return new JsonResponse($model, 201);
+    /**
+     * Creates the new asset for us
+     */
+    public function store(Requests\Entity\Asset\StoreRequest $request, IsAnEntityContract $entity): JsonResponse
+    {
+        return $this->storeForEntity($request, $entity);
     }
 
     /**
@@ -93,7 +78,7 @@ abstract class AssetControllerAbstract extends BaseControllerAbstract
      */
     public function update(Requests\Entity\Asset\UpdateRequest $request, IsAnEntityContract $entity, Asset $asset)
     {
-        return $this->repository->update($asset, $request->json()->all());
+        return $this->updateForEntity($request, $entity, $asset);
     }
 
     /**
@@ -101,10 +86,8 @@ abstract class AssetControllerAbstract extends BaseControllerAbstract
      *
      * @return ResponseFactory|Response
      */
-    public function destroy(Requests\Entity\Asset\DeleteRequest $request, IsAnEntityContract $entity, Asset $asset)
+    public function destroy(Requests\Entity\Asset\DeleteRequest $request, IsAnEntityContract $entity, Asset $asset): Response
     {
-        $this->repository->delete($asset);
-
-        return response(null, 204);
+        return $this->destroyForEntity($request, $entity, $asset);
     }
 }

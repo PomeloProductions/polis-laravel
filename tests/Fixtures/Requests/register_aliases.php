@@ -98,6 +98,7 @@ $requestAliases = [
     'App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\StoreRequest',
     'App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\UpdateRequest',
     'App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\DeleteRequest',
+    'App\\Http\\Core\\Requests\\Organization\\Article\\IndexRequest',
     // Resource
     'App\\Http\\Core\\Requests\\Resource\\IndexRequest',
     // Role

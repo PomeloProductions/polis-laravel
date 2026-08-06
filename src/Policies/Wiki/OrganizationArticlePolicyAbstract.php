@@ -6,6 +6,7 @@ namespace Polis\Policies\Wiki;
 
 use Polis\Policies\BaseBelongsToOrganizationPolicyAbstract;
 use Polis\Policies\BasePolicyAbstract;
+use Polis\Policies\Entity\EntityArticlePolicyAbstract;
 
 /**
  * Class OrganizationArticlePolicyAbstract
@@ -18,6 +19,14 @@ use Polis\Policies\BasePolicyAbstract;
  * return true for any authenticated user). The org-detail dashboard needs the
  * opposite guarantee: an Article may only be listed/viewed through an
  * organization the caller actually manages.
+ *
+ * Conceptually this is the Organization flavour of the entity-generic
+ * {@see EntityArticlePolicyAbstract}. It stays on
+ * {@see BaseBelongsToOrganizationPolicyAbstract} (rather than the entity base)
+ * because Article carries a concrete `organization_id` FK — not the polymorphic
+ * `owner` columns — so the org-specific cross-tenant boundary
+ * (`$model->organization_id == $organization->id`) lives here. A future
+ * User-owned article policy would extend the entity base instead.
  *
  * By extending {@see BaseBelongsToOrganizationPolicyAbstract} we inherit the
  * canonical org-scoping rules for free:
