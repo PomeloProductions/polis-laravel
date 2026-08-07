@@ -12,6 +12,7 @@ use Illuminate\Cache\RateLimiter;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Support\ConfigurationUrlParser;
 use Illuminate\Support\ServiceProvider;
 use Kreait\Firebase\Contract\Messaging;
 use NotificationChannels\Twilio\Twilio;
@@ -177,6 +178,90 @@ abstract class BaseServiceProvider extends ServiceProvider
     }
 
     /**
+     * Ensure the framework's database connections honor a full connection
+     * string supplied via the `DATABASE_URL` environment variable.
+     *
+     * The client-driver controller injects tenant DB credentials as a single
+     * `DATABASE_URL` (e.g. `mysql://user:pass@host:25060/db`). Laravel only
+     * parses such a URL when the target connection config carries a `url`
+     * key (see {@see ConfigurationUrlParser}). A plain
+     * Laravel app's shipped `config/database.php` DOES include that key, but
+     * consumers can drift, and older/customized app configs may omit it —
+     * in which case Laravel silently falls back to the discrete `DB_*`
+     * defaults (`forge@127.0.0.1`) and every tenant deploy fails with
+     * "Connection refused".
+     *
+     * This backfills a `url` key on the standard `mysql`/`pgsql` connections
+     * from `DATABASE_URL`, but ONLY when:
+     *   - the `DATABASE_URL` env var is actually set, AND
+     *   - the connection exists, AND
+     *   - the connection does not already define a (non-empty) `url`.
+     *
+     * It is therefore fully additive and non-breaking:
+     *   - No `DATABASE_URL` set  → nothing changes; discrete `DB_*` still win.
+     *   - App already sets `url` → we leave it untouched.
+     */
+    private function honorDatabaseUrl(): void
+    {
+        $config = $this->app->make('config');
+
+        $connections = $config->get('database.connections');
+
+        $overrides = self::resolveDatabaseUrlOverrides(
+            env('DATABASE_URL'),
+            is_array($connections) ? $connections : [],
+        );
+
+        foreach ($overrides as $connection => $url) {
+            $config->set("database.connections.{$connection}.url", $url);
+        }
+    }
+
+    /**
+     * Pure resolution of which database connections should have their `url`
+     * key backfilled from `DATABASE_URL`, extracted so the decision logic is
+     * unit-testable without booting a full container.
+     *
+     * Returns a map of `connectionName => url` for every standard SQL
+     * connection (`mysql`, `pgsql`) that is present in $connections and does
+     * not already carry a non-empty `url`. Returns an empty array (i.e. a
+     * no-op) when $databaseUrl is unset/blank, guaranteeing discrete `DB_*`
+     * configuration keeps working untouched.
+     *
+     * @param  mixed  $databaseUrl  Raw `DATABASE_URL` env value.
+     * @param  array<string, mixed>  $connections  The `database.connections` config array.
+     * @return array<string, string> Map of connection name => URL to set.
+     */
+    public static function resolveDatabaseUrlOverrides(mixed $databaseUrl, array $connections): array
+    {
+        if (! is_string($databaseUrl) || $databaseUrl === '') {
+            return [];
+        }
+
+        $overrides = [];
+
+        foreach (['mysql', 'pgsql'] as $connection) {
+            $definition = $connections[$connection] ?? null;
+
+            // Only touch connections the consuming app actually defines.
+            if (! is_array($definition)) {
+                continue;
+            }
+
+            // Respect an explicit `url` the app has already configured.
+            $existing = $definition['url'] ?? null;
+
+            if (is_string($existing) && $existing !== '') {
+                continue;
+            }
+
+            $overrides[$connection] = $databaseUrl;
+        }
+
+        return $overrides;
+    }
+
+    /**
      * Publish the package's config file so consumers can override the
      * defaults via their own `config/polis.php`.
      */
@@ -197,6 +282,8 @@ abstract class BaseServiceProvider extends ServiceProvider
         // Merge the package's default config so consumers that have not
         // published `config/polis.php` still get the defaults at runtime.
         $this->mergeConfigFrom($this->packageConfigPath(), 'polis');
+
+        $this->honorDatabaseUrl();
 
         $this->registerEnvironmentSpecificProviders();
 
