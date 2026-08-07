@@ -12,7 +12,6 @@ use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Organization\OrganizationArticleControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
 use Polis\Http\Core\Requests\BaseRequestAbstract;
-use Polis\Repositories\BaseRepositoryAbstract;
 
 /**
  * Class EntityArticleControllerAbstract
@@ -24,19 +23,19 @@ use Polis\Repositories\BaseRepositoryAbstract;
  * Unlike the platform-wide {@see ArticleControllerAbstract}
  * (which lists every Article in the wiki), this controller scopes the result
  * set to the Articles owned by the entity bound to the FIRST route parameter —
- * currently an Organization, but generically ANY {@see IsAnEntityContract}.
+ * an Organization today, but generically ANY {@see IsAnEntityContract}.
  *
- * The scoping is delegated to the repository's `belongsToArray` mechanism: the
- * bound entity is handed to {@see BaseRepositoryAbstract::buildFindAllQuery()},
- * which resolves the correct relation on Article FROM THE ENTITY'S CLASS
- * (`organization()` for an Organization, `user()` for a User, …) and applies a
- * `whereHas(...)`. Because the relation is discovered from the entity rather
- * than hard-coded, the same controller works for every entity type that Article
- * can belong to — an Organization today, a User the moment Article gains a
- * `user()` relation, with no new controller.
+ * As of the Article organization_id → polymorphic-owner conversion, the scoping
+ * is done against Article's polymorphic `owner_id` / `owner_type` columns (the
+ * same columns Collection/Asset/Payment use), exactly like
+ * {@see EntityResourceControllerAbstract::entityFilter()}. This is uniform
+ * across every entity type — an Organization or a User (or any future entity) —
+ * without depending on a per-owner `belongsTo` relation existing on Article.
+ * Organization-owned rows have their owner columns backfilled from the retained
+ * `organization_id` FK, so the Organization listing is unchanged in behaviour.
  *
  * This is the reusable base that {@see OrganizationArticleControllerAbstract}
- * now derives from; the Organization case is just one entity type.
+ * derives from; the Organization case is just one entity type.
  *
  * Authorization is enforced by the request (see the corresponding
  * IndexRequest), so a caller only ever sees the contracts of an entity they
@@ -52,6 +51,28 @@ abstract class EntityArticleControllerAbstract extends BaseControllerAbstract
     public function __construct(protected readonly ArticleRepositoryContract $repository) {}
 
     /**
+     * Builds the listing filter, always scoping to the owning entity's
+     * polymorphic owner columns.
+     */
+    protected function entityFilter(BaseRequestAbstract $request, IsAnEntityContract $entity): array
+    {
+        $filter = $this->filter($request);
+
+        $filter[] = [
+            'owner_id',
+            '=',
+            $entity->id,
+        ];
+        $filter[] = [
+            'owner_type',
+            '=',
+            $entity->morphRelationName(),
+        ];
+
+        return $filter;
+    }
+
+    /**
      * Display a listing of the entity's articles (contracts).
      *
      * A concrete subclass keeps its own strongly-typed `index(ConcreteRequest,
@@ -65,12 +86,12 @@ abstract class EntityArticleControllerAbstract extends BaseControllerAbstract
     protected function indexForEntity(BaseRequestAbstract $request, IsAnEntityContract $entity)
     {
         return $this->repository->findAll(
-            $this->filter($request),
+            $this->entityFilter($request, $entity),
             $this->search($request),
             $this->order($request),
             $this->expand($request),
             $this->limit($request),
-            [$entity],
+            [],
             (int) $request->input('page', 1),
         );
     }

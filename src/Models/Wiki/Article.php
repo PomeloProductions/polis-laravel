@@ -16,6 +16,7 @@ use App\Models\Wiki\ArticleSummary;
 use App\Models\Wiki\ArticleVersion;
 use Eloquent;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,6 +32,7 @@ use Polis\Models\Traits\BelongsToOrganization;
 use Polis\Models\Traits\CanBeIndexed;
 use Polis\Models\Traits\HasStatisticTargets;
 use Polis\Models\Traits\HasValidationRules;
+use Polis\Models\Traits\IsOwnedByEntity;
 
 /**
  * Class Article
@@ -38,8 +40,11 @@ use Polis\Models\Traits\HasValidationRules;
  * @property int $id
  * @property int $created_by_id
  * @property int|null $organization_id
+ * @property int|null $owner_id
+ * @property string|null $owner_type
  * @property string $title
  * @property-read Organization|null $organization
+ * @property-read Model|Eloquent|null $owner
  * @property Carbon|null $deleted_at
  * @property mixed|null $created_at
  * @property mixed|null $updated_at
@@ -104,7 +109,7 @@ use Polis\Models\Traits\HasValidationRules;
  */
 class Article extends BaseModelAbstract implements BelongsToOrganizationContract, CanBeIndexedContract, CanBeStatisticTargetContract, HasPolicyContract, HasValidationRulesContract
 {
-    use BelongsToOrganization, CanBeIndexed, HasStatisticTargets, HasValidationRules;
+    use BelongsToOrganization, CanBeIndexed, HasStatisticTargets, HasValidationRules, IsOwnedByEntity;
 
     /**
      * Values that are appending on a toArray function call
@@ -241,6 +246,14 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
                 'organization_id' => [
                     'nullable',
                     'integer',
+                ],
+                'owner_id' => [
+                    'nullable',
+                    'integer',
+                ],
+                'owner_type' => [
+                    'nullable',
+                    'string',
                 ],
                 'authors' => [
                     'nullable',

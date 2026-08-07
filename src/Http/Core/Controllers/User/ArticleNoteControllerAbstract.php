@@ -52,6 +52,9 @@ abstract class ArticleNoteControllerAbstract extends BaseControllerAbstract
     {
         $data = $request->json()->all();
         $data['user_id'] = $user->id;
+        // Keep the polymorphic owner in sync with the legacy user_id FK.
+        $data['owner_id'] = $user->id;
+        $data['owner_type'] = $user->morphRelationName();
 
         /** @var ArticleNote $model */
         $model = $this->repository->create($data);

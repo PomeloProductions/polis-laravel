@@ -7,6 +7,7 @@ namespace Polis\Models\User;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,10 +15,13 @@ use Illuminate\Support\Carbon;
 use Polis\Contracts\Models\HasValidationRulesContract;
 use Polis\Models\BaseModelAbstract;
 use Polis\Models\Traits\HasValidationRules;
+use Polis\Models\Traits\IsOwnedByEntity;
 
 /**
  * @property int $id
  * @property int $user_id
+ * @property int|null $owner_id
+ * @property string|null $owner_type
  * @property string $slug
  * @property string $name
  * @property string $icon
@@ -34,13 +38,14 @@ use Polis\Models\Traits\HasValidationRules;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read User $user
+ * @property-read Model|\Eloquent|null $owner
  * @property-read UserPage|null $parentPage
  * @property-read Collection<int, UserPage> $childPages
  * @property-read Collection<int, UserPageComponent> $components
  */
 class UserPage extends BaseModelAbstract implements HasValidationRulesContract
 {
-    use HasFactory, HasValidationRules, SoftDeletes;
+    use HasFactory, HasValidationRules, IsOwnedByEntity, SoftDeletes;
 
     public const VALID_PAGE_TYPES = ['dashboard', 'list', 'detail', 'todo'];
 
@@ -64,6 +69,13 @@ class UserPage extends BaseModelAbstract implements HasValidationRulesContract
         'config_json' => 'array',
     ];
 
+    /**
+     * The user who owns this page.
+     *
+     * Retained for backward-compat; the canonical owner is now the polymorphic
+     * owner() relation (via {@see IsOwnedByEntity}), which resolves to the same
+     * user for existing rows and can point at any entity type for new ones.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

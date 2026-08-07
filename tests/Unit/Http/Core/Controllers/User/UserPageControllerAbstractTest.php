@@ -24,7 +24,7 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class UserPageControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_user_with_display_order(): void
+    public function test_index_scopes_find_all_to_parent_user_with_display_order(): void
     {
         $repo = Mockery::mock(UserPageRepositoryContract::class);
         $user = Mockery::mock(UserFixture::class);
@@ -51,6 +51,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(UserPageRepositoryContract::class);
         $user = Mockery::mock(UserFixture::class);
         $user->id = 7;
+        $user->shouldReceive('morphRelationName')->andReturn('user');
 
         $payload = ['name' => 'My New Page'];
         $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPage\\StoreRequest', $payload);
@@ -80,6 +81,8 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $repo->shouldReceive('create')
             ->once()
             ->with(Mockery::on(fn (array $data) => $data['user_id'] === 7
+                && $data['owner_id'] === 7
+                && $data['owner_type'] === 'user'
                 && $data['slug'] === 'my-new-page'
                 && $data['display_order'] === 5
                 && $data['is_required'] === false
@@ -134,6 +137,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(UserPageRepositoryContract::class);
         $user = Mockery::mock(UserFixture::class);
         $user->id = 7;
+        $user->shouldReceive('morphRelationName')->andReturn('user');
 
         // Name "1 Hot Page" starts with a digit; the slug helper prefixes
         // 'page-' in that branch.
