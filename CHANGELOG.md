@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.3.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.2.0...v0.3.0) (2026-08-07)
+
+
+### Features
+
+* **entity:** migrate Article + user-owned resources onto polymorphic entity owner ([45846f8](https://github.com/PomeloProductions/polis-laravel/commit/45846f8b2a6fd075754aeceea7810ddd40b767bd))
+* **entity:** migrate Article + user-owned resources onto polymorphic entity owner ([ccb49ee](https://github.com/PomeloProductions/polis-laravel/commit/ccb49eee061c4ad5b53d6362d8e8ff56c92522ca))
+* **entity:** reusable entity-scoped controller/policy layer; rebase Article onto it ([121739e](https://github.com/PomeloProductions/polis-laravel/commit/121739e8b3087a5f183537dad696f36fd43735a7))
+* **entity:** reusable entity-scoped controller/policy layer; rebase Article onto it ([fbabf06](https://github.com/PomeloProductions/polis-laravel/commit/fbabf0641773849aae723b3acfc24a6fd221ce3f))
+* **http:** RejectsUnknownParams trait + adopt in sample FormRequests ([ff3378e](https://github.com/PomeloProductions/polis-laravel/commit/ff3378e8fbd38100dd76fedaf8640c65e8d727dc))
+* **http:** RejectsUnknownParams trait + adopt in sample FormRequests ([26378a0](https://github.com/PomeloProductions/polis-laravel/commit/26378a02d493ea6f50d00853c0137629eb767ee6))
+* **org-detail:** expose role context on /me + org-scope Article contracts ([fadc7a5](https://github.com/PomeloProductions/polis-laravel/commit/fadc7a5ae15973da40209ca54db76a264e730228))
+* **org-detail:** expose role context on /me and org-scope Article contracts ([fcda90f](https://github.com/PomeloProductions/polis-laravel/commit/fcda90f1493dca10847e1e63132d7b50fd56b850))
+* **push:** migrate to laravel-notification-channels/fcm ([8bce40f](https://github.com/PomeloProductions/polis-laravel/commit/8bce40f8cc441a8fc32293301335f15cff496150))
+* **push:** migrate to laravel-notification-channels/fcm for FCM v1 ([225dbae](https://github.com/PomeloProductions/polis-laravel/commit/225dbae514bce9194fef510bc65d59aa9e71d523))
+* reusable org-member invite → email → accept/set-password flow ([1cb2a1f](https://github.com/PomeloProductions/polis-laravel/commit/1cb2a1fbd309c3581b4355efd3c480d60096eb3a))
+* reusable org-member invite → email → accept/set-password flow ([2dd84bb](https://github.com/PomeloProductions/polis-laravel/commit/2dd84bb121cff2b8e40096f632bdef07b6fe612c))
+* **todo:** extract generic period/node-tree framework + Todo module ([c3714a8](https://github.com/PomeloProductions/polis-laravel/commit/c3714a8a96510d30e021b52eb4f07c5a4b22f0e2))
+* **todo:** generic period/node-tree framework + Todo module ([f6ad198](https://github.com/PomeloProductions/polis-laravel/commit/f6ad198674af26bded544fd3bd91fd00ca37b8c5))
+* **traits:** add HasExternalSources trait + Source model + migration ([f9fda3d](https://github.com/PomeloProductions/polis-laravel/commit/f9fda3d21db02c7a5399044c3841fb4a4a85049b))
+* **traits:** add HasExternalSources trait + Source model + migration ([0dcb33d](https://github.com/PomeloProductions/polis-laravel/commit/0dcb33d67bf73396c0dbe6b5f43793aa9d2aadc3))
+
 ## [0.2.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.1.0...v0.2.0) (2026-06-09)
 
 
