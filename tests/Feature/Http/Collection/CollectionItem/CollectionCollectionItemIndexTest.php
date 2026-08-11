@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\Collection\CollectionItem;
 
 use App\Models\Collection\Collection;
 use App\Models\Collection\CollectionItem;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserSubscriptionIndexTest
  */
-final class CollectionCollectionItemIndexTest extends TestCase
+final class CollectionCollectionItemIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

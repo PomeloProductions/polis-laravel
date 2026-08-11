@@ -12,10 +12,12 @@ use App\Providers\AppValidatorProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider;
+use Polis\Exceptions\Handler;
 use Polis\Http\Middleware\ExpandParsingMiddleware;
 use Polis\Http\Middleware\Issue404IfPageAfterPaginationMiddleware;
 use Polis\Http\Middleware\JWTGetUserFromTokenProtectedRouteMiddleware;
@@ -75,9 +77,18 @@ abstract class ApplicationTestCase extends OrchestraTestCase
         // ported PolisOS routes/ dir is used.
         $app->setBasePath(__DIR__);
 
+        // Use the package exception handler (PolisOS binds this in
+        // bootstrap/app.php). It maps ValidationException -> 400, the JWT
+        // exceptions -> 401, etc., which the ported tests assert on. Without
+        // it Testbench's default handler returns 422/500.
+        $app->singleton(
+            ExceptionHandler::class,
+            Handler::class,
+        );
+
         $config = $app->make('config');
 
-        $config->set('app.debug', false);
+        $config->set('app.debug', (bool) env('APP_DEBUG', false));
         $config->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
         $config->set('database.default', 'testing');
         $config->set('database.connections.testing', [

@@ -9,16 +9,14 @@ use App\Policies\Messaging\ThreadPolicy;
 use Polis\Contracts\ThreadSecurity\ThreadSubjectGateContract;
 use Polis\Contracts\ThreadSecurity\ThreadSubjectGateProviderContract;
 use Polis\Tests\CustomMockInterface;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ThreadPolicyTest
  */
-final class ThreadPolicyTest extends TestCase
+final class ThreadPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var ThreadSubjectGateProviderContract|CustomMockInterface
      */

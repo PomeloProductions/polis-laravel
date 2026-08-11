@@ -6,17 +6,16 @@ namespace Polis\Tests\Feature\Http\Ballot;
 
 use App\Models\Role;
 use App\Models\Vote\Ballot;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class BallotViewTest
  */
-final class BallotViewTest extends TestCase
+final class BallotViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     protected function setUp(): void
     {

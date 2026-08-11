@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\User\Contact;
 
 use App\Models\User\Contact;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserContactUpdateTest
  */
-final class UserContactUpdateTest extends TestCase
+final class UserContactUpdateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

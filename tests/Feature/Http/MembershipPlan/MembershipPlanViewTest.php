@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\MembershipPlan;
 
 use App\Models\Role;
 use App\Models\Subscription\MembershipPlan;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class MembershipPlanViewTest
  */
-final class MembershipPlanViewTest extends TestCase
+final class MembershipPlanViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

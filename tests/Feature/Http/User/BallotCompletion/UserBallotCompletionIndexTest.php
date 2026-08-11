@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\User\BallotCompletion;
 
 use App\Models\User\User;
 use App\Models\Vote\BallotCompletion;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserBallotCompletionIndexTest
  */
-final class UserBallotCompletionIndexTest extends TestCase
+final class UserBallotCompletionIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

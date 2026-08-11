@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Models\Subscription;
 use App\Models\Subscription\MembershipPlan;
 use App\Models\Subscription\MembershipPlanRate;
 use Carbon\Carbon;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class MembershipPlanTest
  */
-final class MembershipPlanTest extends TestCase
+final class MembershipPlanTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_current_cost_attribute(): void
     {
         /** @var MembershipPlan $membershipPlan */

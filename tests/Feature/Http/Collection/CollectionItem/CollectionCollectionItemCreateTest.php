@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\Collection\CollectionItem;
 
 use App\Models\Collection\Collection;
 use App\Models\Wiki\Article;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserPaymentMethodCreateTest
  */
-final class CollectionCollectionItemCreateTest extends TestCase
+final class CollectionCollectionItemCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

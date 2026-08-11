@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Organization\Asset;
 use App\Models\Asset;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class OrganizationContactIndexTest
  */
-final class OrganizationAssetIndexTest extends TestCase
+final class OrganizationAssetIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

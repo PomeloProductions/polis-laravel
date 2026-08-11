@@ -8,16 +8,15 @@ use App\Models\Wiki\Article;
 use App\Models\Wiki\ArticleIteration;
 use App\Models\Wiki\ArticleVersion;
 use Carbon\Carbon;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleTest
  */
-final class ArticleTest extends TestCase
+final class ArticleTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

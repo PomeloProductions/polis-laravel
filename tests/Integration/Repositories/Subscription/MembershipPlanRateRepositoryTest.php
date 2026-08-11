@@ -8,16 +8,15 @@ use App\Models\Subscription\MembershipPlan;
 use App\Models\Subscription\MembershipPlanRate;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Subscription\MembershipPlanRateRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class MembershipPlanRateRepositoryTest
  */
-final class MembershipPlanRateRepositoryTest extends TestCase
+final class MembershipPlanRateRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var MembershipPlanRateRepository

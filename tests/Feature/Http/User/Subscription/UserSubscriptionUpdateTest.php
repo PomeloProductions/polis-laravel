@@ -8,16 +8,15 @@ use App\Models\Payment\PaymentMethod;
 use App\Models\Role;
 use App\Models\Subscription\Subscription;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserSubscriptionUpdateTest
  */
-final class UserSubscriptionUpdateTest extends TestCase
+final class UserSubscriptionUpdateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

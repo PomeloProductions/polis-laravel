@@ -12,16 +12,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\Vote\BallotCompletionRepository;
 use Polis\Repositories\Vote\VoteRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class BallotCompletionRepositoryTest
  */
-final class BallotCompletionRepositoryTest extends TestCase
+final class BallotCompletionRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var BallotCompletionRepository

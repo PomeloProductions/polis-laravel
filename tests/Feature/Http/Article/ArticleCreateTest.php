@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\Http\Article;
 use App\Models\Category;
 use App\Models\Role;
 use App\Models\Wiki\Article;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class ArticleCreateTest
  */
-final class ArticleCreateTest extends TestCase
+final class ArticleCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string

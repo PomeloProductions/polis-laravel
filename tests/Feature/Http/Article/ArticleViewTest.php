@@ -8,17 +8,16 @@ use App\Models\Role;
 use App\Models\Wiki\Article;
 use App\Models\Wiki\ArticleIteration;
 use App\Models\Wiki\ArticleVersion;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class ArticleViewTest
  */
-final class ArticleViewTest extends TestCase
+final class ArticleViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string

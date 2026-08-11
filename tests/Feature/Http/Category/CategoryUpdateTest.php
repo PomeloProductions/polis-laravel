@@ -6,17 +6,16 @@ namespace Polis\Tests\Feature\Http\Category;
 
 use App\Models\Category;
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class MembershipPlanUpdateTest
  */
-final class CategoryUpdateTest extends TestCase
+final class CategoryUpdateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     const BASE_ROUTE = '/v1/categories/';
 

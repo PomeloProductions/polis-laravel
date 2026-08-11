@@ -8,16 +8,15 @@ use App\Models\Payment\LineItem;
 use App\Models\Payment\Payment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Payment\LineItemRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class LineItemRepositoryTest
  */
-final class LineItemRepositoryTest extends TestCase
+final class LineItemRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var LineItemRepository

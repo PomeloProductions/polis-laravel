@@ -7,13 +7,11 @@ namespace Polis\Tests\Integration\Policies\User;
 use App\Models\User\TodoSetting;
 use App\Models\User\User;
 use App\Policies\User\TodoSettingPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
-final class TodoSettingPolicyTest extends TestCase
+final class TodoSettingPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all_passes(): void
     {
         $user = User::factory()->create();

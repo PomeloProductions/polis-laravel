@@ -6,17 +6,16 @@ namespace Polis\Tests\Feature\Http\Statistic;
 
 use App\Models\Role;
 use App\Models\Statistic\Statistic;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class StatisticViewTest
  */
-class StatisticViewTest extends TestCase
+class StatisticViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     protected function setUp(): void
     {

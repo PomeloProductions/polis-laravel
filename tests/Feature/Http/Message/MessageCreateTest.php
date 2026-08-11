@@ -6,17 +6,16 @@ namespace Polis\Tests\Feature\Http\Message;
 
 use App\Models\Messaging\Message;
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class MembershipPlanCreateTest
  */
-final class MessageCreateTest extends TestCase
+final class MessageCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     private $route = '/v1/messages';
 

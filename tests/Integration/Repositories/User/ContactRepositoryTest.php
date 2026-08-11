@@ -11,16 +11,15 @@ use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\User\ContactRepository;
 use Polis\Repositories\User\UserRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ContactRepositoryTest
  */
-final class ContactRepositoryTest extends TestCase
+final class ContactRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var Hasher

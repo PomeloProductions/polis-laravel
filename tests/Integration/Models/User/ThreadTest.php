@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Models\User;
 use App\Models\Messaging\Message;
 use App\Models\Messaging\Thread;
 use Illuminate\Contracts\Events\Dispatcher;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ThreadTest
  */
-final class ThreadTest extends TestCase
+final class ThreadTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_last_message(): void
     {
         $messageDispatcher = mock(Dispatcher::class);

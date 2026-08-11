@@ -6,16 +6,14 @@ namespace Polis\Tests\Integration\Middleware;
 
 use App\Models\Role;
 use App\Models\Wiki\Article;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class SearchFilteringMiddlewareTest
  */
-final class SearchFilteringMiddlewareTest extends TestCase
+final class SearchFilteringMiddlewareTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     protected function setUp(): void
     {
         parent::setUp();

@@ -9,16 +9,15 @@ use App\Models\Organization\OrganizationManager;
 use App\Models\Payment\PaymentMethod;
 use App\Models\Role;
 use App\Models\Subscription\Subscription;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class OrganizationSubscriptionUpdateTest
  */
-final class OrganizationSubscriptionUpdateTest extends TestCase
+final class OrganizationSubscriptionUpdateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

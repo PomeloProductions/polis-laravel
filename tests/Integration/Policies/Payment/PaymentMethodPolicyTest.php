@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Policies\Payment;
 use App\Models\Payment\PaymentMethod;
 use App\Models\User\User;
 use App\Policies\Payment\PaymentMethodPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class PaymentMethodPolicyTest
  */
-final class PaymentMethodPolicyTest extends TestCase
+final class PaymentMethodPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_create(): void
     {
         $policy = new PaymentMethodPolicy;

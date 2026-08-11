@@ -7,16 +7,15 @@ namespace Polis\Tests\Integration\Repositories;
 use App\Models\Feature;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\FeatureRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ResourceRepositoryTest
  */
-final class FeatureRepositoryTest extends TestCase
+final class FeatureRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected FeatureRepository $repository;
 

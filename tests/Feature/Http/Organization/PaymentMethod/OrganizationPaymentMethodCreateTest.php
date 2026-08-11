@@ -10,16 +10,15 @@ use App\Models\Payment\PaymentMethod;
 use App\Models\Role;
 use Polis\Contracts\Services\StripeCustomerServiceContract;
 use Polis\Tests\CustomMockInterface;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class OrganizationPaymentMethodCreateTest
  */
-final class OrganizationPaymentMethodCreateTest extends TestCase
+final class OrganizationPaymentMethodCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

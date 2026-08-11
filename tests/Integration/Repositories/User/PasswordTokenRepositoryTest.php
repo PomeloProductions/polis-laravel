@@ -12,16 +12,14 @@ use Polis\Events\User\ForgotPasswordEvent;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\User\PasswordTokenRepository;
 use Polis\Tests\CustomMockInterface;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class PasswordTokenRepositoryTest
  */
-final class PasswordTokenRepositoryTest extends TestCase
+final class PasswordTokenRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var Dispatcher|CustomMockInterface
      */

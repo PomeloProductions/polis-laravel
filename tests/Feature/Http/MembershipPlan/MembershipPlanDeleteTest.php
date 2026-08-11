@@ -6,17 +6,16 @@ namespace Polis\Tests\Feature\Http\MembershipPlan;
 
 use App\Models\Role;
 use App\Models\Subscription\MembershipPlan;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class MembershipPlanDeleteTest
  */
-final class MembershipPlanDeleteTest extends TestCase
+final class MembershipPlanDeleteTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     protected function setUp(): void
     {

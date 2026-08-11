@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\User\ArticleNote;
 
 use App\Models\User\ArticleNote;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserArticleNoteViewTest
  */
-final class UserArticleNoteViewTest extends TestCase
+final class UserArticleNoteViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

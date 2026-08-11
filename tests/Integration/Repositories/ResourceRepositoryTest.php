@@ -8,16 +8,15 @@ use App\Models\Resource;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\ResourceRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ResourceRepositoryTest
  */
-final class ResourceRepositoryTest extends TestCase
+final class ResourceRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var ResourceRepository

@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\User\Asset;
 
 use App\Models\Asset;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserContactIndexTest
  */
-final class UserAssetIndexTest extends TestCase
+final class UserAssetIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

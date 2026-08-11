@@ -16,16 +16,14 @@ use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
 use Polis\Contracts\Services\StripePaymentServiceContract;
 use Polis\Repositories\Subscription\MembershipPlanRateRepository;
 use Polis\Repositories\Subscription\SubscriptionRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ChargeRenewalTest
  */
-final class ChargeRenewalTest extends TestCase
+final class ChargeRenewalTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     protected function setUp(): void
     {
         parent::setUp();

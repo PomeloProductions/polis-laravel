@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Polis\Tests\Feature\Http\Roles;
 
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class RolesIndexTest
  */
-final class RolesIndexTest extends TestCase
+final class RolesIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string the base path

@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Polis\Tests\Feature\Http\User;
 
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserViewTest
  */
-final class UserViewTest extends TestCase
+final class UserViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

@@ -12,16 +12,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Event;
 use Polis\Events\User\ArticleNoteCompletedEvent;
 use Polis\Repositories\User\ArticleNoteRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleNoteRepositoryTest
  */
-final class ArticleNoteRepositoryTest extends TestCase
+final class ArticleNoteRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var ArticleNoteRepository

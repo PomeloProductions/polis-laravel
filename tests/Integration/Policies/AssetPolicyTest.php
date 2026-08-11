@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Policies;
 use App\Models\Asset;
 use App\Models\User\User;
 use App\Policies\AssetPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class AssetPolicyTest
  */
-final class AssetPolicyTest extends TestCase
+final class AssetPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all_fails(): void
     {
         $policy = new AssetPolicy;

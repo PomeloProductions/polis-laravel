@@ -13,16 +13,14 @@ use Polis\Events\Statistic\StatisticDeletedEvent;
 use Polis\Events\Statistic\StatisticUpdatedEvent;
 use Polis\Repositories\Statistic\StatisticFilterRepository;
 use Polis\Repositories\Statistic\StatisticRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class StatisticRepositoryTest
  */
-class StatisticRepositoryTest extends TestCase
+class StatisticRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var StatisticRepository
      */

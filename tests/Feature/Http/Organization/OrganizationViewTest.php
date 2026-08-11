@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\Http\Organization;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class OrganizationViewTest
  */
-final class OrganizationViewTest extends TestCase
+final class OrganizationViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     protected function setUp(): void
     {

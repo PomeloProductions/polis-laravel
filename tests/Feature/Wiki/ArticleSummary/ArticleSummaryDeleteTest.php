@@ -8,16 +8,15 @@ use App\Models\Role;
 use App\Models\User\User;
 use App\Models\Wiki\Article;
 use App\Models\Wiki\ArticleSummary;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleSummaryDeleteTest
  */
-final class ArticleSummaryDeleteTest extends TestCase
+final class ArticleSummaryDeleteTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     private string $path;
 

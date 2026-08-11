@@ -7,13 +7,12 @@ namespace Polis\Tests\Feature\Http\User\UserPage;
 use App\Models\User\User;
 use App\Models\User\UserPage;
 use App\Models\User\UserPageComponent;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
-class UserPageComponentTest extends TestCase
+class UserPageComponentTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     private string $path = '/v1/users/';
 

@@ -10,13 +10,11 @@ use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use App\Models\User\User;
 use App\Policies\Collection\CollectionItemPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
-final class CollectionItemPolicyTest extends TestCase
+final class CollectionItemPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all_passes_with_public_collection(): void
     {
         $policy = new CollectionItemPolicy;

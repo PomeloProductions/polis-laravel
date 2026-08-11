@@ -11,16 +11,15 @@ use App\Models\Role;
 use App\Models\Subscription\MembershipPlanRate;
 use App\Models\Subscription\Subscription;
 use Polis\Contracts\Services\StripePaymentServiceContract;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserSubscriptionCreateTest
  */
-final class OrganizationSubscriptionCreateTest extends TestCase
+final class OrganizationSubscriptionCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

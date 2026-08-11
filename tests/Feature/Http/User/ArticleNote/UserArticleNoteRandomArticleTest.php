@@ -9,16 +9,15 @@ use App\Models\User\User;
 use App\Models\Wiki\Article;
 use Database\Seeders\ArticleNoteStatisticsSeeder;
 use Polis\Contracts\Services\Statistic\StatisticSynchronizationServiceContract;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserArticleNoteRandomArticleTest
  */
-final class UserArticleNoteRandomArticleTest extends TestCase
+final class UserArticleNoteRandomArticleTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

@@ -8,16 +8,15 @@ use App\Models\User\Contact;
 use App\Models\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
 use Polis\Events\User\Contact\ContactCreatedEvent;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserContactCreateTest
  */
-final class UserContactCreateTest extends TestCase
+final class UserContactCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

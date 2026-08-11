@@ -13,16 +13,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Subscription\MembershipPlanRateRepository;
 use Polis\Repositories\Subscription\SubscriptionRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class SubscriptionRepositoryTest
  */
-final class SubscriptionRepositoryTest extends TestCase
+final class SubscriptionRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var SubscriptionRepository

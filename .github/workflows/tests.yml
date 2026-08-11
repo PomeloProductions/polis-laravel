@@ -98,9 +98,24 @@ jobs:
         if: matrix.php == '8.4'
         run: php tools/check-coverage-threshold.php coverage.xml
 
-      # Integration and Feature testsuites are intentionally not present
-      # in phpunit.xml yet: all tests currently in tests/Integration and
-      # tests/Feature reference consumer-app (App\*) classes and live in
-      # the Consumer-Only suite. As tests are refactored to use fixtures,
-      # add Integration / Feature testsuites to phpunit.xml and run them
-      # here.
+      # Application suites (Feature + Integration): these run the ported
+      # PolisOS HTTP tests against the dummy consumer app under
+      # tests/Application, booting the full Polis provider stack. They use a
+      # separate phpunit config (phpunit-app.xml) + bootstrap
+      # (tests/bootstrap-app.php) so the fixture-stub aliases used by the Unit
+      # suite never collide with the real App\ classes.
+      #
+      # NOTE: the ported Feature/Integration tests now BOOT and RUN against the
+      # dummy app (~520/706 Feature tests currently pass). The remaining
+      # failures are per-endpoint (mostly 500s from app-layer bindings/schema
+      # gaps still being ported) and are being driven to green incrementally.
+      # These steps are marked continue-on-error so the suites are visible and
+      # exercised in CI WITHOUT gating the build on the not-yet-green tests.
+      # Flip continue-on-error off (remove it) once the suites are fully green.
+      - name: Run Feature tests (dummy consumer app)
+        continue-on-error: true
+        run: php -d memory_limit=1G ./vendor/bin/phpunit -c phpunit-app.xml --testsuite=Feature
+
+      - name: Run Integration tests (dummy consumer app)
+        continue-on-error: true
+        run: php -d memory_limit=1G ./vendor/bin/phpunit -c phpunit-app.xml --testsuite=Integration

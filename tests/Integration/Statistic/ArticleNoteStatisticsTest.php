@@ -11,16 +11,14 @@ use App\Models\User\User;
 use App\Models\Wiki\Article;
 use Database\Seeders\ArticleNoteStatisticsSeeder;
 use Polis\Contracts\Services\Statistic\StatisticSynchronizationServiceContract;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ArticleNoteStatisticsTest
  */
-final class ArticleNoteStatisticsTest extends TestCase
+final class ArticleNoteStatisticsTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     protected function setUp(): void
     {
         parent::setUp();

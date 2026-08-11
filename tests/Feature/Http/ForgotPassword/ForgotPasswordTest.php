@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Http\ForgotPassword;
 use App\Models\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
 use Polis\Events\User\ForgotPasswordEvent;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ForgotPasswordTest
  */
-final class ForgotPasswordTest extends TestCase
+final class ForgotPasswordTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     private $route = '/v1/forgot-password';
 

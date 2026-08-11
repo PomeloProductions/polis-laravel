@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\User\ProfileImage;
 use App\Models\User\ProfileImage;
 use App\Models\User\User;
 use Illuminate\Support\Facades\Storage;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserProfileImageCreateTest
  */
-final class UserProfileImageCreateTest extends TestCase
+final class UserProfileImageCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

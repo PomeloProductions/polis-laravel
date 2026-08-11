@@ -10,16 +10,14 @@ use App\Models\Wiki\Article;
 use Database\Seeders\ArticleNoteStatisticsSeeder;
 use Polis\Contracts\Repositories\Wiki\ArticleRepositoryContract;
 use Polis\Contracts\Services\Statistic\StatisticSynchronizationServiceContract;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ArticleRepositorySelectArticleTest
  */
-final class ArticleRepositorySelectArticleTest extends TestCase
+final class ArticleRepositorySelectArticleTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     private ArticleRepositoryContract $repository;
 
     protected function setUp(): void

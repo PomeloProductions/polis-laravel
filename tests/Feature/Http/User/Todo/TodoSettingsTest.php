@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Polis\Tests\Feature\Http\User\Todo;
 
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
-class TodoSettingsTest extends TestCase
+class TodoSettingsTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     private string $path = '/v1/users/';
 

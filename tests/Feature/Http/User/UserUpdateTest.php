@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\User;
 
 use App\Models\User\User;
 use Illuminate\Support\Facades\Hash;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserUpdateTest
  */
-final class UserUpdateTest extends TestCase
+final class UserUpdateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

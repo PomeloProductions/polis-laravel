@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Http\Authentication;
 use App\Models\User\User;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Polis\Http\Middleware\LogMiddleware;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class LogoutTest
  */
-final class LogoutTest extends TestCase
+final class LogoutTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

@@ -7,16 +7,15 @@ namespace Polis\Tests\Integration\Repositories\Statistic;
 use App\Models\Statistic\Statistic;
 use App\Models\Statistic\StatisticFilter;
 use Polis\Repositories\Statistic\StatisticFilterRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class StatisticFilterRepositoryTest
  */
-class StatisticFilterRepositoryTest extends TestCase
+class StatisticFilterRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var StatisticFilterRepository

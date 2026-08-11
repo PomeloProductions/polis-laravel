@@ -13,13 +13,12 @@ use App\Models\User\TodoTaskNode;
 use App\Models\User\User;
 use App\Models\User\UserPage;
 use Polis\Models\User\UserPageComponent;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
-class TodoPatchNodeTest extends TestCase
+class TodoPatchNodeTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     private string $path = '/v1/users/';
 

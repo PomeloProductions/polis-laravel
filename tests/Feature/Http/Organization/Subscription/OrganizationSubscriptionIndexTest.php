@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Organization\Subscription;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use App\Models\Subscription\Subscription;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class OrganizationSubscriptionIndexTest
  */
-final class OrganizationSubscriptionIndexTest extends TestCase
+final class OrganizationSubscriptionIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

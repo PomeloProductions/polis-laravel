@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Http\Organization\Payment;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use App\Models\Payment\Payment;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class OrganizationSubscriptionIndexTest
  */
-final class OrganizationPaymentIndexTest extends TestCase
+final class OrganizationPaymentIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

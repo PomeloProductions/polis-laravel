@@ -6,12 +6,12 @@ namespace Polis\Tests\Integration\Policies;
 
 use App\Models\User\User;
 use App\Policies\RolePolicy;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class RolePolicyTest
  */
-final class RolePolicyTest extends TestCase
+final class RolePolicyTest extends ApplicationTestCase
 {
     public function test_all(): void
     {

@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Polis\Tests\Feature\Http\Collection;
 
 use App\Models\Collection\Collection;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class categoriesViewTest
  */
-final class CollectionViewTest extends TestCase
+final class CollectionViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Policies\Subscription;
 use App\Models\Subscription\Subscription;
 use App\Models\User\User;
 use App\Policies\Subscription\SubscriptionPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class SubscriptionPolicyTest
  */
-final class SubscriptionPolicyTest extends TestCase
+final class SubscriptionPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all(): void
     {
         $policy = new SubscriptionPolicy;

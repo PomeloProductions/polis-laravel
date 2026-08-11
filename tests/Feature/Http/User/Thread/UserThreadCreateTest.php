@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\User\Thread;
 
 use App\Models\Messaging\Thread;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserThreadCreateTest
  */
-final class UserThreadCreateTest extends TestCase
+final class UserThreadCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

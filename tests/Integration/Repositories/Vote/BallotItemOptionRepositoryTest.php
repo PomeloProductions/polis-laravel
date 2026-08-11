@@ -9,16 +9,15 @@ use App\Models\Vote\BallotItem;
 use App\Models\Vote\BallotItemOption;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Vote\BallotItemOptionRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class BallotItemOptionRepositoryTest
  */
-final class BallotItemOptionRepositoryTest extends TestCase
+final class BallotItemOptionRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var BallotItemOptionRepository

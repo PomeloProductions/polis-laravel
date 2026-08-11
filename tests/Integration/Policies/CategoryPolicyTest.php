@@ -7,12 +7,12 @@ namespace Polis\Tests\Integration\Policies;
 use App\Models\Category;
 use App\Models\User\User;
 use App\Policies\CategoryPolicy;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class CategoryPolicyTest
  */
-final class CategoryPolicyTest extends TestCase
+final class CategoryPolicyTest extends ApplicationTestCase
 {
     public function test_create(): void
     {

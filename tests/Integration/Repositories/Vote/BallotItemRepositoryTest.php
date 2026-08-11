@@ -11,16 +11,15 @@ use App\Models\Wiki\ArticleIteration;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Vote\BallotItemOptionRepository;
 use Polis\Repositories\Vote\BallotItemRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class BallotItemRepositoryTest
  */
-final class BallotItemRepositoryTest extends TestCase
+final class BallotItemRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var BallotItemRepository

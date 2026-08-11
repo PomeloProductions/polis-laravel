@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Polis\Tests\Feature\Http\Feature;
 
 use App\Models\Feature;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class FeatureIndexTest
  */
-final class FeatureIndexTest extends TestCase
+final class FeatureIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     protected function setUp(): void
     {

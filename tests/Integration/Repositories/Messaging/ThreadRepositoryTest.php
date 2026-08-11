@@ -9,16 +9,15 @@ use App\Models\User\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\Messaging\ThreadRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ThreadRepositoryTest
  */
-final class ThreadRepositoryTest extends TestCase
+final class ThreadRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var ThreadRepository

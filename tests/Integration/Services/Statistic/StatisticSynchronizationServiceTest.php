@@ -10,9 +10,9 @@ use App\Models\Statistic\TargetStatistic;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Polis\Services\Statistic\StatisticSynchronizationService;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
-class StatisticSynchronizationServiceTest extends TestCase
+class StatisticSynchronizationServiceTest extends ApplicationTestCase
 {
     private StatisticSynchronizationService $service;
 

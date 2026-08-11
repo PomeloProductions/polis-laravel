@@ -9,16 +9,14 @@ use App\Models\User\InvitationToken;
 use Polis\Contracts\Services\TokenGenerationServiceContract;
 use Polis\Repositories\User\InvitationTokenRepository;
 use Polis\Tests\CustomMockInterface;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class InvitationTokenRepositoryTest
  */
-final class InvitationTokenRepositoryTest extends TestCase
+final class InvitationTokenRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var TokenGenerationServiceContract|CustomMockInterface
      */
