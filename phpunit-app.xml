@@ -14,15 +14,125 @@
     <!--
       Application suites: the ported PolisOS Feature/Integration HTTP tests
       run against the real dummy consumer app (tests/Application) with the
-      full Polis provider stack booted. These use tests/bootstrap-app.php
-      (no fixture-stub aliases) and a phpunit config separate from the Unit
-      suite so the two worlds never collide.
+      full Polis provider stack booted, via tests/bootstrap-app.php (no
+      fixture-stub aliases) and a phpunit config separate from the Unit suite
+      so the two worlds never collide.
+
+      These suites enumerate ONLY the ported tests that genuinely pass today,
+      exactly like the Unit suite in phpunit.xml. They are hard CI gates. As
+      more ported tests are driven to green, add their files here (they
+      currently live in the Consumer-Only suite in phpunit.xml). Do NOT add a
+      test here until it passes, and do NOT force-pass failing tests.
     -->
     <testsuite name="Feature">
-      <directory suffix="Test.php">./tests/Feature</directory>
+      <file>./tests/Feature/Http/Article/ArticleIndexTest.php</file>
+      <file>./tests/Feature/Http/Article/ArticleVersion/ArticleVersionIndexTest.php</file>
+      <file>./tests/Feature/Http/Article/ArticleViewTest.php</file>
+      <file>./tests/Feature/Http/Article/Iteration/ArticleIterationIndexTest.php</file>
+      <file>./tests/Feature/Http/Authentication/RefreshTest.php</file>
+      <file>./tests/Feature/Http/Ballot/BallotViewTest.php</file>
+      <file>./tests/Feature/Http/Category/CategoryDeleteTest.php</file>
+      <file>./tests/Feature/Http/Category/CategoryIndexTest.php</file>
+      <file>./tests/Feature/Http/Category/CategoryViewTest.php</file>
+      <file>./tests/Feature/Http/Collection/CollectionDeleteTest.php</file>
+      <file>./tests/Feature/Http/Collection/CollectionItem/CollectionCollectionItemIndexTest.php</file>
+      <file>./tests/Feature/Http/Collection/CollectionViewTest.php</file>
+      <file>./tests/Feature/Http/CollectionItem/CollectionItemDeleteTest.php</file>
+      <file>./tests/Feature/Http/CollectionItem/CollectionItemViewTest.php</file>
+      <file>./tests/Feature/Http/Feature/FeatureIndexTest.php</file>
+      <file>./tests/Feature/Http/Feature/FeatureViewTest.php</file>
+      <file>./tests/Feature/Http/InvitationToken/InvitationTokenDeleteTest.php</file>
+      <file>./tests/Feature/Http/InvitationToken/InvitationTokenIndexTest.php</file>
+      <file>./tests/Feature/Http/InvitationToken/InvitationTokenViewTest.php</file>
+      <file>./tests/Feature/Http/MembershipPlan/MembershipPlanDeleteTest.php</file>
+      <file>./tests/Feature/Http/MembershipPlan/MembershipPlanIndexTest.php</file>
+      <file>./tests/Feature/Http/MembershipPlan/MembershipPlanRate/MembershipPlanMembershipPlanRateIndexTest.php</file>
+      <file>./tests/Feature/Http/MembershipPlan/MembershipPlanViewTest.php</file>
+      <file>./tests/Feature/Http/Organization/Article/OrganizationArticleIndexTest.php</file>
+      <file>./tests/Feature/Http/Organization/Collection/OrganizationCollectionIndexTest.php</file>
+      <file>./tests/Feature/Http/Organization/OrganizationDeleteTest.php</file>
+      <file>./tests/Feature/Http/Organization/OrganizationIndexTest.php</file>
+      <file>./tests/Feature/Http/Organization/OrganizationManager/OrganizationOrganizationManagerDeleteTest.php</file>
+      <file>./tests/Feature/Http/Organization/OrganizationManager/OrganizationOrganizationManagerIndexTest.php</file>
+      <file>./tests/Feature/Http/Organization/OrganizationViewTest.php</file>
+      <file>./tests/Feature/Http/Organization/Payment/OrganizationPaymentIndexTest.php</file>
+      <file>./tests/Feature/Http/Organization/PaymentMethod/OrganizationPaymentMethodDeleteTest.php</file>
+      <file>./tests/Feature/Http/Resource/ResourceIndexTest.php</file>
+      <file>./tests/Feature/Http/Roles/RolesIndexTest.php</file>
+      <file>./tests/Feature/Http/Statistic/StatisticDeleteTest.php</file>
+      <file>./tests/Feature/Http/Statistic/StatisticIndexTest.php</file>
+      <file>./tests/Feature/Http/Statistic/StatisticViewTest.php</file>
+      <file>./tests/Feature/Http/StatusTest.php</file>
+      <file>./tests/Feature/Http/User/ArticleNote/UserArticleNoteDeleteTest.php</file>
+      <file>./tests/Feature/Http/User/ArticleNote/UserArticleNoteIndexTest.php</file>
+      <file>./tests/Feature/Http/User/ArticleNote/UserArticleNoteRandomArticleTest.php</file>
+      <file>./tests/Feature/Http/User/ArticleNote/UserArticleNoteViewTest.php</file>
+      <file>./tests/Feature/Http/User/BallotCompletion/UserBallotCompletionIndexTest.php</file>
+      <file>./tests/Feature/Http/User/Collection/UserCollectionIndexTest.php</file>
+      <file>./tests/Feature/Http/User/Contact/UserContactIndexTest.php</file>
+      <file>./tests/Feature/Http/User/Payment/UserPaymentIndexTest.php</file>
+      <file>./tests/Feature/Http/User/PaymentMethod/UserPaymentMethodDeleteTest.php</file>
+      <file>./tests/Feature/Http/User/Thread/Message/UserThreadMessageIndexTest.php</file>
+      <file>./tests/Feature/Http/User/Thread/Message/UserThreadMessageUpdateTest.php</file>
+      <file>./tests/Feature/Http/User/Thread/UserThreadIndexTest.php</file>
+      <file>./tests/Feature/Http/User/Todo/TodoGenerateTest.php</file>
+      <file>./tests/Feature/Http/User/Todo/TodoSettingsTest.php</file>
+      <file>./tests/Feature/Http/User/Todo/TodoTemplateTest.php</file>
+      <file>./tests/Feature/Http/User/Todo/TodoTodayTest.php</file>
+      <file>./tests/Feature/Http/User/UserMeTest.php</file>
+      <file>./tests/Feature/Http/User/UserPage/UserPageComponentTest.php</file>
+      <file>./tests/Feature/Http/User/UserPage/UserPageDeleteTest.php</file>
+      <file>./tests/Feature/Http/User/UserPage/UserPageIndexTest.php</file>
+      <file>./tests/Feature/Http/User/UserPage/UserPageStoreTest.php</file>
+      <file>./tests/Feature/Http/User/UserPage/UserPageUpdateTest.php</file>
+      <file>./tests/Feature/Http/User/UserViewTest.php</file>
+      <file>./tests/Feature/Wiki/ArticleSummary/ArticleSummaryCreateTest.php</file>
+      <file>./tests/Feature/Wiki/ArticleSummary/ArticleSummaryDeleteTest.php</file>
+      <file>./tests/Feature/Wiki/ArticleSummary/ArticleSummaryUpdateTest.php</file>
+      <file>./tests/Feature/Wiki/ArticleSummary/ArticleSummaryViewTest.php</file>
     </testsuite>
     <testsuite name="Integration">
-      <directory suffix="Test.php">./tests/Integration</directory>
+      <file>./tests/Integration/Http/Middleware/Issue404IfPageAfterPaginationTest.php</file>
+      <file>./tests/Integration/Http/Middleware/SearchFilteringMiddlewareTest.php</file>
+      <file>./tests/Integration/Models/ResourceTest.php</file>
+      <file>./tests/Integration/Models/Subscription/MembershipPlanTest.php</file>
+      <file>./tests/Integration/Models/User/ThreadTest.php</file>
+      <file>./tests/Integration/Models/User/UserTest.php</file>
+      <file>./tests/Integration/Models/Wiki/ArticleTest.php</file>
+      <file>./tests/Integration/Policies/AssetPolicyTest.php</file>
+      <file>./tests/Integration/Policies/BasePolicyAbstractTest.php</file>
+      <file>./tests/Integration/Policies/CategoryPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Collection/CollectionItemPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Collection/CollectionPolicyTest.php</file>
+      <file>./tests/Integration/Policies/FeaturePolicyTest.php</file>
+      <file>./tests/Integration/Policies/Messaging/MessagePolicyTest.php</file>
+      <file>./tests/Integration/Policies/Messaging/ThreadPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Organization/OrganizationManagerPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Organization/OrganizationPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Payment/PaymentMethodPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Payment/PaymentPolicyTest.php</file>
+      <file>./tests/Integration/Policies/ResourcePolicyTest.php</file>
+      <file>./tests/Integration/Policies/RolePolicyTest.php</file>
+      <file>./tests/Integration/Policies/Statistic/StatisticPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Subscription/MembershipPlanPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Subscription/MembershipPlanRatePolicyTest.php</file>
+      <file>./tests/Integration/Policies/Subscription/SubscriptionPolicyTest.php</file>
+      <file>./tests/Integration/Policies/User/ArticleNotePolicyTest.php</file>
+      <file>./tests/Integration/Policies/User/ContactPolicyTest.php</file>
+      <file>./tests/Integration/Policies/User/TodoSettingPolicyTest.php</file>
+      <file>./tests/Integration/Policies/User/TodoTemplatePolicyTest.php</file>
+      <file>./tests/Integration/Policies/User/UserPageComponentPolicyTest.php</file>
+      <file>./tests/Integration/Policies/User/UserPagePolicyTest.php</file>
+      <file>./tests/Integration/Policies/User/UserPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Vote/BallotCompletionPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Vote/BallotPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Wiki/ArticlePolicyTest.php</file>
+      <file>./tests/Integration/Policies/Wiki/ArticleSummaryPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Wiki/ArticleVersionPolicyTest.php</file>
+      <file>./tests/Integration/Policies/Wiki/IterationPolicyTest.php</file>
+      <file>./tests/Integration/Repositories/Wiki/ArticleRepositorySelectArticleTest.php</file>
+      <file>./tests/Integration/Services/Statistic/StatisticSynchronizationServiceTest.php</file>
+      <file>./tests/Integration/Statistic/ArticleNoteStatisticsTest.php</file>
     </testsuite>
   </testsuites>
   <php>
