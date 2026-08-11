@@ -10,7 +10,10 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Polis\\Tests\\": "tests/"
+            "Polis\\Tests\\": "tests/",
+            "App\\": "tests/Application/app/",
+            "Database\\Factories\\": "tests/Application/database/factories/",
+            "Database\\Seeders\\": "tests/Application/database/seeders/"
         }
     },
     "require": {

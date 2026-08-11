@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        backupGlobals="false"
+        bootstrap="tests/bootstrap-app.php"
+        colors="true"
+        processIsolation="false"
+        beStrictAboutTestsThatDoNotTestAnything="false"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+        cacheDirectory=".phpunit.cache"
+        backupStaticProperties="false"
+>
+  <testsuites>
+    <!--
+      Application suites: the ported PolisOS Feature/Integration HTTP tests
+      run against the real dummy consumer app (tests/Application) with the
+      full Polis provider stack booted. These use tests/bootstrap-app.php
+      (no fixture-stub aliases) and a phpunit config separate from the Unit
+      suite so the two worlds never collide.
+    -->
+    <testsuite name="Feature">
+      <directory suffix="Test.php">./tests/Feature</directory>
+    </testsuite>
+    <testsuite name="Integration">
+      <directory suffix="Test.php">./tests/Integration</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="APP_ENV" value="testing"/>
+    <env name="CACHE_DRIVER" value="array"/>
+    <env name="SESSION_DRIVER" value="array"/>
+    <env name="QUEUE_DRIVER" value="sync"/>
+    <env name="DB_CONNECTION" value="sqlite"/>
+    <env name="DB_DATABASE" value=":memory:"/>
+    <env name="APP_DEBUG" value="false"/>
+  </php>
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </source>
+</phpunit>
