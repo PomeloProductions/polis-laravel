@@ -48,9 +48,12 @@ final class UserUpdateTest extends ApplicationTestCase
 
     public function test_not_found(): void
     {
+        // actAsUser() creates the authenticated user (which may be id 1), so
+        // target an id guaranteed not to exist rather than a literal 1.
         $this->actAsUser();
+        $missingId = ((int) User::max('id')) + 1000;
 
-        $response = $this->json('PUT', $this->path.'/1');
+        $response = $this->json('PUT', $this->path.'/'.$missingId);
 
         $response->assertStatus(404);
     }
