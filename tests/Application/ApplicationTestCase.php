@@ -23,7 +23,6 @@ use Polis\Http\Middleware\JWTGetUserFromTokenUnprotectedRouteMiddleware;
 use Polis\Http\Middleware\LogMiddleware;
 use Polis\Http\Middleware\SearchFilterParsingMiddleware;
 use Polis\Tests\TestCase;
-use Psr\Log\LoggerInterface;
 
 /**
  * Base test case for the dummy consumer application shipped under
@@ -195,19 +194,6 @@ abstract class ApplicationTestCase extends OrchestraTestCase
         // Intentionally empty: defineDatabaseMigrations() runs migrations and
         // Testbench wraps each test in a transaction via RefreshDatabase-style
         // in-memory sqlite. Kept so ported tests can call it without error.
-    }
-
-    /**
-     * Replace the log with a mock that swallows output.
-     */
-    protected function mockApplicationLog(): void
-    {
-        $logMock = mock(LoggerInterface::class);
-        $logMock->shouldReceive('info');
-        $logMock->shouldReceive('debug');
-        $logMock->shouldReceive('warning');
-        $logMock->shouldReceive('error');
-        $this->app->instance('log', $logMock);
     }
 
     /**

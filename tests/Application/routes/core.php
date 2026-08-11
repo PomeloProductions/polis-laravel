@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Routes that are available to the public
  */
-Route::group(['middleware' => 'jwt.auth.unprotected'], function() {
+Route::group(['middleware' => 'jwt.auth.unprotected'], function () {
 
     Route::get('status', 'StatusController')
         ->name('status');
@@ -12,8 +13,8 @@ Route::group(['middleware' => 'jwt.auth.unprotected'], function() {
      */
     Route::resource('categories', 'CategoryController', [
         'only' => [
-            'index', 'show'
-        ]
+            'index', 'show',
+        ],
     ]);
 
     /**
@@ -22,7 +23,7 @@ Route::group(['middleware' => 'jwt.auth.unprotected'], function() {
     Route::resource('features', 'FeatureController', [
         'only' => [
             'index', 'show',
-        ]
+        ],
     ]);
 
     /**
@@ -31,7 +32,7 @@ Route::group(['middleware' => 'jwt.auth.unprotected'], function() {
     Route::resource('messages', 'MessageController', [
         'only' => [
             'store',
-        ]
+        ],
     ]);
 });
 
@@ -47,7 +48,7 @@ Route::post('reset-password', 'ForgotPasswordController@resetPassword')
 /**
  * Authentication routes
  */
-Route::group(['prefix' => 'auth', 'as' => 'auth.'], function() {
+Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 
     Route::post('refresh', 'AuthenticationController@refresh')
         ->name('refresh');
@@ -65,15 +66,15 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function() {
 /**
  * Routes that a user needs to be authenticated for in order to access
  */
-Route::group(['middleware' => 'jwt.auth.protected'], function() {
+Route::group(['middleware' => 'jwt.auth.protected'], function () {
 
     /**
      * Article Context
      */
     Route::resource('articles', 'ArticleController', [
         'except' => [
-            'create', 'edit', 'destroy'
-        ]
+            'create', 'edit', 'destroy',
+        ],
     ]);
     Route::group(['prefix' => 'articles/{article}', 'as' => 'article.'], function () {
         Route::resource('iterations', 'Article\IterationController', [
@@ -101,7 +102,7 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
     Route::resource('ballots', 'BallotController', [
         'only' => [
             'show',
-        ]
+        ],
     ]);
     Route::group(['prefix' => 'ballots/{ballot}', 'as' => 'ballot.'], function () {
         Route::resource('ballot-completions', 'Ballot\BallotCompletionController', [
@@ -116,7 +117,7 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
     Route::resource('categories', 'CategoryController', [
         'only' => [
             'store', 'update', 'destroy',
-        ]
+        ],
     ]);
     /**
      * Collection context
@@ -124,7 +125,7 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
     Route::resource('collections', 'CollectionController', [
         'only' => [
             'show', 'update', 'destroy',
-        ]
+        ],
     ]);
     Route::group(['prefix' => 'collections/{collection}', 'as' => 'collection.'], function () {
 
@@ -141,7 +142,7 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
     Route::resource('collection-items', 'CollectionItemController', [
         'only' => [
             'show', 'destroy',
-        ]
+        ],
     ]);
 
     /**
@@ -254,14 +255,14 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
      */
     Route::resource('membership-plans', 'MembershipPlanController', [
         'except' => [
-            'create', 'edit'
-        ]
+            'create', 'edit',
+        ],
     ]);
     Route::group(['prefix' => 'membership-plans/{membership_plan}', 'as' => 'membership-plan.'], function () {
         Route::resource('rates', 'MembershipPlan\MembershipPlanRateController', [
             'only' => [
                 'index',
-            ]
+            ],
         ]);
     });
 
@@ -270,8 +271,8 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
      */
     Route::resource('organizations', 'OrganizationController', [
         'except' => [
-            'create', 'edit'
-        ]
+            'create', 'edit',
+        ],
     ]);
     Route::group(['prefix' => 'organizations/{organization}', 'as' => 'organization.'], function () {
         require 'entity-routes.php';
@@ -279,7 +280,13 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
         Route::resource('organization-managers', 'Organization\OrganizationManagerController', [
             'except' => [
                 'create', 'edit', 'show',
-            ]
+            ],
+        ]);
+
+        Route::resource('articles', 'Organization\ArticleController', [
+            'only' => [
+                'index',
+            ],
         ]);
     });
 
@@ -288,8 +295,8 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
      */
     Route::resource('roles', 'RoleController', [
         'only' => [
-            'index'
-        ]
+            'index',
+        ],
     ]);
 
     /**
@@ -297,8 +304,8 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
      */
     Route::resource('invitation-tokens', 'InvitationTokenController', [
         'except' => [
-            'create', 'edit'
-        ]
+            'create', 'edit',
+        ],
     ]);
 
     /**
@@ -307,6 +314,6 @@ Route::group(['middleware' => 'jwt.auth.protected'], function() {
     Route::resource('statistics', 'StatisticController', [
         'only' => [
             'index', 'store', 'show', 'update', 'destroy',
-        ]
+        ],
     ]);
 });
