@@ -80,6 +80,10 @@ abstract class ApplicationTestCase extends OrchestraTestCase
         // ported PolisOS routes/ dir is used.
         $app->setBasePath(__DIR__);
 
+        // Load the dummy app's lang overrides (older Laravel validation
+        // phrasing the ported PolisOS tests assert on).
+        $app->useLangPath(__DIR__.'/lang');
+
         // Use the package exception handler (PolisOS binds this in
         // bootstrap/app.php). It maps ValidationException -> 400, the JWT
         // exceptions -> 401, etc., which the ported tests assert on. Without
