@@ -25,6 +25,7 @@ use Polis\Http\Middleware\JWTGetUserFromTokenUnprotectedRouteMiddleware;
 use Polis\Http\Middleware\LogMiddleware;
 use Polis\Http\Middleware\SearchFilterParsingMiddleware;
 use Polis\Tests\TestCase;
+use Psr\Log\LoggerInterface;
 
 /**
  * Base test case for the dummy consumer application shipped under
@@ -223,5 +224,28 @@ abstract class ApplicationTestCase extends OrchestraTestCase
     {
         $this->actAsUser();
         $this->actingAs->addRole($roleId);
+    }
+
+    /**
+     * A log mock that swallows everything. Ported repository/integration tests
+     * inject this into repositories under test.
+     */
+    protected function getGenericLogMock()
+    {
+        $logMock = mock(LoggerInterface::class);
+        $logMock->shouldReceive('info');
+        $logMock->shouldReceive('debug');
+        $logMock->shouldReceive('warning');
+        $logMock->shouldReceive('error');
+
+        return $logMock;
+    }
+
+    /**
+     * Temporarily enable debug output on a test (parity with the old base).
+     */
+    protected function enableDebug(): void
+    {
+        config(['app.debug' => true]);
     }
 }
