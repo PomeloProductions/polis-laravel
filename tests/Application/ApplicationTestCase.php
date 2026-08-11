@@ -91,6 +91,10 @@ abstract class ApplicationTestCase extends OrchestraTestCase
 
         $config->set('app.debug', (bool) env('APP_DEBUG', false));
         $config->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+        $config->set('app.url', 'http://localhost');
+        // AssetConfigurationService requires a non-null server URL to build
+        // asset paths; the ported PolisOS tests run with this configured.
+        $config->set('app.asset_url', 'http://localhost');
         $config->set('database.default', 'testing');
         $config->set('database.connections.testing', [
             'driver' => 'sqlite',
