@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Polis\Tests\Feature\Http\Authentication;
 
 use App\Models\User\User;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Polis\Http\Middleware\LogMiddleware;
 use Polis\Tests\Application\ApplicationTestCase;
@@ -40,6 +41,10 @@ final class LogoutTest extends ApplicationTestCase
         $response = $this->json('POST', '/v1/auth/logout', [], ['Authorization' => 'Bearer '.$token]);
         $this->app['env'] = 'testing'; // @todo resolve
         $response->assertStatus(200);
+
+        // Logout invalidates (blacklists) the token, so re-authenticating with
+        // it must now be rejected — that is the proof logout took effect.
+        $this->expectException(TokenBlacklistedException::class);
         JWTAuth::authenticate($token);
     }
 }

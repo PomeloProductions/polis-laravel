@@ -112,10 +112,9 @@ abstract class ApplicationTestCase extends OrchestraTestCase
         $config->set('jwt.secret', 'testing-secret-testing-secret-testing');
         $config->set('jwt.ttl', 60);
         $config->set('jwt.algo', 'HS256');
-        // Disable the token blacklist in tests: the logout test re-authenticates
-        // the same token after logout to prove the endpoint succeeded, which
-        // only holds when the just-issued token isn't blacklisted mid-test.
-        $config->set('jwt.blacklist_enabled', false);
+        // Blacklist stays enabled (the logout endpoint calls
+        // JWTAuth::invalidate(), which requires it).
+        $config->set('jwt.blacklist_enabled', true);
 
         // Auth: the package ships a custom "user-authentication" provider
         // driver (registered by BaseAuthServiceProvider).
