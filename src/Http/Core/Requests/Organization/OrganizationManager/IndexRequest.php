@@ -7,7 +7,6 @@ namespace Polis\Http\Core\Requests\Organization\OrganizationManager;
 use App\Models\Organization\OrganizationManager;
 use App\Policies\Organization\OrganizationManagerPolicy;
 use Polis\Http\Core\Requests\BaseAuthenticatedRequestAbstract;
-use Polis\Http\Core\Requests\Traits\HasNoExpands;
 use Polis\Http\Core\Requests\Traits\HasNoRules;
 
 /**
@@ -15,7 +14,19 @@ use Polis\Http\Core\Requests\Traits\HasNoRules;
  */
 class IndexRequest extends BaseAuthenticatedRequestAbstract
 {
-    use HasNoExpands, HasNoRules;
+    use HasNoRules;
+
+    /**
+     * All expands that are allowed for this request
+     *
+     * The dashboard lists organization managers with `expand[user]=*` to show
+     * each manager's user details in one call; without allowing it here
+     * authorizeExpands() throws an AuthorizationException (403).
+     */
+    public function allowedExpands(): array
+    {
+        return ['user'];
+    }
 
     /**
      * Get the policy action for the guard
