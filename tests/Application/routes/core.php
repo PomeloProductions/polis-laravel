@@ -195,35 +195,9 @@ Route::group(['middleware' => 'jwt.auth.protected'], function () {
             ],
         ]);
 
-        Route::group(['prefix' => 'todos', 'as' => 'todo.'], function () {
-            Route::get('today', 'User\TodoController@today')->name('today');
-            Route::get('resolve', 'User\TodoController@resolve')->name('resolve');
-            Route::get('navigate', 'User\TodoController@navigate')->name('navigate');
-            Route::get('hierarchy', 'User\TodoController@hierarchy')->name('hierarchy');
-            Route::post('generate', 'User\TodoController@generate')->name('generate');
-            Route::get('settings', 'User\TodoController@settings')->name('settings');
-            Route::put('settings', 'User\TodoController@updateSettings')->name('settings.update');
-            Route::get('timer', 'User\TodoController@timerShow')->name('timer.show');
-            Route::post('timer', 'User\TodoController@timerStart')->name('timer.start');
-            Route::patch('timer', 'User\TodoController@timerUpdate')->name('timer.update');
-            Route::delete('timer', 'User\TodoController@timerStop')->name('timer.stop');
-            Route::get('time-entries', 'User\TodoController@timeEntryIndex')->name('time-entries.index');
-            Route::post('time-entries', 'User\TodoController@timeEntryStore')->name('time-entries.store');
-            Route::put('time-entries/{timeEntry}', 'User\TodoController@timeEntryUpdate')->name('time-entries.update');
-            Route::delete('time-entries/{timeEntry}', 'User\TodoController@timeEntryDestroy')->name('time-entries.destroy');
-            Route::get('balances', 'User\TodoController@balanceIndex')->name('balances.index');
-            Route::get('calendars', 'User\TodoController@calendarIndex')->name('calendars.index');
-            Route::post('calendars', 'User\TodoController@calendarStore')->name('calendars.store');
-            Route::put('calendars/{calendar}', 'User\TodoController@calendarUpdate')->name('calendars.update');
-            Route::delete('calendars/{calendar}', 'User\TodoController@calendarDestroy')->name('calendars.destroy');
-            Route::get('vacation', 'User\TodoController@vacationShow')->name('vacation.show');
-            Route::put('vacation', 'User\TodoController@vacationUpdate')->name('vacation.update');
-            Route::patch('nodes/{clientId}', 'User\TodoController@patchNode')->name('nodes.patch');
-            Route::get('templates', 'User\TodoController@templateIndex')->name('templates.index');
-            Route::post('templates', 'User\TodoController@templateStore')->name('templates.store');
-            Route::put('templates/{template}', 'User\TodoController@templateUpdate')->name('templates.update');
-            Route::delete('templates/{template}', 'User\TodoController@templateDestroy')->name('templates.destroy');
-        });
+        // The todos/* routes are PolisOS-specific (the Todo subsystem lives
+        // only in the PolisOS API app), so they are intentionally omitted from
+        // the package's dummy consumer app.
         Route::group(['prefix' => 'pages/{page}', 'as' => 'page.'], function () {
             Route::resource('components', 'User\UserPageComponentController', [
                 'parameters' => [
