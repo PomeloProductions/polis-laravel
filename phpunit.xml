@@ -30,6 +30,7 @@
       <file>./tests/Unit/Database/SourcesMigrationTest.php</file>
       <file>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</file>
+      <file>./tests/Unit/Exceptions/HandlerJwtExpiryTest.php</file>
       <file>./tests/Unit/Exceptions/HandlerTest.php</file>
       <file>./tests/Unit/Http/Core/Controllers/Article/ArticleVersionControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Controllers/Article/IterationControllerAbstractTest.php</file>
@@ -71,6 +72,7 @@
       <file>./tests/Unit/Http/Core/Controllers/UserControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</file>
+      <file>./tests/Unit/Http/Core/Requests/Organization/OrganizationManager/IndexRequestExpandTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsFeatureTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</file>
@@ -209,6 +211,7 @@
       <exclude>./tests/Unit/Database/MigrationsTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/ExceptionInstantiationTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerBranchCoverageTest.php</exclude>
+      <exclude>./tests/Unit/Exceptions/HandlerJwtExpiryTest.php</exclude>
       <exclude>./tests/Unit/Exceptions/HandlerTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Controllers/Article/ArticleVersionControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Controllers/Article/IterationControllerAbstractTest.php</exclude>
@@ -250,6 +253,7 @@
       <exclude>./tests/Unit/Http/Core/Controllers/UserControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Requests/Organization/OrganizationManager/IndexRequestExpandTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsFeatureTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</exclude>
