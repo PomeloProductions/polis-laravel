@@ -57,7 +57,9 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('merged_to_id')->nullable();
             $table->string('stripe_customer_key', 120)->nullable();
-            $table->string('email', 120)->unique();
+            // email unique index is dropped by 2021_04_19 (system users share
+            // the same address), so it is intentionally NOT unique here.
+            $table->string('email', 120);
             // name -> first_name (2020_07_23), made nullable (2020_03_03)
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
