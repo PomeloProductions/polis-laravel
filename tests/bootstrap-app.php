@@ -19,7 +19,21 @@ use Polis\Tests\CustomMockInterface;
  * the stubs here would shadow those real classes and break the boot.
  */
 
-require __DIR__.'/../vendor/autoload.php';
+$loader = require __DIR__.'/../vendor/autoload.php';
+
+/*
+ * Register the dummy consumer application's namespaces for the Application
+ * (Feature/Integration) suites ONLY.
+ *
+ * These are intentionally NOT in composer.json's autoload-dev: a global psr-4
+ * mapping would make the real App\ consumer classes autoloadable during the
+ * standalone Unit suite too, which must exercise the Polis package in complete
+ * isolation (its resolver/fallback tests assume no consumer overrides exist).
+ * Registering them here scopes the consumer app to the suites that need it.
+ */
+$loader->addPsr4('App\\', __DIR__.'/Application/app/');
+$loader->addPsr4('Database\\Factories\\', __DIR__.'/Application/database/factories/');
+$loader->addPsr4('Database\\Seeders\\', __DIR__.'/Application/database/seeders/');
 
 BypassFinals::enable();
 

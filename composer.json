@@ -10,11 +10,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Polis\\Tests\\": "tests/",
-            "App\\": "tests/Application/app/",
-            "Database\\Factories\\": "tests/Application/database/factories/",
-            "Database\\Seeders\\": "tests/Application/database/seeders/"
-        }
+            "Polis\\Tests\\": "tests/"
+        },
+        "comment": "The dummy consumer app (App\\, Database\\Factories\\, Database\\Seeders\\ -> tests/Application) is deliberately NOT mapped here. Registering it globally would leak the consumer app into the standalone Unit suite, which must test the Polis package in isolation. Those namespaces are registered dynamically for the Feature/Integration suites only, in tests/bootstrap-app.php."
     },
     "require": {
         "php": ">=8.3.0",
