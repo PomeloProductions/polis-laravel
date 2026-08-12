@@ -21,7 +21,7 @@ final class CollectionControllerAbstractTest extends ControllerTestCase
     public function test_show_loads_specified_relations(): void
     {
         $repo = Mockery::mock(CollectionRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Collection\\ViewRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Collection\\ViewRequest', [
             'with' => ['items'],
         ]);
 
@@ -37,7 +37,7 @@ final class CollectionControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(CollectionRepositoryContract::class);
         $payload = ['name' => 'Renamed Collection'];
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Collection\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Collection\\UpdateRequest', $payload);
         $collection = Mockery::mock(CollectionFixture::class);
         $updated = Mockery::mock(CollectionFixture::class);
         $repo->shouldReceive('update')->once()->with($collection, $payload)->andReturn($updated);
@@ -48,7 +48,7 @@ final class CollectionControllerAbstractTest extends ControllerTestCase
     public function test_destroy_deletes_and_returns_204(): void
     {
         $repo = Mockery::mock(CollectionRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Collection\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Collection\\DeleteRequest');
         $collection = Mockery::mock(CollectionFixture::class);
         $repo->shouldReceive('delete')->once()->with($collection);
 

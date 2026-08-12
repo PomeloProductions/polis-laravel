@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Entity;
 
-use App\Http\Core\Requests;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\Collection\CollectionRepositoryContract;
+use Polis\Http\Core\Requests;
 use Polis\Http\Core\Requests\BaseRequestAbstract;
 
 /**

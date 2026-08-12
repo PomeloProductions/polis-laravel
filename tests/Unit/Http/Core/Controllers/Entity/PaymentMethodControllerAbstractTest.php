@@ -29,7 +29,7 @@ final class PaymentMethodControllerAbstractTest extends ControllerTestCase
 
         $payload = ['token' => 'tok_visa_1234'];
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Entity\\PaymentMethod\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\Entity\\PaymentMethod\\StoreRequest',
             $payload,
         );
 
@@ -54,7 +54,7 @@ final class PaymentMethodControllerAbstractTest extends ControllerTestCase
 
         $payload = ['payment_method_type' => 'card'];
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Entity\\PaymentMethod\\UpdateRequest',
+            'Polis\\Http\\Core\\Requests\\Entity\\PaymentMethod\\UpdateRequest',
             $payload,
         );
 
@@ -73,7 +73,7 @@ final class PaymentMethodControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(PaymentMethodRepositoryContract::class);
         $stripe = Mockery::mock(StripeCustomerServiceContract::class);
         $entity = Mockery::mock(IsAnEntityContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Entity\\PaymentMethod\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Entity\\PaymentMethod\\DeleteRequest');
 
         $paymentMethod = Mockery::mock(PaymentMethodFixture::class);
         $repo->shouldReceive('delete')->once()->with($paymentMethod);

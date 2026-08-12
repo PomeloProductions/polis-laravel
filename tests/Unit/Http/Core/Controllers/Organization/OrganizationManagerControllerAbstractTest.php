@@ -37,7 +37,7 @@ final class OrganizationManagerControllerAbstractTest extends ControllerTestCase
         $invitationRepo = Mockery::mock(InvitationTokenRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Organization\\OrganizationManager\\IndexRequest',
         );
         $org = Mockery::mock(OrganizationFixture::class);
 
@@ -85,7 +85,7 @@ final class OrganizationManagerControllerAbstractTest extends ControllerTestCase
             ->with(Mockery::on(fn (OrganizationManagerCreatedEvent $e) => $e->getInvitationToken() === null));
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\Organization\\OrganizationManager\\StoreRequest',
             $payload,
         );
 
@@ -141,7 +141,7 @@ final class OrganizationManagerControllerAbstractTest extends ControllerTestCase
                 && $e->getTempPassword() === null));
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\Organization\\OrganizationManager\\StoreRequest',
             $payload,
         );
 
@@ -166,7 +166,7 @@ final class OrganizationManagerControllerAbstractTest extends ControllerTestCase
         $repo->shouldReceive('update')->once()->with($manager, $payload)->andReturn($updated);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\UpdateRequest',
+            'Polis\\Http\\Core\\Requests\\Organization\\OrganizationManager\\UpdateRequest',
             $payload,
         );
 
@@ -187,7 +187,7 @@ final class OrganizationManagerControllerAbstractTest extends ControllerTestCase
         $manager = Mockery::mock(OrganizationManagerFixture::class);
         $repo->shouldReceive('delete')->once()->with($manager);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Organization\\OrganizationManager\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Organization\\OrganizationManager\\DeleteRequest');
         $response = (new OrganizationManagerController($repo, $userRepo, $dispatcher, $invitationRepo))
             ->destroy($request, $org, $manager);
 

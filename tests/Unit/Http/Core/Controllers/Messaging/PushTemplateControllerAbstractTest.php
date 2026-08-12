@@ -200,17 +200,17 @@ final class PushTemplateControllerAbstractTest extends TestCase
 
     private function makeIndexRequest(): MockInterface
     {
-        return Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\PushTemplate\\IndexRequest');
+        return Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\PushTemplate\\IndexRequest');
     }
 
     private function makeViewRequest(): MockInterface
     {
-        return Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\PushTemplate\\ViewRequest');
+        return Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\PushTemplate\\ViewRequest');
     }
 
     private function makeUpdateRequest(array $payload): MockInterface
     {
-        $request = Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\PushTemplate\\UpdateRequest');
+        $request = Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\PushTemplate\\UpdateRequest');
         $request->shouldReceive('input')
             ->with('title')
             ->andReturn($payload['title']);
@@ -223,7 +223,7 @@ final class PushTemplateControllerAbstractTest extends TestCase
 
     private function makeDeleteRequest(): MockInterface
     {
-        return Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\PushTemplate\\DeleteRequest');
+        return Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\PushTemplate\\DeleteRequest');
     }
 
     private function makeTemplate(string $title, string $body): PushTemplateContract

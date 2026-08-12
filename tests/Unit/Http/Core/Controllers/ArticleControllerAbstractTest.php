@@ -23,13 +23,13 @@ use Polis\Tests\Fixtures\Models\Article as ArticleFixture;
  */
 final class ArticleControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_forwards_parsed_query_args_to_repository_findAll(): void
+    public function test_index_forwards_parsed_query_args_to_repository_find_all(): void
     {
         $repo = Mockery::mock(ArticleRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Article\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Article\\IndexRequest',
             ['limit' => 5, 'page' => 2],
         );
 
@@ -44,7 +44,7 @@ final class ArticleControllerAbstractTest extends ControllerTestCase
     public function test_show_loads_specified_relations_on_the_bound_article(): void
     {
         $repo = Mockery::mock(ArticleRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Article\\ViewRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Article\\ViewRequest', [
             'with' => ['versions'],
         ]);
 
@@ -64,7 +64,7 @@ final class ArticleControllerAbstractTest extends ControllerTestCase
         Auth::shouldReceive('user')->once()->andReturn($user);
 
         $payload = ['title' => 'New article'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Article\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Article\\StoreRequest', $payload);
 
         $created = Mockery::mock(ArticleFixture::class);
         // JsonResponse calls toJson() on the model when serializing.
@@ -86,7 +86,7 @@ final class ArticleControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(ArticleRepositoryContract::class);
         $payload = ['title' => 'Renamed'];
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Article\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Article\\UpdateRequest', $payload);
         $model = Mockery::mock(ArticleFixture::class);
         $updated = Mockery::mock(ArticleFixture::class);
 

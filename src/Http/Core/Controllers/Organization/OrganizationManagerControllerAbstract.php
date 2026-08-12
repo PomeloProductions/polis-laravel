@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Organization;
 
-use App\Http\Core\Requests;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -16,6 +15,7 @@ use Polis\Contracts\Repositories\User\UserRepositoryContract;
 use Polis\Events\Organization\OrganizationManagerCreatedEvent;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 use Polis\Models\BaseModelAbstract;
 use Polis\Models\User\InvitationToken;
 use Polis\Traits\CanGetAndUnset;

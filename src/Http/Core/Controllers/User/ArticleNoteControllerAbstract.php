@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\User;
 
-use App\Http\Core\Requests;
 use App\Models\User\ArticleNote;
 use App\Models\User\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -13,6 +12,7 @@ use Polis\Contracts\Repositories\User\ArticleNoteRepositoryContract;
 use Polis\Contracts\Repositories\Wiki\ArticleRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 use Polis\Models\BaseModelAbstract;
 
 /**

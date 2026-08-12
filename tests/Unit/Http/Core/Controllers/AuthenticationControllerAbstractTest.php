@@ -7,6 +7,7 @@ namespace Polis\Tests\Unit\Http\Core\Controllers;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Mockery;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\JWTAuth;
@@ -36,7 +37,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             ->andReturn('jwt-token-xyz');
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Authentication\\LoginRequest',
+            'Polis\\Http\\Core\\Requests\\Authentication\\LoginRequest',
             ['email' => 'a@b.test', 'password' => 'pw'],
         );
 
@@ -60,7 +61,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
         $auth->shouldReceive('attempt')->once()->andReturn(false);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Authentication\\LoginRequest',
+            'Polis\\Http\\Core\\Requests\\Authentication\\LoginRequest',
             ['email' => 'a@b.test', 'password' => 'wrong'],
         );
 
@@ -103,7 +104,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
         $auth->shouldReceive('fromUser')->once()->with($user)->andReturn('jwt-token-new');
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Authentication\\SignUpRequest',
+            'Polis\\Http\\Core\\Requests\\Authentication\\SignUpRequest',
             ['email' => 'ada@x.test', 'password' => 'plaintext'],
         );
 
@@ -143,7 +144,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
         $auth->shouldReceive('fromUser')->once()->andReturn('jwt');
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Authentication\\SignUpRequest',
+            'Polis\\Http\\Core\\Requests\\Authentication\\SignUpRequest',
             ['email' => 'a@b.test', 'password' => 'pw', 'invitation_token' => 'invite-123'],
         );
 
@@ -161,7 +162,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
         $auth->shouldReceive('parseToken')->once()->andReturnSelf();
         $auth->shouldReceive('refresh')->once()->andReturn('jwt-refreshed');
 
-        $request = new \Illuminate\Http\Request;
+        $request = new Request;
 
         $controller = new AuthenticationController(
             Mockery::mock(UserRepositoryContract::class),
@@ -190,7 +191,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             Mockery::mock(InvitationTokenRepositoryContract::class),
         );
 
-        $response = $controller->logout(new \Illuminate\Http\Request);
+        $response = $controller->logout(new Request);
 
         $this->assertSame(['status' => 'ok'], json_decode($response->getContent(), true));
     }
@@ -223,7 +224,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
         $auth->shouldReceive('fromUser')->once()->andReturn('jwt');
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Authentication\\SignUpRequest',
+            'Polis\\Http\\Core\\Requests\\Authentication\\SignUpRequest',
             ['email' => 'a@b.test', 'password' => 'pw', 'invitation_token' => 'stale'],
         );
 

@@ -73,6 +73,7 @@
       <file>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Organization/OrganizationManager/IndexRequestExpandTest.php</file>
+      <file>./tests/Unit/Http/Core/Requests/RequestResolverTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsFeatureTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsTest.php</file>
       <file>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</file>
@@ -254,6 +255,7 @@
       <exclude>./tests/Unit/Http/Core/Controllers/Wiki/ArticleSummaryControllerAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/BaseAssetUploadRequestAbstractTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Organization/OrganizationManager/IndexRequestExpandTest.php</exclude>
+      <exclude>./tests/Unit/Http/Core/Requests/RequestResolverTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsFeatureTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RejectsUnknownParamsTest.php</exclude>
       <exclude>./tests/Unit/Http/Core/Requests/Traits/RequestTraitsTest.php</exclude>

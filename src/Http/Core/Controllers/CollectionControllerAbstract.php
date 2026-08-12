@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use App\Models\Category;
 use App\Models\Collection\Collection;
 use Polis\Contracts\Repositories\Collection\CollectionRepositoryContract;
 use Polis\Http\Core\Controllers\Traits\HasViewRequests;
+use Polis\Http\Core\Requests;
 use Polis\Models\BaseModelAbstract;
 
 abstract class CollectionControllerAbstract

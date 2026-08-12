@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Ballot;
 
-use App\Http\Core\Requests;
 use App\Models\Vote\Ballot;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Polis\Contracts\Repositories\Vote\BallotCompletionRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
+use Polis\Http\Core\Requests;
 
 /**
  * Class BallotCompletionControllerAbstract

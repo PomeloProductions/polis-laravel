@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Mockery;
 use Polis\Contracts\Repositories\Organization\OrganizationManagerRepositoryContract;
 use Polis\Contracts\Repositories\Organization\OrganizationRepositoryContract;
+use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Controllers\OrganizationController;
 use Polis\Tests\Fixtures\Models\Organization as OrganizationFixture;
 use Polis\Tests\Fixtures\Models\Role;
@@ -30,7 +31,7 @@ final class OrganizationControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(OrganizationRepositoryContract::class);
         $managerRepo = Mockery::mock(OrganizationManagerRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Organization\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Organization\\IndexRequest');
 
         $repo->shouldReceive('findAll')->once()->andReturn($paginator);
 
@@ -41,7 +42,7 @@ final class OrganizationControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(OrganizationRepositoryContract::class);
         $managerRepo = Mockery::mock(OrganizationManagerRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Organization\\ViewRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Organization\\ViewRequest', [
             'with' => ['managers'],
         ]);
 
@@ -62,7 +63,7 @@ final class OrganizationControllerAbstractTest extends ControllerTestCase
         Auth::shouldReceive('user')->once()->andReturn($user);
 
         $payload = ['name' => 'Acme'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Organization\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Organization\\StoreRequest', $payload);
 
         $created = Mockery::mock(OrganizationFixture::class);
         $created->id = 7;
@@ -76,7 +77,7 @@ final class OrganizationControllerAbstractTest extends ControllerTestCase
                 'role_id' => Role::ADMINISTRATOR,
                 'user_id' => 9,
             ])
-            ->andReturn(Mockery::mock(\Polis\Models\BaseModelAbstract::class));
+            ->andReturn(Mockery::mock(BaseModelAbstract::class));
 
         $url = Mockery::mock(UrlGenerator::class);
         $url->shouldReceive('route')
@@ -96,7 +97,7 @@ final class OrganizationControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(OrganizationRepositoryContract::class);
         $managerRepo = Mockery::mock(OrganizationManagerRepositoryContract::class);
         $payload = ['name' => 'Renamed'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Organization\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Organization\\UpdateRequest', $payload);
 
         $org = Mockery::mock(OrganizationFixture::class);
         $updated = Mockery::mock(OrganizationFixture::class);
@@ -109,7 +110,7 @@ final class OrganizationControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(OrganizationRepositoryContract::class);
         $managerRepo = Mockery::mock(OrganizationManagerRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Organization\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Organization\\DeleteRequest');
 
         $org = Mockery::mock(OrganizationFixture::class);
         $repo->shouldReceive('delete')->once()->with($org);

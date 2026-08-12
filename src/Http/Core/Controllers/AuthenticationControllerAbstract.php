@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use App\Models\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Hashing\Hasher;
@@ -16,6 +15,7 @@ use Polis\Contracts\Repositories\User\InvitationTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\UserRepositoryContract;
 use Polis\Events\User\InvitationAcceptedEvent;
 use Polis\Events\User\SignUpEvent;
+use Polis\Http\Core\Requests;
 
 /**
  * Class AuthenticationControllerAbstract

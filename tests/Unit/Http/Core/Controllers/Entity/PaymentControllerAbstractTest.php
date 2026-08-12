@@ -25,7 +25,7 @@ final class PaymentControllerAbstractTest extends ControllerTestCase
         $entity->id = 13;
         $entity->shouldReceive('morphRelationName')->andReturn('users');
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Entity\\Payment\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Entity\\Payment\\IndexRequest');
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $repo->shouldReceive('findAll')

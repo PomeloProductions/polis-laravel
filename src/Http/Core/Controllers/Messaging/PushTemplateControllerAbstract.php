@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Messaging;
 
-use App\Http\Core\Requests\Messaging\PushTemplate as Requests;
 use App\Models\Organization\Organization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Polis\Contracts\Messaging\PushTemplateContract;
 use Polis\Contracts\Repositories\Messaging\PushTemplateRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
+use Polis\Http\Core\Requests\Messaging\PushTemplate as Requests;
 use Polis\Push\DefaultPushTemplates;
 
 /**

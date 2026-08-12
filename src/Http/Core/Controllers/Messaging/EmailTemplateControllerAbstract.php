@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Messaging;
 
-use App\Http\Core\Requests\Messaging\EmailTemplate as Requests;
 use App\Models\Organization\Organization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Polis\Contracts\Messaging\EmailTemplateContract;
 use Polis\Contracts\Repositories\Messaging\EmailTemplateRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
+use Polis\Http\Core\Requests\Messaging\EmailTemplate as Requests;
 use Polis\Mail\DefaultEmailTemplates;
 
 /**

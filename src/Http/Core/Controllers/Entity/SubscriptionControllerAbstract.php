@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Entity;
 
-use App\Http\Core\Requests;
 use App\Models\Subscription\Subscription;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -14,6 +13,7 @@ use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
 use Polis\Contracts\Services\EntitySubscriptionCreationServiceContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 use Polis\Models\BaseModelAbstract;
 
 /**

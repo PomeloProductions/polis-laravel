@@ -20,7 +20,7 @@ final class RoleControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(RoleRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Role\\IndexRequest', [
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Role\\IndexRequest', [
             'order' => ['name' => 'asc'],
         ]);
 

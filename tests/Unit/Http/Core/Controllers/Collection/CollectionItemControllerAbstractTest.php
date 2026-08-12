@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Polis\Contracts\Repositories\Collection\CollectionItemRepositoryContract;
+use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Controllers\Collection\CollectionItemController;
 use Polis\Tests\Fixtures\Models\Collection as CollectionFixture;
 use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
@@ -21,12 +22,12 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class CollectionItemControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_collection(): void
+    public function test_index_scopes_find_all_to_parent_collection(): void
     {
         $repo = Mockery::mock(CollectionItemRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Collection\\CollectionItem\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Collection\\CollectionItem\\IndexRequest',
         );
         $collection = Mockery::mock(CollectionFixture::class);
 
@@ -43,12 +44,12 @@ final class CollectionItemControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(CollectionItemRepositoryContract::class);
         $payload = ['name' => 'Item'];
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Collection\\CollectionItem\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\Collection\\CollectionItem\\StoreRequest',
             $payload,
         );
         $collection = Mockery::mock(CollectionFixture::class);
 
-        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
+        $created = Mockery::mock(BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

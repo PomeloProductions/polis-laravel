@@ -34,7 +34,7 @@ final class EntityArticleControllerAbstractTest extends ControllerTestCase
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Organization\\Article\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Organization\\Article\\IndexRequest',
             ['limit' => 7, 'page' => 3],
         );
 
@@ -65,7 +65,7 @@ final class EntityArticleControllerAbstractTest extends ControllerTestCase
         $userEntity->id = 9;
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Organization\\Article\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Organization\\Article\\IndexRequest');
 
         $repo->shouldReceive('findAll')
             ->once()

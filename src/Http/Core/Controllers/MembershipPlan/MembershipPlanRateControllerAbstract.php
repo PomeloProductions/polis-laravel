@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\MembershipPlan;
 
-use App\Http\Core\Requests;
 use App\Models\Subscription\MembershipPlan;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Polis\Contracts\Repositories\Subscription\MembershipPlanRateRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 
 /**
  * Class MembershipPlanRateControllerAbstract

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Article;
 
-use App\Http\Core\Requests;
 use App\Models\Wiki\Article;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Polis\Contracts\Repositories\Wiki\ArticleIterationRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 
 /**
  * Class IterationControllerAbstract

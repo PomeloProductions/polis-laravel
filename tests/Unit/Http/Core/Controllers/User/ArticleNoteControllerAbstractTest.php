@@ -32,7 +32,7 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
         $user = Mockery::mock(UserFixture::class);
 
         $paginator = Mockery::mock(LengthAwarePaginator::class);
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\ArticleNote\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\ArticleNote\\IndexRequest');
 
         $repo->shouldReceive('findAll')
             ->once()
@@ -51,7 +51,7 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
         $user->shouldReceive('morphRelationName')->andReturn('user');
 
         $payload = ['article_id' => 9, 'note' => 'A note'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\ArticleNote\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\ArticleNote\\StoreRequest', $payload);
 
         $created = Mockery::mock(ArticleNoteFixture::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
@@ -77,7 +77,7 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
         $user = Mockery::mock(UserFixture::class);
         $note = Mockery::mock(ArticleNoteFixture::class);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\ArticleNote\\ViewRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\ArticleNote\\ViewRequest');
 
         $this->assertSame(
             $note,
@@ -92,7 +92,7 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
         $user = Mockery::mock(UserFixture::class);
 
         $payload = ['note' => 'Edited'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\ArticleNote\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\ArticleNote\\UpdateRequest', $payload);
 
         $note = Mockery::mock(ArticleNoteFixture::class);
         $updated = Mockery::mock(ArticleNoteFixture::class);
@@ -111,7 +111,7 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
         $user = Mockery::mock(UserFixture::class);
         $note = Mockery::mock(ArticleNoteFixture::class);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\ArticleNote\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\ArticleNote\\DeleteRequest');
         $repo->shouldReceive('delete')->once()->with($note);
 
         $response = (new ArticleNoteController($repo, $articleRepo))->destroy($request, $user, $note);
@@ -126,7 +126,7 @@ final class ArticleNoteControllerAbstractTest extends ControllerTestCase
 
         $articleRepo->shouldReceive('selectArticleForUser')->once()->with($user)->andReturn(null);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\ArticleNote\\RandomArticleRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\ArticleNote\\RandomArticleRequest');
         $response = (new ArticleNoteController($repo, $articleRepo))->randomArticle($request, $user);
 
         $this->assertInstanceOf(JsonResponse::class, $response);

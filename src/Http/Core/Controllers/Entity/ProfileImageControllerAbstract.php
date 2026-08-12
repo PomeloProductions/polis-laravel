@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Entity;
 
-use App\Http\Core\Requests;
 use Illuminate\Http\JsonResponse;
 use Mimey\MimeTypes;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\User\ProfileImageRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
+use Polis\Http\Core\Requests;
 
 /**
  * Class ProfileImageControllerAbstract

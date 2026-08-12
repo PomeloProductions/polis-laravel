@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Entity;
 
-use App\Http\Core\Requests;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\Payment\PaymentRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 
 /**
  * Class PaymentControllerAbstract

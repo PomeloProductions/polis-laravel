@@ -19,7 +19,7 @@ final class BallotControllerAbstractTest extends ControllerTestCase
     public function test_show_loads_specified_relations_on_the_bound_ballot(): void
     {
         $repo = Mockery::mock(BallotRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Ballot\\ViewRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Ballot\\ViewRequest', [
             'with' => ['items', 'items.options'],
         ]);
 
@@ -33,7 +33,7 @@ final class BallotControllerAbstractTest extends ControllerTestCase
     public function test_show_with_no_expand_passes_empty_array(): void
     {
         $repo = Mockery::mock(BallotRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Ballot\\ViewRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Ballot\\ViewRequest');
 
         $ballot = Mockery::mock(BallotFixture::class);
         $loaded = Mockery::mock(BallotFixture::class);

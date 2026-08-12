@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Organization;
 
-use App\Http\Core\Requests;
 use App\Models\Organization\Organization;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Polis\Contracts\Models\IsAnEntityContract;
@@ -81,7 +80,7 @@ abstract class OrganizationArticleControllerAbstract extends EntityArticleContro
      *
      * @return LengthAwarePaginator
      */
-    public function index(Requests\Organization\Article\IndexRequest $request, Organization $organization)
+    public function index(IndexRequest $request, Organization $organization)
     {
         return $this->indexForEntity($request, $organization);
     }

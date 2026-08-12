@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use App\Models\User\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +11,7 @@ use Polis\Contracts\Repositories\User\UserRepositoryContract;
 use Polis\Contracts\Services\StripeCustomerServiceContract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
 use Polis\Http\Core\Controllers\Traits\HasViewRequests;
+use Polis\Http\Core\Requests;
 use Polis\Models\BaseModelAbstract;
 
 /**

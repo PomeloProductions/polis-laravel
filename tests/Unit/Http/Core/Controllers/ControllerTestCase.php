@@ -8,7 +8,7 @@ use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Factory as ValidationFactory;
 use Mockery;
-use Polis\Tests\Fixtures\Requests\StubRequest;
+use Polis\Http\Core\Requests\BaseRequestAbstract;
 use Polis\Tests\TestCase;
 
 /**
@@ -18,7 +18,10 @@ use Polis\Tests\TestCase;
  * src/Http/Core/Controllers/* via a Polis\Tests\Fixtures\Controllers\*
  * concrete subclass. Common plumbing — a working validator binding for
  * the HasIndexRequests::limit() trait call and a helper that builds a
- * real (non-Mockery) StubRequest with merged inputs — lives here.
+ * real (non-Mockery) request with merged inputs — lives here. The helper
+ * returns a BaseRequestAbstract so callers can build either the shared
+ * StubRequest (aliased under legacy App\ FQNs) or a concrete package
+ * Polis\Http\Core\Requests\... request directly.
  */
 abstract class ControllerTestCase extends TestCase
 {
@@ -65,13 +68,13 @@ abstract class ControllerTestCase extends TestCase
      *
      * @param  array<string, mixed>  $inputs
      */
-    protected function makeRequest(string $requestFqcn, array $inputs = []): StubRequest
+    protected function makeRequest(string $requestFqcn, array $inputs = []): BaseRequestAbstract
     {
         // Strip nulls so $request->input('limit', 10) returns the default
         // 10 (not (int) null = 0) when the test omits the key entirely.
         $merge = array_filter($inputs, fn ($v) => $v !== null);
 
-        /** @var StubRequest $request */
+        /** @var BaseRequestAbstract $request */
         $request = new $requestFqcn(
             query: $merge,
             request: $merge,
@@ -92,7 +95,7 @@ abstract class ControllerTestCase extends TestCase
      *
      * @param  array<string, mixed>  $inputs
      */
-    protected function makeIndexRequest(string $requestFqcn, array $inputs = []): StubRequest
+    protected function makeIndexRequest(string $requestFqcn, array $inputs = []): BaseRequestAbstract
     {
         return $this->makeRequest($requestFqcn, [
             'cleaned_filter' => $inputs['cleaned_filter'] ?? null,

@@ -25,7 +25,7 @@ final class MembershipPlanControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(MembershipPlanRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\MembershipPlan\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\MembershipPlan\\IndexRequest');
 
         $repo->shouldReceive('findAll')->once()->with([], [], [], [], 10, [], 1)->andReturn($paginator);
 
@@ -35,7 +35,7 @@ final class MembershipPlanControllerAbstractTest extends ControllerTestCase
     public function test_show_loads_expand(): void
     {
         $repo = Mockery::mock(MembershipPlanRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\MembershipPlan\\ViewRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\MembershipPlan\\ViewRequest', [
             'with' => ['rates'],
         ]);
 
@@ -50,7 +50,7 @@ final class MembershipPlanControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(MembershipPlanRepositoryContract::class);
         $payload = ['name' => 'Pro'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\MembershipPlan\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\MembershipPlan\\StoreRequest', $payload);
 
         $created = Mockery::mock(MembershipPlanFixture::class);
         $created->shouldReceive('toJson')->andReturn('{"id":7}');
@@ -75,7 +75,7 @@ final class MembershipPlanControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(MembershipPlanRepositoryContract::class);
         $payload = ['name' => 'Pro+'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\MembershipPlan\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\MembershipPlan\\UpdateRequest', $payload);
 
         $plan = Mockery::mock(MembershipPlanFixture::class);
         $updated = Mockery::mock(MembershipPlanFixture::class);
@@ -87,7 +87,7 @@ final class MembershipPlanControllerAbstractTest extends ControllerTestCase
     public function test_destroy_deletes_and_returns_204(): void
     {
         $repo = Mockery::mock(MembershipPlanRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\MembershipPlan\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\MembershipPlan\\DeleteRequest');
 
         $plan = Mockery::mock(MembershipPlanFixture::class);
         $repo->shouldReceive('delete')->once()->with($plan);

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use App\Models\Organization\Organization;
 use Illuminate\Support\Facades\Auth;
 use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
+use Polis\Http\Core\Requests;
 
 /**
  * Class OrganizationControllerAbstract

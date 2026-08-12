@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Mockery;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\Collection\CollectionRepositoryContract;
+use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Controllers\Entity\CollectionController;
 use Polis\Tests\Fixtures\Models\Role;
 use Polis\Tests\Fixtures\Models\User as UserFixture;
@@ -34,7 +35,7 @@ final class EntityCollectionControllerAbstractTest extends ControllerTestCase
 
         Auth::shouldReceive('user')->once()->andReturn(null);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Entity\\Collection\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Entity\\Collection\\IndexRequest');
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $repo->shouldReceive('findAll')
@@ -62,7 +63,7 @@ final class EntityCollectionControllerAbstractTest extends ControllerTestCase
         $user = Mockery::mock(UserFixture::class);
         Auth::shouldReceive('user')->once()->andReturn($user);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Entity\\Collection\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Entity\\Collection\\IndexRequest');
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $repo->shouldReceive('findAll')
@@ -84,9 +85,9 @@ final class EntityCollectionControllerAbstractTest extends ControllerTestCase
         $entity->shouldReceive('morphRelationName')->andReturn('organizations');
 
         $payload = ['name' => 'New Collection'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Entity\\Collection\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Entity\\Collection\\StoreRequest', $payload);
 
-        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
+        $created = Mockery::mock(BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

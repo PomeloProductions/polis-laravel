@@ -23,7 +23,7 @@ final class ResourceControllerAbstractTest extends ControllerTestCase
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Resource\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Resource\\IndexRequest',
             ['limit' => 100, 'page' => 5],
         );
 

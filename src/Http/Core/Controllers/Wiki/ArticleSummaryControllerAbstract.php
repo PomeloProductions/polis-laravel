@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Wiki;
 
-use App\Http\Core\Requests;
 use App\Models\Wiki\Article;
 use App\Models\Wiki\ArticleSummary;
 use Illuminate\Http\JsonResponse;
 use Polis\Contracts\Repositories\Wiki\ArticleSummaryRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
+use Polis\Http\Core\Requests;
 
 /**
  * Class ArticleSummaryControllerAbstract

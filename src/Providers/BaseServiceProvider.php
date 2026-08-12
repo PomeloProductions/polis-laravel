@@ -55,6 +55,7 @@ use Polis\Contracts\Services\StripeCustomerServiceContract;
 use Polis\Contracts\Services\StripePaymentServiceContract;
 use Polis\Contracts\Services\TokenGenerationServiceContract;
 use Polis\Contracts\Services\Wiki\ArticleVersionCalculationServiceContract;
+use Polis\Http\Core\Requests\RequestResolver;
 use Polis\Mail\DefaultEmailTemplates;
 use Polis\Push\DefaultPushTemplates;
 use Polis\Services\ArchiveHelperService;
@@ -199,6 +200,14 @@ abstract class BaseServiceProvider extends ServiceProvider
         $this->mergeConfigFrom($this->packageConfigPath(), 'polis');
 
         $this->registerEnvironmentSpecificProviders();
+
+        // Let consumers omit empty App\Http\Core\Requests\... shims: the
+        // abstract controllers type-hint the package's own concrete requests,
+        // and this rebinds any package request that the consumer HAS chosen to
+        // override (App\Http\Core\Requests\...) so the override is injected
+        // instead. Requests without an override are left untouched and Laravel
+        // instantiates the package concrete directly.
+        RequestResolver::registerBindings($this->app, RequestResolver::packageRequests());
 
         $this->app->bind(ArchiveHelperServiceContract::class, fn () => new ArchiveHelperService(
             new \ZipArchive,

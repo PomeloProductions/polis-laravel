@@ -26,7 +26,7 @@ final class ArticleSummaryControllerAbstractTest extends ControllerTestCase
         $article = new ArticleFixture;
         // articleSummary attribute defaults to null on a parentless model.
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\ViewRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\ViewRequest');
 
         $response = (new ArticleSummaryController($repo))->show($request, $article);
 
@@ -44,7 +44,7 @@ final class ArticleSummaryControllerAbstractTest extends ControllerTestCase
         $article = new ArticleFixture;
         $article->articleSummary = $summary;
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\ViewRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\ViewRequest');
         $response = (new ArticleSummaryController($repo))->show($request, $article);
 
         $this->assertSame(200, $response->getStatusCode());
@@ -58,7 +58,7 @@ final class ArticleSummaryControllerAbstractTest extends ControllerTestCase
         $article->id = 14;
 
         $payload = ['summary_text' => 'short summary'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\StoreRequest', $payload);
 
         $created = Mockery::mock(ArticleSummaryFixture::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
@@ -76,7 +76,7 @@ final class ArticleSummaryControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(ArticleSummaryRepositoryContract::class);
         $article = new ArticleFixture;
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\UpdateRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\UpdateRequest');
         $response = (new ArticleSummaryController($repo))->update($request, $article);
 
         $this->assertSame(404, $response->getStatusCode());
@@ -96,7 +96,7 @@ final class ArticleSummaryControllerAbstractTest extends ControllerTestCase
 
         $repo->shouldReceive('update')->once()->with($summary, $payload)->andReturn($updated);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\UpdateRequest', $payload);
         $response = (new ArticleSummaryController($repo))->update($request, $article);
 
         $this->assertSame(200, $response->getStatusCode());
@@ -108,7 +108,7 @@ final class ArticleSummaryControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(ArticleSummaryRepositoryContract::class);
         $article = new ArticleFixture;
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\DeleteRequest');
         $response = (new ArticleSummaryController($repo))->destroy($request, $article);
 
         $this->assertSame(404, $response->getStatusCode());
@@ -124,7 +124,7 @@ final class ArticleSummaryControllerAbstractTest extends ControllerTestCase
 
         $repo->shouldReceive('delete')->once()->with($summary);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Wiki\\ArticleSummary\\DeleteRequest');
         $response = (new ArticleSummaryController($repo))->destroy($request, $article);
 
         $this->assertSame(204, $response->getStatusCode());

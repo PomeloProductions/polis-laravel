@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Polis\Contracts\Repositories\Messaging\ThreadRepositoryContract;
+use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Controllers\User\ThreadController;
 use Polis\Tests\Fixtures\Models\User as UserFixture;
 use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
@@ -19,13 +20,13 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class ThreadControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_user(): void
+    public function test_index_scopes_find_all_to_parent_user(): void
     {
         $repo = Mockery::mock(ThreadRepositoryContract::class);
         $user = Mockery::mock(UserFixture::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\Thread\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\Thread\\IndexRequest');
         $repo->shouldReceive('findAll')
             ->once()
             ->with([], [], [], [], 10, [$user], 1)
@@ -41,9 +42,9 @@ final class ThreadControllerAbstractTest extends ControllerTestCase
         $user->id = 17;
 
         $payload = ['users' => [99], 'subject' => 'Hi'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\Thread\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\Thread\\StoreRequest', $payload);
 
-        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
+        $created = Mockery::mock(BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{}');
         $repo->shouldReceive('create')
             ->once()
