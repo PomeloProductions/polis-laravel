@@ -6,12 +6,12 @@ namespace Polis\Tests\Integration\Policies;
 
 use App\Models\User\User;
 use App\Policies\ResourcePolicy;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ResourcePolicyTest
  */
-final class ResourcePolicyTest extends TestCase
+final class ResourcePolicyTest extends ApplicationTestCase
 {
     public function test_all(): void
     {

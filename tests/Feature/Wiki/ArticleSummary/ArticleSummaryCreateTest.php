@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Wiki\ArticleSummary;
 use App\Models\Role;
 use App\Models\User\User;
 use App\Models\Wiki\Article;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleSummaryCreateTest
  */
-final class ArticleSummaryCreateTest extends TestCase
+final class ArticleSummaryCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     private string $path;
 

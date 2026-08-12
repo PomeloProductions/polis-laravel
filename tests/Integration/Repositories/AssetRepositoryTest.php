@@ -9,16 +9,15 @@ use App\Models\User\User;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\AssetRepository;
 use Polis\Services\Asset\AssetConfigurationService;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class AssetRepositoryTest
  */
-final class AssetRepositoryTest extends TestCase
+final class AssetRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var AssetRepository

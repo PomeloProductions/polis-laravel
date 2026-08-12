@@ -8,16 +8,15 @@ use App\Models\Role;
 use App\Models\User\User;
 use App\Models\Wiki\Article;
 use App\Policies\Wiki\ArticleVersionPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class ArticleVersionPolicyTest
  */
-final class ArticleVersionPolicyTest extends TestCase
+final class ArticleVersionPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, RolesTesting;
+    use RolesTesting;
 
     public function IterationPolicy()
     {

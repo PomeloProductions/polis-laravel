@@ -8,16 +8,14 @@ use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use App\Models\Role;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class UserTest
  */
-final class UserTest extends TestCase
+final class UserTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_has_role(): void
     {
         /** @var User $user */

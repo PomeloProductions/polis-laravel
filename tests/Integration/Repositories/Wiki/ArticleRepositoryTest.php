@@ -10,16 +10,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Contracts\Repositories\Statistic\StatisticRepositoryContract;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\Wiki\ArticleRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleRepositoryTest
  */
-final class ArticleRepositoryTest extends TestCase
+final class ArticleRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var ArticleRepository

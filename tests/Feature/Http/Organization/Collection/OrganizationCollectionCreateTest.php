@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\Organization\Collection;
 
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserPaymentMethodCreateTest
  */
-final class OrganizationCollectionCreateTest extends TestCase
+final class OrganizationCollectionCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

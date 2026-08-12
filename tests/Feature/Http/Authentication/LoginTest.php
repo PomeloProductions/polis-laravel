@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\Authentication;
 
 use App\Models\User\User;
 use Illuminate\Support\Facades\Hash;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class LoginTest
  */
-final class LoginTest extends TestCase
+final class LoginTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\Http\Collection;
 use App\Models\Collection\Collection;
 use App\Models\Collection\CollectionItem;
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class MembershipPlanUpdateTest
  */
-final class CollectionUpdateTest extends TestCase
+final class CollectionUpdateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     const BASE_ROUTE = '/v1/collections/';
 

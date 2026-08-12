@@ -9,16 +9,14 @@ use App\Models\Organization\OrganizationManager;
 use App\Models\Role;
 use App\Models\User\User;
 use App\Policies\Organization\OrganizationManagerPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class OrganizationManagerPolicyTest
  */
-final class OrganizationManagerPolicyTest extends TestCase
+final class OrganizationManagerPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all_blocks_when_not_organization_manager(): void
     {
         $policy = new OrganizationManagerPolicy;

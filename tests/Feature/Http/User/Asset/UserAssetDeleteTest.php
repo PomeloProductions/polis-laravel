@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\User\Asset;
 
 use App\Models\Asset;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserPaymentMethodDeleteTest
  */
-final class UserAssetDeleteTest extends TestCase
+final class UserAssetDeleteTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

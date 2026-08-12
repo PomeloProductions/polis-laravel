@@ -6,12 +6,12 @@ namespace Polis\Tests\Integration\Policies\Subscription;
 
 use App\Models\User\User;
 use App\Policies\Subscription\MembershipPlanRatePolicy;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class MembershipPlanRatePolicyTest
  */
-final class MembershipPlanRatePolicyTest extends TestCase
+final class MembershipPlanRatePolicyTest extends ApplicationTestCase
 {
     public function test_all(): void
     {

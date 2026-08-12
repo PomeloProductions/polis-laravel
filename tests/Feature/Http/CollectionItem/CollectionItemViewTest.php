@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\V1\CollectionItem;
 
 use App\Models\Collection\Collection;
 use App\Models\Collection\CollectionItem;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class categoriesViewTest
  */
-final class CollectionItemViewTest extends TestCase
+final class CollectionItemViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

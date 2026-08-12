@@ -10,17 +10,16 @@ use App\Models\Role;
 use App\Models\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
 use Polis\Events\Organization\OrganizationManagerCreatedEvent;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class OrganizationOrganizationManagerCreateTest
  */
-final class OrganizationOrganizationManagerCreateTest extends TestCase
+final class OrganizationOrganizationManagerCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string

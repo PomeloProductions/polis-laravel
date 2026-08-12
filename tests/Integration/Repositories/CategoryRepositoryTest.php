@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Repositories;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\CategoryRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class RoleRepositoryTest
  */
-final class CategoryRepositoryTest extends TestCase
+final class CategoryRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var CategoryRepository
      */

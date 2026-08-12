@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Resource;
 
 use App\Models\Resource;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ResourceIndexTest
  */
-final class ResourceIndexTest extends TestCase
+final class ResourceIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

@@ -11,16 +11,14 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Polis\Repositories\Statistic\TargetStatisticRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class TargetStatisticRepositoryTest
  */
-class TargetStatisticRepositoryTest extends TestCase
+class TargetStatisticRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var TargetStatisticRepository
      */

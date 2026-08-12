@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\Statistic;
 
 use App\Models\Role;
 use App\Models\Statistic\Statistic;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class StatisticIndexTest
  */
-class StatisticIndexTest extends TestCase
+class StatisticIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

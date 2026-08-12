@@ -7,13 +7,13 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Feature\Http;
 
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class StatusTest
  */
-final class StatusTest extends TestCase
+final class StatusTest extends ApplicationTestCase
 {
     use MocksApplicationLog;
 

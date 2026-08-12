@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Polis\Tests\Integration\Policies;
 
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
 use Polis\Tests\Mocks\BasePolicy;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class BasePolicyAbstractTest
  */
-final class BasePolicyAbstractTest extends TestCase
+final class BasePolicyAbstractTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, RolesTesting;
+    use RolesTesting;
 
     public function test_before(): void
     {

@@ -15,17 +15,16 @@ use Polis\Contracts\Repositories\User\UserRepositoryContract;
 use Polis\Repositories\ResourceRepository;
 use Polis\Repositories\User\UserRepository;
 use Polis\Services\Indexing\BaseResourceRepositoryService;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\MocksConsoleOutput;
 
 /**
  * Class ReindexResourcesTest
  */
-final class ReindexResourcesTest extends TestCase
+final class ReindexResourcesTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, MocksConsoleOutput;
+    use MocksApplicationLog, MocksConsoleOutput;
 
     /**
      * @var ReindexResources

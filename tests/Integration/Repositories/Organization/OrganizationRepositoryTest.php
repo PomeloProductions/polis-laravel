@@ -7,16 +7,15 @@ namespace Polis\Tests\Integration\Repositories\Organization;
 use App\Models\Organization\Organization;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Organization\OrganizationRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class OrganizationRepositoryTest
  */
-final class OrganizationRepositoryTest extends TestCase
+final class OrganizationRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var OrganizationRepository

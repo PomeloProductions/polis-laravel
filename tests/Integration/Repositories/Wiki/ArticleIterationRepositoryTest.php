@@ -10,16 +10,15 @@ use App\Models\Wiki\ArticleIteration;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\Wiki\ArticleIterationRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleIterationRepositoryTest
  */
-final class ArticleIterationRepositoryTest extends TestCase
+final class ArticleIterationRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     private ArticleIterationRepository $repository;
 

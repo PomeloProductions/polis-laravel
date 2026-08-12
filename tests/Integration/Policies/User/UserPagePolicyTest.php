@@ -7,13 +7,11 @@ namespace Polis\Tests\Integration\Policies\User;
 use App\Models\User\User;
 use App\Models\User\UserPage;
 use App\Policies\User\UserPagePolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
-final class UserPagePolicyTest extends TestCase
+final class UserPagePolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all_passes(): void
     {
         $user = User::factory()->create();

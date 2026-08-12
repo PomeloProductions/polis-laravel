@@ -9,16 +9,15 @@ use App\Models\User\ProfileImage;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\User\ProfileImageRepository;
 use Polis\Services\Asset\AssetConfigurationService;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ProfileImageRepositoryTest
  */
-final class ProfileImageRepositoryTest extends TestCase
+final class ProfileImageRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var ProfileImageRepository

@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\Http\Article\Iteration;
 use App\Models\Role;
 use App\Models\Wiki\Article;
 use App\Models\Wiki\ArticleIteration;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class ArticleIterationIndexTest
  */
-final class ArticleIterationIndexTest extends TestCase
+final class ArticleIterationIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string

@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Http\Organization\Asset;
 use App\Models\Asset;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserPaymentMethodDeleteTest
  */
-final class OrganizationAssetDeleteTest extends TestCase
+final class OrganizationAssetDeleteTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

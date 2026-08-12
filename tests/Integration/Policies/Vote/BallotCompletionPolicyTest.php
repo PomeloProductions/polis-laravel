@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Policies\Vote;
 use App\Models\User\User;
 use App\Models\Vote\Ballot;
 use App\Policies\Vote\BallotCompletionPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class BallotCompletionPolicyTest
  */
-final class BallotCompletionPolicyTest extends TestCase
+final class BallotCompletionPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all(): void
     {
         $user1 = User::factory()->create();

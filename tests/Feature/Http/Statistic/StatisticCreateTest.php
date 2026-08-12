@@ -6,16 +6,15 @@ namespace Polis\Tests\Feature\Http\Statistic;
 
 use App\Models\Role;
 use App\Models\Statistic\Statistic;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class StatisticCreateTest
  */
-class StatisticCreateTest extends TestCase
+class StatisticCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, RolesTesting;
+    use RolesTesting;
 
     private $route = '/v1/statistics';
 

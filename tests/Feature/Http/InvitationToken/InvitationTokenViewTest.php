@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Http\InvitationToken;
 use App\Models\Role;
 use App\Models\User\InvitationToken;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class InvitationTokenViewTest
  */
-final class InvitationTokenViewTest extends TestCase
+final class InvitationTokenViewTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

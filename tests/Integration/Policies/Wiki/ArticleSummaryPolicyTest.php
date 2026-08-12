@@ -8,16 +8,14 @@ use App\Models\Role;
 use App\Models\User\User;
 use App\Models\Wiki\Article;
 use App\Policies\Wiki\ArticleSummaryPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ArticleSummaryPolicyTest
  */
-final class ArticleSummaryPolicyTest extends TestCase
+final class ArticleSummaryPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     protected function setUp(): void
     {
         parent::setUp();

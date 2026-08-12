@@ -7,16 +7,15 @@ namespace Polis\Tests\Integration\Policies\Statistic;
 use App\Models\Role;
 use App\Models\User\User;
 use App\Policies\Statistic\StatisticPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class StatisticPolicyTest
  */
-class StatisticPolicyTest extends TestCase
+class StatisticPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, RolesTesting;
+    use RolesTesting;
 
     public function test_all_passes()
     {

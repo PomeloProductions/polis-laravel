@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\Http\Authentication;
 use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class RefreshTest
  */
-final class RefreshTest extends TestCase
+final class RefreshTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

@@ -7,12 +7,12 @@ namespace Polis\Tests\Integration\Policies;
 use App\Models\Feature;
 use App\Models\User\User;
 use App\Policies\FeaturePolicy;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class FeaturePolicyTest
  */
-final class FeaturePolicyTest extends TestCase
+final class FeaturePolicyTest extends ApplicationTestCase
 {
     public function test_all(): void
     {

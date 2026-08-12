@@ -12,16 +12,14 @@ use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
 use Polis\Repositories\Subscription\MembershipPlanRateRepository;
 use Polis\Repositories\Subscription\SubscriptionRepository;
 use Polis\Tests\CustomMockInterface;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class SendRenewalRemindersTest
  */
-final class SendRenewalRemindersTest extends TestCase
+final class SendRenewalRemindersTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     protected function setUp(): void
     {
         parent::setUp();

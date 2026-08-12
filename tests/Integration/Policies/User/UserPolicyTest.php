@@ -6,16 +6,15 @@ namespace Polis\Tests\Integration\Policies\User;
 
 use App\Models\User\User;
 use App\Policies\User\UserPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class UserPolicyTest
  */
-final class UserPolicyTest extends TestCase
+final class UserPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, RolesTesting;
+    use RolesTesting;
 
     public function test_view_self_passes(): void
     {

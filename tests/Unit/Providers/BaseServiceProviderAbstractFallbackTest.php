@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Providers;
 
-use App\Services\Indexing\ResourceRepositoryService;
 use Polis\Contracts\Services\Indexing\ResourceRepositoryServiceContract;
 use Polis\Providers\BaseServiceProvider;
 use Polis\Tests\TestCase;
@@ -28,8 +27,16 @@ final class BaseServiceProviderAbstractFallbackTest extends TestCase
         // the implementation drifts, the closure here will need to drift
         // with it — which is the point: this is the contract we promise to
         // consumer apps.
-        $this->app->bind(ResourceRepositoryServiceContract::class, function () {
-            if (! class_exists(ResourceRepositoryService::class)) {
+        // NOTE: the package's dummy consumer app (tests/Application) DOES ship
+        // a real App\Services\Indexing\ResourceRepositoryService, so we can no
+        // longer prove the missing-concrete branch against that exact FQCN.
+        // Instead we drive the same guard-closure shape with a deliberately
+        // non-existent concrete class name — this is the contract we promise
+        // consumer apps that fail to provide the concrete.
+        $missingConcrete = 'App\\Services\\Indexing\\NonexistentResourceRepositoryService';
+
+        $this->app->bind(ResourceRepositoryServiceContract::class, function () use ($missingConcrete) {
+            if (! class_exists($missingConcrete)) {
                 throw new \RuntimeException(
                     'polis-laravel: missing consumer-side concrete '
                     .'App\\Services\\Indexing\\ResourceRepositoryService. '
@@ -38,9 +45,7 @@ final class BaseServiceProviderAbstractFallbackTest extends TestCase
                 );
             }
 
-            $class = ResourceRepositoryService::class;
-
-            return new $class($this->app);
+            return new $missingConcrete($this->app);
         });
 
         try {
@@ -58,8 +63,15 @@ final class BaseServiceProviderAbstractFallbackTest extends TestCase
         // hands back the polis FQN even when neither side has a class, so
         // the failure surfaces at instantiation/binding time with a name
         // the developer can grep for.
+        //
+        // NOTE: uses a deliberately non-existent consumer FQCN. The package's
+        // own test harness now ships a dummy consumer app (tests/Application)
+        // under the real App\ namespace, so any App\ class that the dummy app
+        // actually provides (e.g. App\Policies\User\UserPolicy) WOULD resolve.
+        // This assertion is about the missing-consumer-class fallback, so it
+        // must reference a class the dummy app never defines.
         $result = BaseServiceProvider::resolveConsumerOrPackage(
-            'App\\Policies\\User\\UserPolicy',
+            'App\\Policies\\User\\NonexistentFallbackPolicy',
             'Polis\\Policies\\User\\UserPolicyAbstract',
         );
 

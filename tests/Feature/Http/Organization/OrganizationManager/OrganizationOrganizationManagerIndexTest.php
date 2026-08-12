@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\Http\Organization\OrganizationManager;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class OrganizationOrganizationManagerIndexTest
  */
-final class OrganizationOrganizationManagerIndexTest extends TestCase
+final class OrganizationOrganizationManagerIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string
@@ -124,5 +123,39 @@ final class OrganizationOrganizationManagerIndexTest extends TestCase
                 ],
             ]);
         $response->assertStatus(200);
+    }
+
+    /**
+     * Regression: the dashboard lists organization managers with
+     * `expand[user]=*` to render each manager's user in one call. The request
+     * must allow the `user` expand (allowedExpands) — otherwise
+     * authorizeExpands() throws a 403 — and the payload must carry the
+     * expanded user relation.
+     */
+    public function test_index_with_user_expand_returns_expanded_user(): void
+    {
+        $this->actAs(Role::MANAGER);
+        $organization = Organization::factory()->create();
+        OrganizationManager::factory()->create([
+            'organization_id' => $organization->id,
+            'user_id' => $this->actingAs->id,
+            'role_id' => Role::MANAGER,
+        ]);
+        $this->setupRoute($organization->id);
+
+        $response = $this->json('GET', $this->route.'?expand[user]=*');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'user' => [
+                        'id',
+                        'email',
+                    ],
+                ],
+            ],
+        ]);
     }
 }

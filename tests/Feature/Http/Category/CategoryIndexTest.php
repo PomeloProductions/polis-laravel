@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Polis\Tests\Feature\Http\Category;
 
 use App\Models\Category;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class CategoryIndexTest
  */
-final class CategoryIndexTest extends TestCase
+final class CategoryIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

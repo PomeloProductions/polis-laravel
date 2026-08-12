@@ -8,16 +8,15 @@ use App\Models\Payment\PaymentMethod;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Payment\PaymentMethodRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class PaymentMethodRepositoryTest
  */
-final class PaymentMethodRepositoryTest extends TestCase
+final class PaymentMethodRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var PaymentMethodRepository

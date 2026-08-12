@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\Http\MembershipPlan\MembershipPlanRate;
 use App\Models\Role;
 use App\Models\Subscription\MembershipPlan;
 use App\Models\Subscription\MembershipPlanRate;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class MembershipPlanMembershipPlanRateIndexTest
  */
-final class MembershipPlanMembershipPlanRateIndexTest extends TestCase
+final class MembershipPlanMembershipPlanRateIndexTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string

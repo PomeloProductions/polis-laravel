@@ -6,16 +6,14 @@ namespace Polis\Tests\Integration\Middleware;
 
 use App\Models\Role;
 use App\Models\Wiki\Article;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class Issue404IfPageAfterPaginationTest
  */
-final class Issue404IfPageAfterPaginationTest extends TestCase
+final class Issue404IfPageAfterPaginationTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     protected function setUp(): void
     {
         parent::setUp();

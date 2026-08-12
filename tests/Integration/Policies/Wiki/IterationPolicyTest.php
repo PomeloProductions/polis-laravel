@@ -6,16 +6,15 @@ namespace Polis\Tests\Integration\Policies\Wiki;
 
 use App\Models\Role;
 use App\Policies\Wiki\ArticleIterationPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class IterationPolicyTest
  */
-final class IterationPolicyTest extends TestCase
+final class IterationPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, RolesTesting;
+    use RolesTesting;
 
     public function IterationPolicy()
     {

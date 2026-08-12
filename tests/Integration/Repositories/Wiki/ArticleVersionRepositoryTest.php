@@ -12,16 +12,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Events\Article\ArticleVersionCreatedEvent;
 use Polis\Repositories\Wiki\ArticleVersionRepository;
 use Polis\Tests\CustomMockInterface;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleVersionRepositoryTest
  */
-final class ArticleVersionRepositoryTest extends TestCase
+final class ArticleVersionRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var ArticleVersionRepository

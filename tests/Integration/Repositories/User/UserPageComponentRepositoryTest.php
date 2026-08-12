@@ -8,13 +8,12 @@ use App\Models\User\UserPage;
 use App\Models\User\UserPageComponent;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\User\UserPageComponentRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
-final class UserPageComponentRepositoryTest extends TestCase
+final class UserPageComponentRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected UserPageComponentRepository $repository;
 

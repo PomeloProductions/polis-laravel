@@ -9,13 +9,12 @@ use App\Models\Collection\CollectionItem;
 use App\Models\Wiki\Article;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Collection\CollectionItemRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
-final class CollectionItemRepositoryTest extends TestCase
+final class CollectionItemRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected CollectionItemRepository $repository;
 

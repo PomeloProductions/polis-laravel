@@ -7,16 +7,15 @@ namespace Polis\Tests\Feature\User\ProfileImage;
 use App\Models\Asset;
 use App\Models\User\User;
 use Illuminate\Support\Facades\Storage;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserAssetCreateTest
  */
-final class UserAssetCreateTest extends TestCase
+final class UserAssetCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var string

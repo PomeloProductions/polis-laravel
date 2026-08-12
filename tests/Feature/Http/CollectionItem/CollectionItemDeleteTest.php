@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\V1\CollectionItem;
 use App\Models\Collection\Collection;
 use App\Models\Collection\CollectionItem;
 use App\Models\Role;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class MembershipPlanDeleteTest
  */
-final class CollectionItemDeleteTest extends TestCase
+final class CollectionItemDeleteTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     protected function setUp(): void
     {

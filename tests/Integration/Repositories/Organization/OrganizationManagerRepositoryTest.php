@@ -10,16 +10,15 @@ use App\Models\Role;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Organization\OrganizationManagerRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class OrganizationManagerRepositoryTest
  */
-final class OrganizationManagerRepositoryTest extends TestCase
+final class OrganizationManagerRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var OrganizationManagerRepository

@@ -8,16 +8,15 @@ use App\Models\Wiki\Article;
 use App\Models\Wiki\ArticleModification;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Wiki\ArticleModificationRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleModificationRepositoryTest
  */
-final class ArticleModificationRepositoryTest extends TestCase
+final class ArticleModificationRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected ArticleModificationRepository $repository;
 

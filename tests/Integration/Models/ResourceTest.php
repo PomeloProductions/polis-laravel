@@ -6,16 +6,14 @@ namespace Polis\Tests\Integration\Models;
 
 use App\Models\Resource;
 use App\Models\User\User;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class ResourceTest
  */
-final class ResourceTest extends TestCase
+final class ResourceTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_resource(): void
     {
         User::unsetEventDispatcher();

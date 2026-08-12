@@ -11,16 +11,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Payment\LineItemRepository;
 use Polis\Repositories\Payment\PaymentRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class PaymentRepositoryTest
  */
-final class PaymentRepositoryTest extends TestCase
+final class PaymentRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var PaymentRepository

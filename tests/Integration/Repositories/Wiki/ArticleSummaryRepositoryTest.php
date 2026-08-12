@@ -8,16 +8,15 @@ use App\Models\Wiki\Article;
 use App\Models\Wiki\ArticleSummary;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Polis\Repositories\Wiki\ArticleSummaryRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class ArticleSummaryRepositoryTest
  */
-final class ArticleSummaryRepositoryTest extends TestCase
+final class ArticleSummaryRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var ArticleSummaryRepository

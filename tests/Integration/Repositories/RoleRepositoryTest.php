@@ -7,16 +7,14 @@ namespace Polis\Tests\Integration\Repositories;
 use App\Models\Role;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\RoleRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class RoleRepositoryTest
  */
-final class RoleRepositoryTest extends TestCase
+final class RoleRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var RoleRepository
      */

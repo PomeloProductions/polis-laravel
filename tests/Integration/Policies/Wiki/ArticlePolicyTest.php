@@ -7,16 +7,15 @@ namespace Polis\Tests\Integration\Policies\Wiki;
 use App\Models\Role;
 use App\Models\Wiki\Article;
 use App\Policies\Wiki\ArticlePolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class ArticlePolicyTest
  */
-final class ArticlePolicyTest extends TestCase
+final class ArticlePolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, RolesTesting;
+    use RolesTesting;
 
     public function test_all_success(): void
     {

@@ -15,16 +15,15 @@ use Polis\Events\Messaging\MessageCreatedEvent;
 use Polis\Exceptions\NotImplementedException;
 use Polis\Repositories\Messaging\MessageRepository;
 use Polis\Repositories\User\UserRepository;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class MessageRepositoryTest
  */
-class MessageRepositoryTest extends TestCase
+class MessageRepositoryTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     /**
      * @var MessageRepository

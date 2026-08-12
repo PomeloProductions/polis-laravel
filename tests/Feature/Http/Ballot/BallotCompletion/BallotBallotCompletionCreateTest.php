@@ -7,17 +7,16 @@ namespace Polis\Tests\Feature\Http\Ballot\BallotCompletion;
 use App\Models\Vote\Ballot;
 use App\Models\Vote\BallotItem;
 use App\Models\Vote\BallotItemOption;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class OrganizationOrganizationManagerCreateTest
  */
-final class BallotBallotCompletionCreateTest extends TestCase
+final class BallotBallotCompletionCreateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     /**
      * @var string

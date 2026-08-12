@@ -13,16 +13,15 @@ use Illuminate\Support\Facades\Hash;
 use Polis\Events\User\InvitationAcceptedEvent;
 use Polis\Events\User\SignUpEvent;
 use Polis\Listeners\User\InvitationAcceptedListener;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
 /**
  * Class UserSignUpTest
  */
-final class SignUpTest extends TestCase
+final class SignUpTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog;
+    use MocksApplicationLog;
 
     protected function setUp(): void
     {

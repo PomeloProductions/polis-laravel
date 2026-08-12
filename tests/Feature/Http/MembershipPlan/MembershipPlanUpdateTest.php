@@ -6,17 +6,16 @@ namespace Polis\Tests\Feature\Http\MembershipPlan;
 
 use App\Models\Role;
 use App\Models\Subscription\MembershipPlan;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 use Polis\Tests\Traits\RolesTesting;
 
 /**
  * Class MembershipPlanUpdateTest
  */
-final class MembershipPlanUpdateTest extends TestCase
+final class MembershipPlanUpdateTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait, MocksApplicationLog, RolesTesting;
+    use MocksApplicationLog, RolesTesting;
 
     const BASE_ROUTE = '/v1/membership-plans/';
 

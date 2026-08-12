@@ -11,16 +11,14 @@ use App\Policies\Messaging\MessagePolicy;
 use Polis\Contracts\ThreadSecurity\ThreadSubjectGateContract;
 use Polis\Contracts\ThreadSecurity\ThreadSubjectGateProviderContract;
 use Polis\Tests\CustomMockInterface;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
 /**
  * Class MessagePolicyTest
  */
-final class MessagePolicyTest extends TestCase
+final class MessagePolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     /**
      * @var ThreadSubjectGateProviderContract|CustomMockInterface
      */

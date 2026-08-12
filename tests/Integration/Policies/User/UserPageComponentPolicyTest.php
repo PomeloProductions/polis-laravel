@@ -8,13 +8,11 @@ use App\Models\User\User;
 use App\Models\User\UserPage;
 use App\Models\User\UserPageComponent;
 use App\Policies\User\UserPageComponentPolicy;
-use Polis\Tests\DatabaseSetupTrait;
-use Polis\Tests\TestCase;
+use Polis\Tests\Application\ApplicationTestCase;
 
-final class UserPageComponentPolicyTest extends TestCase
+final class UserPageComponentPolicyTest extends ApplicationTestCase
 {
-    use DatabaseSetupTrait;
-
+    
     public function test_all_passes(): void
     {
         $user = User::factory()->create();
