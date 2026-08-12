@@ -106,10 +106,9 @@ jobs:
       # suite never collide with the real App\ classes.
       #
       # These are HARD gates: they must pass. The Feature/Integration suites in
-      # phpunit-app.xml enumerate ONLY the tests that genuinely pass today.
-      # Ported tests that are not yet green stay in the Consumer-Only suite
-      # (not run here) and are moved into these suites as they go green — they
-      # are never force-passed.
+      # phpunit-app.xml run the ENTIRE tests/Feature and tests/Integration
+      # directories (no enumerated allow-list) — every ported PolisOS test runs
+      # here and must be green.
       - name: Run Feature tests (dummy consumer app)
         run: php -d memory_limit=1G ./vendor/bin/phpunit -c phpunit-app.xml --testsuite=Feature
 
