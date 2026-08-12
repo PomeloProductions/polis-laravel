@@ -31,10 +31,15 @@ use Polis\ThreadSecurity\ThreadSubjectGateProvider;
  * Policy bodies can be empty one-liners if the abstract already covers the
  * needed abilities.
  *
- * The {@see guessPolicyName()} method below tells Laravel's gate to look
- * for `App\Policies\...Policy` (NOT `Polis\Policies\...Policy`), so failing
- * to ship those concretes will surface a "class not found" error from the
- * gate at first authorisation check rather than silently no-op.
+ * The {@see guessPolicyName()} method below first looks for a consumer
+ * `App\Policies\...Policy` override. When that concrete does NOT exist it
+ * falls back to the package's own concrete `Polis\Policies\...Policy`
+ * (which extends the corresponding `...PolicyAbstract`). This means a
+ * consumer application no longer has to ship an empty
+ * `App\Policies\...Policy extends Polis\Policies\...PolicyAbstract {}`
+ * shim: omitting it transparently uses the package default. A consumer
+ * `App\Policies\...Policy` still wins whenever it is present, so existing
+ * applications that DO ship those shims behave exactly as before.
  */
 abstract class BaseAuthServiceProvider extends ServiceProvider
 {
@@ -79,10 +84,35 @@ abstract class BaseAuthServiceProvider extends ServiceProvider
     }
 
     /**
-     * Automatically guesses a policies name based on the app structure
+     * Automatically guesses a policy class name based on the app structure.
+     *
+     * The consumer override at `App\Policies\...Policy` is always preferred.
+     * When it does not exist, this falls back to the package's own concrete
+     * policy at the equivalent `Polis\Policies\...Policy` FQN so consumers no
+     * longer need to ship empty pass-through policy shims. Returning the
+     * (possibly still-missing) `App\` name in the no-fallback case preserves
+     * the original behaviour of surfacing a clear class-not-found error at the
+     * first authorization check rather than silently no-op'ing.
      */
     public function guessPolicyName(string $modelClass): string
     {
-        return str_replace('Models', 'Policies', $modelClass).'Policy';
+        $appPolicy = str_replace('Models', 'Policies', $modelClass).'Policy';
+
+        if (class_exists($appPolicy)) {
+            return $appPolicy;
+        }
+
+        // Map the App\ policy FQN to the package concrete: App\Policies\X\YPolicy
+        // becomes Polis\Policies\X\YPolicy. Only rewrite a leading `App\`
+        // segment so unrelated namespaces are left untouched.
+        if (str_starts_with($appPolicy, 'App\\')) {
+            $polisPolicy = 'Polis\\'.substr($appPolicy, strlen('App\\'));
+
+            if (class_exists($polisPolicy)) {
+                return $polisPolicy;
+            }
+        }
+
+        return $appPolicy;
     }
 }
