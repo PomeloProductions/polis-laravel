@@ -56,6 +56,26 @@ final class RequestResolverTest extends TestCase
         $this->assertNull(RequestResolver::appOverrideFor('App\\Models\\User'));
     }
 
+    public function test_package_requests_discovers_the_shipped_concrete_requests(): void
+    {
+        $requests = RequestResolver::packageRequests();
+
+        // Guards the filesystem-scan path (a wrong base dir silently returns an
+        // empty list, which would disable every override binding). A concrete,
+        // known package request must be discovered, and the abstract bases must
+        // NOT be.
+        $this->assertContains(PolisFeatureIndexRequest::class, $requests);
+        $this->assertContains(
+            'Polis\\Http\\Core\\Requests\\Organization\\Article\\IndexRequest',
+            $requests,
+        );
+        $this->assertNotContains(
+            'Polis\\Http\\Core\\Requests\\BaseAuthenticatedRequestAbstract',
+            $requests,
+        );
+        $this->assertGreaterThan(50, count($requests));
+    }
+
     public function test_resolve_returns_package_request_when_no_override_exists(): void
     {
         // Use a synthetic package request under an un-aliased Probe namespace so

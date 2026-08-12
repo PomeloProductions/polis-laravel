@@ -81,7 +81,9 @@ final class RequestResolver
      */
     public static function packageRequests(): array
     {
-        $baseDir = dirname(__DIR__, 3).'/src/Http/Core/Requests';
+        // This file lives at src/Http/Core/Requests/RequestResolver.php, so
+        // __DIR__ is already the package requests root.
+        $baseDir = __DIR__;
 
         if (! is_dir($baseDir)) {
             return [];
