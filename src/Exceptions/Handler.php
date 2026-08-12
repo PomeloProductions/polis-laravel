@@ -15,6 +15,8 @@ use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 use Polis\Exceptions\JWT\TokenMissingException;
 use Polis\Exceptions\JWT\TokenUserNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -78,6 +80,17 @@ class Handler extends ExceptionHandler
         ];
 
         switch (true) {
+            case $exception instanceof TokenExpiredException:
+            case $exception instanceof TokenInvalidException:
+                // Expired/invalid JWTs are an authentication failure, not a
+                // server error. These are subclasses of JWTException and would
+                // already fall through to the generic JWTException case below,
+                // but we map them explicitly so the 401 contract is regression
+                // proof against future reordering of the switch.
+                $response['message'] = $exception->getMessage();
+                $status = 401;
+                break;
+
             case $exception instanceof JWTException:
                 $response['message'] = $exception->getMessage();
                 $status = 401;
