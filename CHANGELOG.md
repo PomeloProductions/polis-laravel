@@ -7,6 +7,25 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.4.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.3.0...v0.4.0) (2026-08-13)
+
+
+### Features
+
+* **policies:** fall back to package concrete policy when consumer omits App shim ([c6a1ac2](https://github.com/PomeloProductions/polis-laravel/commit/c6a1ac26e8f09552d6415fcc3bc1b49c0d146fac))
+* **policies:** fall back to package concrete policy when no App override exists ([16843dd](https://github.com/PomeloProductions/polis-laravel/commit/16843ddfe69bacbf122804a40e9f91f0e4400f86))
+* **requests:** resolve App request overrides so consumers can drop request shims ([0e9df38](https://github.com/PomeloProductions/polis-laravel/commit/0e9df380e01381b7215a678f2ea0c223c82169fc))
+* **requests:** resolve App request overrides so consumers can drop request shims ([6eae52f](https://github.com/PomeloProductions/polis-laravel/commit/6eae52fef008656f973fc01e369e7a5298df9714))
+
+
+### Bug Fixes
+
+* **dashboard:** explicit JWT 401 mapping + allow organization-manager user expand ([70d444c](https://github.com/PomeloProductions/polis-laravel/commit/70d444cf004d02f9619a39dbe5571c62fb3c423a))
+* **dashboard:** explicit JWT 401 mapping + allow organization-manager user expand + feature tests ([64e4d24](https://github.com/PomeloProductions/polis-laravel/commit/64e4d24dcdf5ef04d2cf6d90716923562e974d7f))
+* **dashboard:** JWT 401 mapping + organization-manager user expand ([67f69f7](https://github.com/PomeloProductions/polis-laravel/commit/67f69f74fc00d1ab34443f34ba0b9cdd775cdb84))
+* **dashboard:** map expired/invalid JWT to 401 + allow organization-manager user expand ([d2a4256](https://github.com/PomeloProductions/polis-laravel/commit/d2a42563a7e1b9c599fd34a79143649d1acefd95))
+* **requests:** correct packageRequests() scan dir so override bindings register ([94e2b5b](https://github.com/PomeloProductions/polis-laravel/commit/94e2b5b25c8f8052e9ac5f04ce5606facb6eb24e))
+
 ## [0.3.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.2.0...v0.3.0) (2026-08-07)
 
 
