@@ -39,7 +39,7 @@ final class ForgotPasswordControllerAbstractTest extends ControllerTestCase
             ->with(['token' => 'opaque-token-abc'], $user);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\ForgotPassword\\ForgotPasswordRequest',
+            'Polis\\Http\\Core\\Requests\\ForgotPassword\\ForgotPasswordRequest',
             ['email' => 'alice@example.test'],
         );
 
@@ -65,7 +65,7 @@ final class ForgotPasswordControllerAbstractTest extends ControllerTestCase
             ->andReturn($user);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\ForgotPassword\\ResetPasswordRequest',
+            'Polis\\Http\\Core\\Requests\\ForgotPassword\\ResetPasswordRequest',
             ['email' => 'alice@example.test', 'password' => 'NewPassw0rd!', 'token' => 't'],
         );
 

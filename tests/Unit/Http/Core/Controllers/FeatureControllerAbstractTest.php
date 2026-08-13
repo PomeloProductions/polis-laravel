@@ -7,6 +7,8 @@ namespace Polis\Tests\Unit\Http\Core\Controllers;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Mockery;
 use Polis\Contracts\Repositories\FeatureRepositoryContract;
+use Polis\Http\Core\Requests\Feature\IndexRequest;
+use Polis\Http\Core\Requests\Feature\ViewRequest;
 use Polis\Tests\Fixtures\Controllers\FeatureController;
 use Polis\Tests\Fixtures\Models\Feature as FeatureFixture;
 
@@ -22,8 +24,10 @@ final class FeatureControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(FeatureRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
+        // FeatureControllerAbstract now type-hints the package request directly
+        // (no App shim required), so the test builds the package concrete.
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Feature\\IndexRequest',
+            IndexRequest::class,
             ['limit' => 50],
         );
 
@@ -38,7 +42,7 @@ final class FeatureControllerAbstractTest extends ControllerTestCase
     public function test_show_loads_expand(): void
     {
         $repo = Mockery::mock(FeatureRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Feature\\ViewRequest');
+        $request = $this->makeRequest(ViewRequest::class);
 
         $feature = Mockery::mock(FeatureFixture::class);
         $loaded = Mockery::mock(FeatureFixture::class);

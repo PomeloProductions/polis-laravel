@@ -22,7 +22,7 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class UserPageComponentControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_page(): void
+    public function test_index_scopes_find_all_to_parent_page(): void
     {
         $repo = Mockery::mock(UserPageComponentRepositoryContract::class);
         $user = Mockery::mock(UserFixture::class);
@@ -30,7 +30,7 @@ final class UserPageComponentControllerAbstractTest extends ControllerTestCase
         $page->id = 33;
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\UserPageComponent\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\UserPageComponent\\IndexRequest');
 
         $repo->shouldReceive('findAll')
             ->once()
@@ -56,7 +56,7 @@ final class UserPageComponentControllerAbstractTest extends ControllerTestCase
         $page->id = 42;
 
         $payload = ['component_type' => 'TextBlock', 'props' => ['text' => 'Hi']];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPageComponent\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPageComponent\\StoreRequest', $payload);
 
         $existing = new Collection;
         $existing->push((object) ['display_order' => 7]);
@@ -87,7 +87,7 @@ final class UserPageComponentControllerAbstractTest extends ControllerTestCase
         $updated = Mockery::mock(UserPageComponentFixture::class);
 
         $payload = ['props' => ['updated' => true]];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPageComponent\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPageComponent\\UpdateRequest', $payload);
 
         $repo->shouldReceive('update')->once()->with($component, $payload)->andReturn($updated);
 
@@ -104,7 +104,7 @@ final class UserPageComponentControllerAbstractTest extends ControllerTestCase
         $page = Mockery::mock(UserPageFixture::class);
         $component = Mockery::mock(UserPageComponentFixture::class);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPageComponent\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPageComponent\\DeleteRequest');
         $repo->shouldReceive('delete')->once()->with($component);
 
         $response = (new UserPageComponentController($repo))->destroy($request, $user, $page, $component);

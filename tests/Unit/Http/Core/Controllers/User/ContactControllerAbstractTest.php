@@ -25,14 +25,14 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class ContactControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_user(): void
+    public function test_index_scopes_find_all_to_parent_user(): void
     {
         $repo = Mockery::mock(ContactRepositoryContract::class);
         $dispatcher = Mockery::mock(Dispatcher::class);
         $user = Mockery::mock(UserFixture::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\Contact\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\Contact\\IndexRequest');
         $repo->shouldReceive('findAll')
             ->once()
             ->with([], [], [], [], 10, [$user], 1)
@@ -49,7 +49,7 @@ final class ContactControllerAbstractTest extends ControllerTestCase
         $user->id = 21;
 
         $payload = ['requested_id' => 99];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\Contact\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\Contact\\StoreRequest', $payload);
 
         $created = Mockery::mock(ContactFixture::class);
         $created->shouldReceive('toJson')->andReturn('{}');
@@ -74,7 +74,7 @@ final class ContactControllerAbstractTest extends ControllerTestCase
         $contact = Mockery::mock(ContactFixture::class);
         $updated = Mockery::mock(ContactFixture::class);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\Contact\\UpdateRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\Contact\\UpdateRequest', [
             'confirm' => true,
         ]);
 
@@ -101,7 +101,7 @@ final class ContactControllerAbstractTest extends ControllerTestCase
         $contact = Mockery::mock(ContactFixture::class);
         $updated = Mockery::mock(ContactFixture::class);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\Contact\\UpdateRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\Contact\\UpdateRequest', [
             'deny' => true,
         ]);
 

@@ -32,7 +32,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
         $thread = Mockery::mock(ThreadFixture::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\Thread\\Message\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\Thread\\Message\\IndexRequest');
 
         $repo->shouldReceive('findAll')
             ->once()
@@ -54,7 +54,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\User\\Thread\\Message\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\User\\Thread\\Message\\IndexRequest',
             ['order' => ['created_at' => 'asc']],
         );
 
@@ -78,7 +78,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
 
         $payload = ['message' => 'Hello world'];
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\User\\Thread\\Message\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\User\\Thread\\Message\\StoreRequest',
             $payload,
         );
 
@@ -110,7 +110,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
         $updated = Mockery::mock(MessageFixture::class);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\User\\Thread\\Message\\UpdateRequest',
+            'Polis\\Http\\Core\\Requests\\User\\Thread\\Message\\UpdateRequest',
             ['seen' => true],
         );
 
@@ -134,7 +134,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
         $updated = Mockery::mock(MessageFixture::class);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\User\\Thread\\Message\\UpdateRequest',
+            'Polis\\Http\\Core\\Requests\\User\\Thread\\Message\\UpdateRequest',
         );
 
         $repo->shouldReceive('update')->once()->with($message, [])->andReturn($updated);

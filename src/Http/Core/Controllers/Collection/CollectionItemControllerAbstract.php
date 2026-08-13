@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Collection;
 
-use App\Http\Core\Requests;
 use App\Models\Collection\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Polis\Contracts\Repositories\Collection\CollectionItemRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 
 /**
  * Class ThreadControllerAbstract

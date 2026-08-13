@@ -20,13 +20,13 @@ use Polis\Tests\Fixtures\Models\Category as CategoryFixture;
  */
 final class CategoryControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_delegates_to_repository_findAll_with_parsed_query_args(): void
+    public function test_index_delegates_to_repository_find_all_with_parsed_query_args(): void
     {
         $repo = Mockery::mock(CategoryRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Category\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Category\\IndexRequest',
             [
                 'cleaned_filter' => [['name', '=', 'foo']],
                 'cleaned_search' => [['name', 'like', '%bar%']],
@@ -60,7 +60,7 @@ final class CategoryControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(CategoryRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Category\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Category\\IndexRequest');
 
         $repo->shouldReceive('findAll')
             ->once()
@@ -75,7 +75,7 @@ final class CategoryControllerAbstractTest extends ControllerTestCase
     public function test_show_loads_expand_with_specified_relations(): void
     {
         $repo = Mockery::mock(CategoryRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Category\\ViewRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Category\\ViewRequest', [
             'with' => ['articles'],
         ]);
 
@@ -93,7 +93,7 @@ final class CategoryControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(CategoryRepositoryContract::class);
         $payload = ['name' => 'New Category'];
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Category\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Category\\StoreRequest', $payload);
 
         $created = Mockery::mock(CategoryFixture::class);
         // response($model, 201) renders the model via toJson()
@@ -113,7 +113,7 @@ final class CategoryControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(CategoryRepositoryContract::class);
         $payload = ['name' => 'Renamed'];
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Category\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Category\\UpdateRequest', $payload);
 
         $model = Mockery::mock(CategoryFixture::class);
         $updated = Mockery::mock(CategoryFixture::class);
@@ -127,7 +127,7 @@ final class CategoryControllerAbstractTest extends ControllerTestCase
     public function test_destroy_deletes_via_repository_and_returns_204_no_content(): void
     {
         $repo = Mockery::mock(CategoryRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Category\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Category\\DeleteRequest');
 
         $model = Mockery::mock(CategoryFixture::class);
         $repo->shouldReceive('delete')->once()->with($model);

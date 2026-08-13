@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Polis\Contracts\Repositories\ResourceRepositoryContract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 
 /**
  * Class ResourceControllerAbstract

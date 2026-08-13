@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Mockery;
 use Polis\Contracts\Repositories\Wiki\ArticleVersionRepositoryContract;
+use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Controllers\Article\ArticleVersionController;
 use Polis\Tests\Fixtures\Models\Article as ArticleFixture;
 use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
@@ -25,7 +26,7 @@ final class ArticleVersionControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(ArticleVersionRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Article\\ArticleVersion\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Article\\ArticleVersion\\IndexRequest',
         );
         $article = Mockery::mock(ArticleFixture::class);
 
@@ -42,12 +43,12 @@ final class ArticleVersionControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(ArticleVersionRepositoryContract::class);
         $payload = ['content' => 'v2 body'];
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Article\\ArticleVersion\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\Article\\ArticleVersion\\StoreRequest',
             $payload,
         );
         $article = Mockery::mock(ArticleFixture::class);
 
-        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
+        $created = Mockery::mock(BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

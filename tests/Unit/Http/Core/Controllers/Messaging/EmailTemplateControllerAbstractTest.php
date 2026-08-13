@@ -225,17 +225,17 @@ final class EmailTemplateControllerAbstractTest extends TestCase
 
     private function makeIndexRequest(): MockInterface
     {
-        return Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\IndexRequest');
+        return Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\IndexRequest');
     }
 
     private function makeViewRequest(): MockInterface
     {
-        return Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\ViewRequest');
+        return Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\ViewRequest');
     }
 
     private function makeUpdateRequest(array $payload): MockInterface
     {
-        $request = Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\UpdateRequest');
+        $request = Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\UpdateRequest');
         $request->shouldReceive('input')
             ->with('subject')
             ->andReturn($payload['subject']);
@@ -248,7 +248,7 @@ final class EmailTemplateControllerAbstractTest extends TestCase
 
     private function makeDeleteRequest(): MockInterface
     {
-        return Mockery::mock('App\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\DeleteRequest');
+        return Mockery::mock('Polis\\Http\\Core\\Requests\\Messaging\\EmailTemplate\\DeleteRequest');
     }
 
     /**

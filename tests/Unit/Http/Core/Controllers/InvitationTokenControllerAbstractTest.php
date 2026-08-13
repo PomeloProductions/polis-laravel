@@ -26,7 +26,7 @@ final class InvitationTokenControllerAbstractTest extends ControllerTestCase
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\InvitationToken\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\InvitationToken\\IndexRequest',
             ['limit' => 15, 'page' => 2],
         );
 
@@ -53,7 +53,7 @@ final class InvitationTokenControllerAbstractTest extends ControllerTestCase
             ->andReturn($created);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\InvitationToken\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\InvitationToken\\StoreRequest',
             $payload,
         );
 
@@ -66,7 +66,7 @@ final class InvitationTokenControllerAbstractTest extends ControllerTestCase
     public function test_show_returns_bound_invitation_token_directly(): void
     {
         $repo = Mockery::mock(InvitationTokenRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\InvitationToken\\ViewRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\InvitationToken\\ViewRequest');
         $token = Mockery::mock(InvitationTokenFixture::class);
 
         $this->assertSame($token, (new InvitationTokenController($repo))->show($request, $token));
@@ -77,7 +77,7 @@ final class InvitationTokenControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(InvitationTokenRepositoryContract::class);
         $payload = ['revoked' => true];
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\InvitationToken\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\InvitationToken\\UpdateRequest', $payload);
         $token = Mockery::mock(InvitationTokenFixture::class);
         $updated = Mockery::mock(InvitationTokenFixture::class);
 
@@ -89,7 +89,7 @@ final class InvitationTokenControllerAbstractTest extends ControllerTestCase
     public function test_destroy_deletes_and_returns_204(): void
     {
         $repo = Mockery::mock(InvitationTokenRepositoryContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\InvitationToken\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\InvitationToken\\DeleteRequest');
 
         $token = Mockery::mock(InvitationTokenFixture::class);
         $repo->shouldReceive('delete')->once()->with($token);

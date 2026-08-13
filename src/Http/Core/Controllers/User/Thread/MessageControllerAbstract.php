@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\User\Thread;
 
-use App\Http\Core\Requests;
 use App\Models\Messaging\Message;
 use App\Models\Messaging\Thread;
 use App\Models\User\User;
@@ -14,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Polis\Contracts\Repositories\Messaging\MessageRepositoryContract;
 use Polis\Http\Core\Controllers\BaseControllerAbstract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 use Polis\Models\BaseModelAbstract;
 
 /**

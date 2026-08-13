@@ -32,7 +32,7 @@ final class SubscriptionControllerAbstractTest extends ControllerTestCase
         $entity->id = 21;
         $entity->shouldReceive('morphRelationName')->andReturn('users');
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\Entity\\Subscription\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\Entity\\Subscription\\IndexRequest');
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
         $repo->shouldReceive('findAll')
@@ -54,7 +54,7 @@ final class SubscriptionControllerAbstractTest extends ControllerTestCase
         $entity = Mockery::mock(IsAnEntityContract::class);
 
         $payload = ['membership_plan_rate_id' => 7, 'payment_method_id' => 99];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Entity\\Subscription\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Entity\\Subscription\\StoreRequest', $payload);
 
         $created = Mockery::mock(SubscriptionFixture::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
@@ -76,7 +76,7 @@ final class SubscriptionControllerAbstractTest extends ControllerTestCase
         $entity = Mockery::mock(IsAnEntityContract::class);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Entity\\Subscription\\UpdateRequest',
+            'Polis\\Http\\Core\\Requests\\Entity\\Subscription\\UpdateRequest',
             ['cancel' => true],
         );
 
@@ -105,7 +105,7 @@ final class SubscriptionControllerAbstractTest extends ControllerTestCase
 
         $payload = ['payment_method_id' => 12];
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Entity\\Subscription\\UpdateRequest',
+            'Polis\\Http\\Core\\Requests\\Entity\\Subscription\\UpdateRequest',
             $payload,
         );
 

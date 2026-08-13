@@ -31,7 +31,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $user->id = 5;
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\UserPage\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\UserPage\\IndexRequest');
 
         $repo->shouldReceive('findAll')
             ->once()
@@ -54,7 +54,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $user->shouldReceive('morphRelationName')->andReturn('user');
 
         $payload = ['name' => 'My New Page'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPage\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPage\\StoreRequest', $payload);
 
         // Slug-uniqueness loop: first lookup returns empty Collection so the
         // base slug 'my-new-page' is kept.
@@ -104,7 +104,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $page->is_required = true;
 
         $payload = ['name' => 'Renamed', 'slug' => 'should-be-ignored', 'route_path' => '/x', 'page_type' => 'custom'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPage\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPage\\UpdateRequest', $payload);
 
         $updated = Mockery::mock(UserPageFixture::class);
         $repo->shouldReceive('update')
@@ -124,7 +124,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $page->is_required = false;
 
         $payload = ['name' => 'Renamed', 'slug' => 'kept'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPage\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPage\\UpdateRequest', $payload);
 
         $updated = Mockery::mock(UserPageFixture::class);
         $repo->shouldReceive('update')->once()->with($page, $payload)->andReturn($updated);
@@ -142,7 +142,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         // Name "1 Hot Page" starts with a digit; the slug helper prefixes
         // 'page-' in that branch.
         $payload = ['name' => '1 Hot Page'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPage\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPage\\StoreRequest', $payload);
 
         $nonEmpty = new Collection;
         $nonEmpty->push((object) ['slug' => 'page-1-hot-page']);
@@ -182,7 +182,7 @@ final class UserPageControllerAbstractTest extends ControllerTestCase
         $user = Mockery::mock(UserFixture::class);
         $page = Mockery::mock(UserPageFixture::class);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UserPage\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UserPage\\DeleteRequest');
         $repo->shouldReceive('delete')->once()->with($page);
 
         $response = (new UserPageController($repo))->destroy($request, $user, $page);

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use App\Models\Vote\Ballot;
 use Polis\Contracts\Repositories\Vote\BallotRepositoryContract;
 use Polis\Http\Core\Controllers\Traits\HasViewRequests;
+use Polis\Http\Core\Requests;
 
 /**
  * Class BallotControllerAbstract

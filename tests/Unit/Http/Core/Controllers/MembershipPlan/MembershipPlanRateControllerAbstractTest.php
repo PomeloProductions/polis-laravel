@@ -18,12 +18,12 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class MembershipPlanRateControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_membership_plan(): void
+    public function test_index_scopes_find_all_to_parent_membership_plan(): void
     {
         $repo = Mockery::mock(MembershipPlanRateRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\MembershipPlan\\MembershipPlanRate\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\MembershipPlan\\MembershipPlanRate\\IndexRequest',
         );
         $plan = Mockery::mock(MembershipPlanFixture::class);
 

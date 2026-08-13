@@ -18,13 +18,13 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class BallotCompletionControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_user(): void
+    public function test_index_scopes_find_all_to_parent_user(): void
     {
         $repo = Mockery::mock(BallotCompletionRepositoryContract::class);
         $user = Mockery::mock(UserFixture::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
 
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\BallotCompletion\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\BallotCompletion\\IndexRequest');
         $repo->shouldReceive('findAll')
             ->once()
             ->with([], [], [], [], 10, [$user], 1)

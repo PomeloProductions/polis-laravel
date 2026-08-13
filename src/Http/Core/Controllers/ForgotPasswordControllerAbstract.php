@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use Illuminate\Http\JsonResponse;
 use Polis\Contracts\Repositories\User\PasswordTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\UserRepositoryContract;
+use Polis\Http\Core\Requests;
 
 /**
  * Class ForgotPasswordControllerAbstract

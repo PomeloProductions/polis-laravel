@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers\Entity;
 
-use App\Http\Core\Requests;
 use App\Models\Asset;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -13,6 +12,7 @@ use Illuminate\Http\Response;
 use Mimey\MimeTypes;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\AssetRepositoryContract;
+use Polis\Http\Core\Requests;
 use Polis\Http\Core\Requests\BaseRequestAbstract;
 use Polis\Models\BaseModelAbstract;
 

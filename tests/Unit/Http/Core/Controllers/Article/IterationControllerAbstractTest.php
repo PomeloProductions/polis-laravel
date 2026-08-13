@@ -18,12 +18,12 @@ use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
  */
 final class IterationControllerAbstractTest extends ControllerTestCase
 {
-    public function test_index_scopes_findAll_to_parent_article(): void
+    public function test_index_scopes_find_all_to_parent_article(): void
     {
         $repo = Mockery::mock(ArticleIterationRepositoryContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Article\\Iteration\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Article\\Iteration\\IndexRequest',
             ['limit' => 50],
         );
         $article = Mockery::mock(ArticleFixture::class);

@@ -40,7 +40,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
             ],
         ];
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Message\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Message\\StoreRequest', $payload);
 
         $created = Mockery::mock(MessageFixture::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
@@ -65,7 +65,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
         Auth::shouldReceive('user')->once()->andReturn(null);
 
         $payload = ['data' => ['name' => 'Combined Name']];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Message\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Message\\StoreRequest', $payload);
 
         $created = Mockery::mock(MessageFixture::class);
         $created->shouldReceive('toJson')->andReturn('{}');
@@ -91,7 +91,7 @@ final class MessageControllerAbstractTest extends ControllerTestCase
             'reply_to_name' => 'Custom Name',
             'data' => ['email' => 'ignored@example.test', 'name' => 'Ignored'],
         ];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Message\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Message\\StoreRequest', $payload);
 
         $created = Mockery::mock(MessageFixture::class);
         $created->shouldReceive('toJson')->andReturn('{}');

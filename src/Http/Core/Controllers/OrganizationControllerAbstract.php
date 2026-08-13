@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Http\Core\Controllers;
 
-use App\Http\Core\Requests;
 use App\Models\Organization\Organization;
 use App\Models\Role;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -12,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Polis\Contracts\Repositories\Organization\OrganizationManagerRepositoryContract;
 use Polis\Contracts\Repositories\Organization\OrganizationRepositoryContract;
 use Polis\Http\Core\Controllers\Traits\HasIndexRequests;
+use Polis\Http\Core\Requests;
 use Polis\Models\BaseModelAbstract;
 
 /**

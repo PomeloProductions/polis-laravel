@@ -33,7 +33,7 @@ final class AssetControllerAbstractTest extends ControllerTestCase
         $entity->shouldReceive('morphRelationName')->andReturn('users');
 
         $request = $this->makeIndexRequest(
-            'App\\Http\\Core\\Requests\\Entity\\Asset\\IndexRequest',
+            'Polis\\Http\\Core\\Requests\\Entity\\Asset\\IndexRequest',
         );
 
         $paginator = Mockery::mock(LengthAwarePaginator::class);
@@ -62,7 +62,7 @@ final class AssetControllerAbstractTest extends ControllerTestCase
         // Real instance of the AssetUploadRequest stub so getDecodedContents +
         // getFileMimeType behave consistently.
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Entity\\Asset\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\Entity\\Asset\\StoreRequest',
             ['caption' => 'Logo'],
         );
         $request = Mockery::mock($request)->makePartial();
@@ -98,7 +98,7 @@ final class AssetControllerAbstractTest extends ControllerTestCase
 
         $payload = ['caption' => 'Updated'];
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Entity\\Asset\\UpdateRequest',
+            'Polis\\Http\\Core\\Requests\\Entity\\Asset\\UpdateRequest',
             $payload,
         );
         $asset = Mockery::mock(AssetFixture::class);
@@ -113,7 +113,7 @@ final class AssetControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(AssetRepositoryContract::class);
         $mimey = Mockery::mock(MimeTypes::class);
         $entity = Mockery::mock(IsAnEntityContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Entity\\Asset\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Entity\\Asset\\DeleteRequest');
 
         $asset = Mockery::mock(AssetFixture::class);
         $repo->shouldReceive('delete')->once()->with($asset);

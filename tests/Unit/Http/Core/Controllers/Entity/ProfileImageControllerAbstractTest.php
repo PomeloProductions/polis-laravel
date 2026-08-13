@@ -9,6 +9,7 @@ use Mimey\MimeTypes;
 use Mockery;
 use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\User\ProfileImageRepositoryContract;
+use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Controllers\Entity\ProfileImageController;
 use Polis\Tests\Fixtures\Models\User as UserFixture;
 use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
@@ -36,12 +37,12 @@ final class ProfileImageControllerAbstractTest extends ControllerTestCase
         $entity->id = 4;
         $entity->shouldReceive('morphRelationName')->andReturn('users');
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\Entity\\ProfileImage\\StoreRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\Entity\\ProfileImage\\StoreRequest');
         $request = Mockery::mock($request)->makePartial();
         $request->shouldReceive('getDecodedContents')->once()->andReturn('binary');
         $request->shouldReceive('getFileMimeType')->once()->andReturn('image/jpeg');
 
-        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
+        $created = Mockery::mock(BaseModelAbstract::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
         $repo->shouldReceive('create')
             ->once()

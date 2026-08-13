@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Unit\Http\Core\Controllers;
 
+use Illuminate\Contracts\Auth\Factory;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Mockery;
@@ -25,7 +27,7 @@ final class UserControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(UserRepositoryContract::class);
         $stripe = Mockery::mock(StripeCustomerServiceContract::class);
         $paginator = Mockery::mock(LengthAwarePaginator::class);
-        $request = $this->makeIndexRequest('App\\Http\\Core\\Requests\\User\\IndexRequest');
+        $request = $this->makeIndexRequest('Polis\\Http\\Core\\Requests\\User\\IndexRequest');
 
         $repo->shouldReceive('findAll')->once()->andReturn($paginator);
 
@@ -37,7 +39,7 @@ final class UserControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(UserRepositoryContract::class);
         $stripe = Mockery::mock(StripeCustomerServiceContract::class);
         $payload = ['email' => 'new@example.test'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\StoreRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\StoreRequest', $payload);
 
         $created = Mockery::mock(UserFixture::class);
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
@@ -53,7 +55,7 @@ final class UserControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(UserRepositoryContract::class);
         $stripe = Mockery::mock(StripeCustomerServiceContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\ViewRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\ViewRequest', [
             'with' => ['contacts'],
         ]);
 
@@ -69,7 +71,7 @@ final class UserControllerAbstractTest extends ControllerTestCase
         $repo = Mockery::mock(UserRepositoryContract::class);
         $stripe = Mockery::mock(StripeCustomerServiceContract::class);
         $payload = ['first_name' => 'Updated'];
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\UpdateRequest', $payload);
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\UpdateRequest', $payload);
 
         $user = Mockery::mock(UserFixture::class);
         $updated = Mockery::mock(UserFixture::class);
@@ -91,14 +93,14 @@ final class UserControllerAbstractTest extends ControllerTestCase
         // auth()->user() routes through the helper -> Auth\Factory ->
         // Guard. Bind a mock Auth\Factory at the container key so the
         // helper resolves through us.
-        $guard = Mockery::mock(\Illuminate\Contracts\Auth\Guard::class);
+        $guard = Mockery::mock(Guard::class);
         $guard->shouldReceive('user')->andReturn($user);
-        $authFactory = Mockery::mock(\Illuminate\Contracts\Auth\Factory::class);
+        $authFactory = Mockery::mock(Factory::class);
         $authFactory->shouldReceive('guard')->andReturn($guard);
         $authFactory->shouldReceive('user')->andReturn($user);
-        app()->instance(\Illuminate\Contracts\Auth\Factory::class, $authFactory);
+        app()->instance(Factory::class, $authFactory);
 
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\MeRequest', [
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\MeRequest', [
             'with' => ['contacts'],
         ]);
 
@@ -111,7 +113,7 @@ final class UserControllerAbstractTest extends ControllerTestCase
     {
         $repo = Mockery::mock(UserRepositoryContract::class);
         $stripe = Mockery::mock(StripeCustomerServiceContract::class);
-        $request = $this->makeRequest('App\\Http\\Core\\Requests\\User\\DeleteRequest');
+        $request = $this->makeRequest('Polis\\Http\\Core\\Requests\\User\\DeleteRequest');
 
         $user = Mockery::mock(UserFixture::class);
         $repo->shouldReceive('delete')->once()->with($user);

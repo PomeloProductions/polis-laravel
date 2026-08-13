@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Mockery;
 use Polis\Contracts\Repositories\Vote\BallotCompletionRepositoryContract;
+use Polis\Models\BaseModelAbstract;
 use Polis\Tests\Fixtures\Controllers\Ballot\BallotCompletionController;
 use Polis\Tests\Fixtures\Models\Ballot as BallotFixture;
 use Polis\Tests\Unit\Http\Core\Controllers\ControllerTestCase;
@@ -33,7 +34,7 @@ final class BallotCompletionControllerAbstractTest extends ControllerTestCase
 
         $payload = ['votes' => [['ballot_item_id' => 1, 'value' => 'yes']]];
 
-        $created = Mockery::mock(\Polis\Models\BaseModelAbstract::class);
+        $created = Mockery::mock(BaseModelAbstract::class);
         $created->shouldReceive('load')->once()->with('votes');
         $created->shouldReceive('toJson')->andReturn('{"id":1}');
 
@@ -43,7 +44,7 @@ final class BallotCompletionControllerAbstractTest extends ControllerTestCase
             ->andReturn($created);
 
         $request = $this->makeRequest(
-            'App\\Http\\Core\\Requests\\Ballot\\BallotCompletion\\StoreRequest',
+            'Polis\\Http\\Core\\Requests\\Ballot\\BallotCompletion\\StoreRequest',
             $payload,
         );
 
