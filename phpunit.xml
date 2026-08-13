@@ -101,6 +101,7 @@
       <file>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/BasePolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/CollectionPolicyAbstractTest.php</file>
+      <file>./tests/Unit/Policies/ConcreteFallbackPoliciesTest.php</file>
       <file>./tests/Unit/Policies/ExternalAccountConnectionPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/MessagingPolicyAbstractTest.php</file>
       <file>./tests/Unit/Policies/OrganizationArticlePolicyAbstractTest.php</file>
@@ -279,6 +280,7 @@
       <exclude>./tests/Unit/Policies/BasePolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/BaseBelongsToOrganizationPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/CollectionPolicyAbstractTest.php</exclude>
+      <exclude>./tests/Unit/Policies/ConcreteFallbackPoliciesTest.php</exclude>
       <exclude>./tests/Unit/Policies/MessagingPolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/OrganizationArticlePolicyAbstractTest.php</exclude>
       <exclude>./tests/Unit/Policies/OrganizationPolicyAbstractTest.php</exclude>
