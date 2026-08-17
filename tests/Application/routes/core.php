@@ -195,9 +195,57 @@ Route::group(['middleware' => 'jwt.auth.protected'], function () {
             ],
         ]);
 
-        // The todos/* routes are PolisOS-specific (the Todo subsystem lives
-        // only in the PolisOS API app), so they are intentionally omitted from
-        // the package's dummy consumer app.
+        /**
+         * Todo subsystem. The whole module (TodoControllerAbstract +
+         * TodoTaskTreeService/TodoNodeTreeCodec/NodeTreeService + the
+         * User\Todo\* and User\TodoTemplate\* requests) ships in the package;
+         * these routes wire the concrete App\...\TodoController so it executes
+         * under test, mirroring the way PolisOS mounts it under
+         * `users/{user}/todos`. Authorization is self-scoped (a user may only
+         * touch their own todo surface) via TodoSetting/TodoTemplate policies.
+         */
+        Route::group(['prefix' => 'todos', 'as' => 'todo.'], function () {
+            Route::get('today', 'User\TodoController@today')->name('today');
+            Route::get('resolve', 'User\TodoController@resolve')->name('resolve');
+            Route::get('navigate', 'User\TodoController@navigate')->name('navigate');
+            Route::get('hierarchy', 'User\TodoController@hierarchy')->name('hierarchy');
+            Route::post('generate', 'User\TodoController@generate')->name('generate');
+
+            Route::get('settings', 'User\TodoController@settings')->name('settings.show');
+            Route::put('settings', 'User\TodoController@updateSettings')->name('settings.update');
+
+            Route::get('balances', 'User\TodoController@balanceIndex')->name('balances.index');
+
+            Route::patch('nodes/{clientId}', 'User\TodoController@patchNode')->name('nodes.patch');
+
+            // Timer (singular running-timer resource) + time-entry history.
+            Route::get('timer', 'User\TodoController@timerShow')->name('timer.show');
+            Route::post('timer', 'User\TodoController@timerStart')->name('timer.start');
+            Route::put('timer', 'User\TodoController@timerUpdate')->name('timer.update');
+            Route::delete('timer', 'User\TodoController@timerStop')->name('timer.stop');
+
+            Route::get('time-entries', 'User\TodoController@timeEntryIndex')->name('time-entries.index');
+            Route::post('time-entries', 'User\TodoController@timeEntryStore')->name('time-entries.store');
+            Route::put('time-entries/{timeEntry}', 'User\TodoController@timeEntryUpdate')->name('time-entries.update');
+            Route::delete('time-entries/{timeEntry}', 'User\TodoController@timeEntryDestroy')->name('time-entries.destroy');
+
+            // Calendars.
+            Route::get('calendars', 'User\TodoController@calendarIndex')->name('calendars.index');
+            Route::post('calendars', 'User\TodoController@calendarStore')->name('calendars.store');
+            Route::put('calendars/{calendar}', 'User\TodoController@calendarUpdate')->name('calendars.update');
+            Route::delete('calendars/{calendar}', 'User\TodoController@calendarDestroy')->name('calendars.destroy');
+
+            // Vacation (singular status resource).
+            Route::get('vacation', 'User\TodoController@vacationShow')->name('vacation.show');
+            Route::put('vacation', 'User\TodoController@vacationUpdate')->name('vacation.update');
+
+            // Templates.
+            Route::get('templates', 'User\TodoController@templateIndex')->name('templates.index');
+            Route::post('templates', 'User\TodoController@templateStore')->name('templates.store');
+            Route::put('templates/{template}', 'User\TodoController@templateUpdate')->name('templates.update');
+            Route::delete('templates/{template}', 'User\TodoController@templateDestroy')->name('templates.destroy');
+        });
+
         Route::group(['prefix' => 'pages/{page}', 'as' => 'page.'], function () {
             Route::resource('components', 'User\UserPageComponentController', [
                 'parameters' => [
@@ -262,6 +310,31 @@ Route::group(['middleware' => 'jwt.auth.protected'], function () {
                 'index',
             ],
         ]);
+
+        /**
+         * Messaging: org-scoped email + push template admin. These mirror the
+         * route registration documented on
+         * Polis\Http\Core\Controllers\Messaging\{Email,Push}TemplateControllerAbstract.
+         * Templates are keyed by a string identifier (not a numeric id), so the
+         * {key} segment is a plain string parameter rather than a model binding.
+         */
+        Route::get('email-templates', 'Messaging\EmailTemplateController@index')
+            ->name('email-templates.index');
+        Route::get('email-templates/{key}', 'Messaging\EmailTemplateController@show')
+            ->name('email-templates.show');
+        Route::put('email-templates/{key}', 'Messaging\EmailTemplateController@update')
+            ->name('email-templates.update');
+        Route::delete('email-templates/{key}', 'Messaging\EmailTemplateController@destroy')
+            ->name('email-templates.destroy');
+
+        Route::get('push-templates', 'Messaging\PushTemplateController@index')
+            ->name('push-templates.index');
+        Route::get('push-templates/{key}', 'Messaging\PushTemplateController@show')
+            ->name('push-templates.show');
+        Route::put('push-templates/{key}', 'Messaging\PushTemplateController@update')
+            ->name('push-templates.update');
+        Route::delete('push-templates/{key}', 'Messaging\PushTemplateController@destroy')
+            ->name('push-templates.destroy');
     });
 
     /**
