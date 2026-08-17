@@ -22,9 +22,17 @@ declare(strict_types=1);
  * application and lives in the Consumer-Only suite, which CI does not run.
  * The generic framework itself is unit-covered; raise the floor again as the
  * DB/HTTP paths gain fixture-backed tests.
+ *
+ * Raised from 35.0 to 44.5 once the data-driven validation matrix landed and
+ * lifted real standalone Unit line coverage to ~45.09% (it instantiates every
+ * rule-bearing model and drives the validator). The floor sits just below the
+ * measured baseline so a regression trips it while normal fluctuation does
+ * not. This gate measures the UNIT suite only. Combined
+ * Unit+Feature+Integration coverage (~66%) is guarded separately by
+ * tools/merge-coverage.php --min so Feature/Integration cannot silently
+ * regress either.
  */
-
-const THRESHOLD = 35.0;
+const THRESHOLD = 44.5;
 
 if ($argc < 2) {
     fwrite(STDERR, "Usage: php {$argv[0]} <clover.xml>\n");

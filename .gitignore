@@ -8,6 +8,11 @@ composer.lock
 coverage/
 coverage-html/
 coverage.xml
+coverage-unit.xml
+coverage-feature.xml
+coverage-integration.xml
+coverage-combined.json
 coverage-baseline.txt
 coverage-final.txt
+/build/
 .phpstan-cache/
