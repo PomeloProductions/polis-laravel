@@ -98,7 +98,7 @@ class UserPageStoreTest extends ApplicationTestCase
             'name' => 'Test',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_store_invalid_page_type()
@@ -112,7 +112,7 @@ class UserPageStoreTest extends ApplicationTestCase
             'page_type' => 'invalid',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_store_auto_assigns_display_order()
@@ -204,7 +204,7 @@ class UserPageStoreTest extends ApplicationTestCase
             'page_type' => 'list',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_store_with_all_page_types()

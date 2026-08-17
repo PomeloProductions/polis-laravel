@@ -104,7 +104,7 @@ final class InvitationTokenUpdateTest extends ApplicationTestCase
             'role_id' => 'not-an-integer',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'role_id' => ['The role id must be an integer.'],
@@ -122,7 +122,7 @@ final class InvitationTokenUpdateTest extends ApplicationTestCase
             'role_id' => 99999,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'role_id' => ['The selected role id is invalid.'],

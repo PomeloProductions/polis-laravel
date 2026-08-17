@@ -119,7 +119,7 @@ final class UserUpdateTest extends ApplicationTestCase
             'receive_push_notifications' => -1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'allow_users_to_add_me' => ['The allow users to add me field must be true or false.'],
@@ -141,7 +141,7 @@ final class UserUpdateTest extends ApplicationTestCase
             'push_notification_key' => 1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'email' => ['The email must be a string.'],
@@ -162,7 +162,7 @@ final class UserUpdateTest extends ApplicationTestCase
             'email' => 'owriowf',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'email' => ['The email must be a valid email address.'],
@@ -182,7 +182,7 @@ final class UserUpdateTest extends ApplicationTestCase
             'push_notification_key' => str_repeat('a', 513),
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'password' => ['The password must be at least 6 characters.'],

@@ -115,7 +115,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$membershipPlan->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -135,7 +135,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
             'features' => ['hi'],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -156,7 +156,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
             'trial_period' => -1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -179,7 +179,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$membershipPlan->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -201,7 +201,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$membershipPlan->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -220,7 +220,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
             'features' => [1425],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -241,7 +241,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$membershipPlan->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -263,7 +263,7 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$membershipPlan->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

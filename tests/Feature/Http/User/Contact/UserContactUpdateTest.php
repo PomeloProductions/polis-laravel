@@ -104,7 +104,7 @@ final class UserContactUpdateTest extends ApplicationTestCase
             'requested_id' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'requested_id' => ['The requested id field is not allowed or can not be set for this request.'],
@@ -126,7 +126,7 @@ final class UserContactUpdateTest extends ApplicationTestCase
             'confirm' => -1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'deny' => ['The deny field must be true or false.'],

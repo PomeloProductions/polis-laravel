@@ -192,6 +192,7 @@
       <file>./tests/Unit/Models/User/TodoTemplateTest.php</file>
       <file>./tests/Unit/Services/Todo/TodoPeriodLadderTest.php</file>
       <file>./tests/Unit/Services/Todo/TodoPeriodComponentCopierTest.php</file>
+      <file>./tests/Unit/Validation/ValidationMatrixTest.php</file>
     </testsuite>
 
     <!--
@@ -370,6 +371,7 @@
       <exclude>./tests/Unit/Models/User/TodoTemplateTest.php</exclude>
       <exclude>./tests/Unit/Services/Todo/TodoPeriodLadderTest.php</exclude>
       <exclude>./tests/Unit/Services/Todo/TodoPeriodComponentCopierTest.php</exclude>
+      <exclude>./tests/Unit/Validation/ValidationMatrixTest.php</exclude>
     </testsuite>
   </testsuites>
   <php>

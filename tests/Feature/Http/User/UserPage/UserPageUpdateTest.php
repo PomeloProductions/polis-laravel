@@ -173,7 +173,7 @@ class UserPageUpdateTest extends ApplicationTestCase
             'page_type' => 'nonexistent',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_update_fails_name_too_long()
@@ -189,6 +189,6 @@ class UserPageUpdateTest extends ApplicationTestCase
             'name' => str_repeat('a', 101),
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 }

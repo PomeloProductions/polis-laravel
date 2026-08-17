@@ -89,7 +89,7 @@ final class SignUpTest extends ApplicationTestCase
     {
         $response = $this->json('POST', '/v1/auth/sign-up', []);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'email' => ['The email field is required.'],
@@ -113,7 +113,7 @@ final class SignUpTest extends ApplicationTestCase
             'password' => ['The password must be a string.'],
         ]]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_website_sign_up_fails_too_short_fields(): void
@@ -125,7 +125,7 @@ final class SignUpTest extends ApplicationTestCase
             'password' => ['The password must be at least 6 characters.'],
         ]]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_website_sign_up_fails_too_long_fields(): void
@@ -141,7 +141,7 @@ final class SignUpTest extends ApplicationTestCase
             'password' => ['The password may not be greater than 256 characters.'],
         ]]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_website_sign_up_fails_invalid_email_fields(): void
@@ -153,7 +153,7 @@ final class SignUpTest extends ApplicationTestCase
             'email' => ['The email must be a valid email address.'],
         ]]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_website_sign_up_fails_email_in_use(): void
@@ -167,7 +167,7 @@ final class SignUpTest extends ApplicationTestCase
             'email' => ['The email has already been taken.'],
         ]]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_sign_up_success_with_valid_invitation_token(): void
@@ -243,7 +243,7 @@ final class SignUpTest extends ApplicationTestCase
 
         $response = $this->json('POST', '/v1/auth/sign-up', $properties);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'invitation_token' => ['The invitation token field is required.'],
@@ -264,7 +264,7 @@ final class SignUpTest extends ApplicationTestCase
 
         $response = $this->json('POST', '/v1/auth/sign-up', $properties);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'invitation_token' => ['The invitation token is invalid.'],
@@ -290,7 +290,7 @@ final class SignUpTest extends ApplicationTestCase
 
         $response = $this->json('POST', '/v1/auth/sign-up', $properties);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'invitation_token' => ['The invitation token is invalid.'],

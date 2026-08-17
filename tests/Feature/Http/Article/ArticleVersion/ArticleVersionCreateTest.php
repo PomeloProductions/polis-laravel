@@ -80,7 +80,7 @@ final class ArticleVersionCreateTest extends ApplicationTestCase
             'article_iteration_id' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -101,7 +101,7 @@ final class ArticleVersionCreateTest extends ApplicationTestCase
             'article_iteration_id' => 245,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -123,7 +123,7 @@ final class ArticleVersionCreateTest extends ApplicationTestCase
             'article_iteration_id' => $iteration->id,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

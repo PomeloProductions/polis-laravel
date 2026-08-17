@@ -95,7 +95,7 @@ final class UserThreadMessageUpdateTest extends ApplicationTestCase
             'seen' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

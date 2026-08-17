@@ -114,8 +114,15 @@ class Handler extends ExceptionHandler
                 break;
 
             case $exception instanceof ValidationException:
+                // 422 Unprocessable Entity is the correct REST/Laravel
+                // convention for a well-formed request that fails validation.
+                // This covers the whole validation-error family: model/inline
+                // rule failures, the RejectsUnknownParams unknown-field guard,
+                // and the NotPresentValidator — every one of these surfaces as
+                // a ValidationException and must map to the same status so the
+                // {"errors":{field:[...]}} contract is consistent.
                 $response['errors'] = $exception->errors();
-                $status = 400;
+                $status = 422;
                 break;
 
             case $exception instanceof ModelNotFoundException:

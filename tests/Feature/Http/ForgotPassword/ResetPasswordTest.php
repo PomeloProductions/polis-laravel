@@ -44,7 +44,7 @@ final class ResetPasswordTest extends ApplicationTestCase
                 ],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_string_fields_too_long(): void
@@ -68,7 +68,7 @@ final class ResetPasswordTest extends ApplicationTestCase
                 ],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_email_format_incorrect(): void
@@ -84,7 +84,7 @@ final class ResetPasswordTest extends ApplicationTestCase
                 ],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_models_do_not_exist(): void
@@ -100,7 +100,7 @@ final class ResetPasswordTest extends ApplicationTestCase
                 'token' => ['The selected token is invalid.'],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_user_does_not_own_token(): void
@@ -122,7 +122,7 @@ final class ResetPasswordTest extends ApplicationTestCase
                 'token' => ['The reset password token does not seem to be for the entered email address.'],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_token_expired(): void
@@ -145,7 +145,7 @@ final class ResetPasswordTest extends ApplicationTestCase
                 'token' => ['The reset password token has expired. You are going to have to request a new one.'],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_success(): void

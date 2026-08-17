@@ -66,7 +66,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -88,7 +88,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -106,7 +106,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
             'features' => ['hi'],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -125,7 +125,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
             'trial_period' => -1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -148,7 +148,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -170,7 +170,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -186,7 +186,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
             'features' => [1425],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -205,7 +205,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -225,7 +225,7 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

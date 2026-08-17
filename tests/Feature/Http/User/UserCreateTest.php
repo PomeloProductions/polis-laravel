@@ -90,7 +90,7 @@ final class UserCreateTest extends ApplicationTestCase
             'password' => 'password123',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'email' => ['The email field is required.'],
@@ -106,7 +106,7 @@ final class UserCreateTest extends ApplicationTestCase
             'email' => 'test@example.com',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'password' => ['The password field is required.'],
@@ -123,7 +123,7 @@ final class UserCreateTest extends ApplicationTestCase
             'password' => 'password123',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'email' => ['The email must be a valid email address.'],
@@ -144,7 +144,7 @@ final class UserCreateTest extends ApplicationTestCase
             'password' => 'password123',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'email' => ['The email has already been taken.'],
@@ -161,7 +161,7 @@ final class UserCreateTest extends ApplicationTestCase
             'password' => '12345',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'password' => ['The password must be at least 6 characters.'],
@@ -202,7 +202,7 @@ final class UserCreateTest extends ApplicationTestCase
             'roles' => ['not-an-integer'],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'roles.0' => ['The roles.0 must be an integer.'],
@@ -220,7 +220,7 @@ final class UserCreateTest extends ApplicationTestCase
             'roles' => [99999],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'roles.0' => ['The selected roles.0 is invalid.'],

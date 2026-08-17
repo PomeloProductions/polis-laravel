@@ -29,6 +29,14 @@ class Role
     public const CONTENT_EDITOR = 100;
 
     public const SUPPORT_STAFF = 101;
+
+    /**
+     * Mirror of Polis\Models\Role::ENTITY_ROLES. Referenced by
+     * OrganizationManager::buildModelValidationRules() (via Rule::in), so the
+     * constant must exist on the aliased App\Models\Role for the validation
+     * matrix to resolve that model's rules standalone.
+     */
+    public const ENTITY_ROLES = [self::ADMINISTRATOR, self::MANAGER];
 }
 
 if (! class_exists(\App\Models\Role::class, false)) {

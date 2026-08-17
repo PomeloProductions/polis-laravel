@@ -74,7 +74,7 @@ final class HandlerBranchCoverageTest extends TestCase
         $this->assertStringContainsString('teapot', $response->content());
     }
 
-    public function test_illuminate_validation_exception_yields_400_with_errors(): void
+    public function test_illuminate_validation_exception_yields_422_with_errors(): void
     {
         $handler = new Handler($this->app);
         $validator = validator(['email' => 'bad'], ['email' => 'required|email']);
@@ -82,7 +82,7 @@ final class HandlerBranchCoverageTest extends TestCase
 
         $response = $handler->render($this->makeApiRequest(), $exception);
 
-        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame(422, $response->getStatusCode());
         $this->assertStringContainsString('errors', $response->content());
     }
 

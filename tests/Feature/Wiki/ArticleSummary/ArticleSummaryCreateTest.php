@@ -74,7 +74,7 @@ final class ArticleSummaryCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path, []);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors(['content']);
     }
 
@@ -88,7 +88,7 @@ final class ArticleSummaryCreateTest extends ApplicationTestCase
             'content' => 12345,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors(['content']);
     }
 }

@@ -132,7 +132,7 @@ final class OrganizationSubscriptionUpdateTest extends ApplicationTestCase
             'is_trial' => false,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'membership_plan_rate_id' => ['The membership plan rate id field is not allowed or can not be set for this request.'],
@@ -158,7 +158,7 @@ final class OrganizationSubscriptionUpdateTest extends ApplicationTestCase
             'cancel' => 'hello',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'recurring' => ['The recurring field must be true or false.'],
@@ -183,7 +183,7 @@ final class OrganizationSubscriptionUpdateTest extends ApplicationTestCase
             'payment_method_id' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'payment_method_id' => ['The payment method id must be an integer.'],
@@ -207,7 +207,7 @@ final class OrganizationSubscriptionUpdateTest extends ApplicationTestCase
             'payment_method_id' => 54,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'payment_method_id' => ['The selected payment method id is invalid.'],
@@ -232,7 +232,7 @@ final class OrganizationSubscriptionUpdateTest extends ApplicationTestCase
             'payment_method_id' => $paymentMethod->id,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'payment_method_id' => ['This payment method does not belong to this user.'],

@@ -128,7 +128,7 @@ final class OrganizationPaymentMethodUpdateTest extends ApplicationTestCase
             'token' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -155,7 +155,7 @@ final class OrganizationPaymentMethodUpdateTest extends ApplicationTestCase
             'default' => 'hello',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

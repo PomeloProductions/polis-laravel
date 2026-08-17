@@ -93,7 +93,7 @@ final class BallotBallotCompletionCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -109,7 +109,7 @@ final class BallotBallotCompletionCreateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -131,7 +131,7 @@ final class BallotBallotCompletionCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -145,7 +145,7 @@ final class BallotBallotCompletionCreateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -171,7 +171,7 @@ final class BallotBallotCompletionCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -198,7 +198,7 @@ final class BallotBallotCompletionCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

@@ -133,7 +133,7 @@ final class CollectionUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$collection->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -154,7 +154,7 @@ final class CollectionUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$collection->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -175,7 +175,7 @@ final class CollectionUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$collection->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -198,7 +198,7 @@ final class CollectionUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$collection->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -221,7 +221,7 @@ final class CollectionUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$collection->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -246,7 +246,7 @@ final class CollectionUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$collection->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

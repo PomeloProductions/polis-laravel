@@ -72,7 +72,7 @@ jobs:
         run: php -d memory_limit=2G ./vendor/bin/phpstan analyse --no-progress
 
       - name: Run Unit tests with coverage
-        run: ./vendor/bin/phpunit --testsuite=Unit --coverage-clover=coverage.xml --coverage-text
+        run: php -d memory_limit=1G ./vendor/bin/phpunit --testsuite=Unit --coverage-clover=coverage.xml --coverage-text
 
       - name: Upload coverage report
         if: always()
