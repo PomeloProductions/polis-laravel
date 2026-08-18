@@ -1,112 +1,80 @@
 # Coverage Baseline Report
 
-Captured against the `Unit` test suite in `phpunit.xml` (Orchestra
-Testbench harness, no consumer-app classes available).
+Measured across **all three** test suites — `Unit` (from `phpunit.xml`,
+Orchestra Testbench, no consumer-app classes) plus `Feature` and
+`Integration` (from `phpunit-app.xml`, booted against the dummy consumer app
+under `tests/Application`). Every suite instruments the same source scope:
+`./src`.
+
+The previous edition of this file reported only the standalone `Unit` suite
+(and a stale 11% headline). That badly understated real coverage: the
+Feature/Integration suites exercise the HTTP controllers, repositories,
+policies and DB-backed services that the Unit suite cannot reach standalone.
+This edition reports each suite and the **combined** (union) figure, which is
+the honest measure of how much of the package the whole corpus touches.
 
 ## Headline numbers
 
-| Metric          | Before this PR | After this PR | Delta            |
-| --------------- | -------------- | ------------- | ---------------- |
-| Tests           | 70             | 167           | **+97**          |
-| Assertions      | 126            | 303           | +177             |
-| Classes covered | 15 / 379       | 38 / 379      | +23 classes      |
-| Methods covered | 39 / 1153      | 86 / 1152     | +47 methods      |
-| **Line %**      | **5.42%**      | **11.13%**    | **+5.71 pts**    |
-| Lines covered   | 245 / 4519     | 503 / 4518    | +258 lines       |
+| Suite                   | Tests | Assertions | Line coverage        |
+| ----------------------- | ----- | ---------- | -------------------- |
+| Unit                    | 1146  | 2547       | 3280 / 7274 (45.09%) |
+| Feature                 | 678   | 1796       | 3481 / 7270 (47.88%) |
+| Integration             | 536   | 902        | 1609 / 7270 (22.13%) |
+| **Combined (union)**    | 2360  | 5245       | **4816 / 7259 (66.35%)** |
 
-(Class/method totals dropped by 1 because we collapsed one no-op class
-along the way — net counts measured against the final source tree.)
+Combined line coverage is the union of covered lines across all three clover
+reports: a `./src` line counts as covered if **any** suite hit it.
+
+At the file level (source scope `./src`): **461** source files, **382** with
+at least one covered line, **301** fully covered.
+
+The Unit figure jumped from ~35.94% to **45.09%** with the data-driven
+validation matrix (`tests/Unit/Validation/ValidationMatrixTest.php`), which
+instantiates every rule-bearing model and drives Laravel's validator against
+each typed rule.
 
 ## CI wiring
 
-- `pcov` extension is now requested via `shivammathur/setup-php` in
+- `pcov` is requested via `shivammathur/setup-php` in
   `.github/workflows/tests.yml`.
-- Each job runs `phpunit --coverage-clover=coverage.xml --coverage-text`,
-  uploads the clover XML as an artifact, and writes a summary line to
-  `$GITHUB_STEP_SUMMARY`.
-- The PHP 8.4 job additionally runs `tools/check-coverage-threshold.php`
-  which fails the job if line coverage drops below the floor.
+- The Unit step emits `coverage-unit.xml`; the Feature and Integration steps
+  now emit `coverage-feature.xml` and `coverage-integration.xml`.
+- All three clovers (plus `coverage-combined.json`) are uploaded as a single
+  `coverage-<php>` artifact.
+- Two gates run on the PHP 8.4 job:
+  - **Unit floor** — `tools/check-coverage-threshold.php coverage-unit.xml`
+    fails the job if Unit line coverage drops below its floor.
+  - **Combined floor** — `tools/merge-coverage.php --min 64.0 …` unions the
+    three reports and fails the job if combined line coverage drops below its
+    floor. This is what stops Feature/Integration coverage from silently
+    regressing — the Unit-only gate cannot see it.
 
-## Threshold
+## Thresholds
 
-`tools/check-coverage-threshold.php` enforces a floor of **9.00%** —
-roughly (final - 2pts), per the rule that PRs cannot regress the locked
-floor. Raise it as more tests land.
+| Gate     | Floor  | Real baseline | Tool                                  |
+| -------- | ------ | ------------- | ------------------------------------- |
+| Unit     | 44.5%  | 45.09%        | `tools/check-coverage-threshold.php`  |
+| Combined | 64.0%  | 66.35%        | `tools/merge-coverage.php --min`      |
 
-## What got covered (now ≥80% line coverage)
+Each floor sits ~1–2 pts below its measured baseline: close enough to trip on
+a real regression, loose enough to absorb normal run-to-run fluctuation. Raise
+both as more tests land.
 
-| Class                                                    | Lines     |
-| -------------------------------------------------------- | --------- |
-| `Polis\Exceptions\Handler`                               | 95%+      |
-| `Polis\Http\Middleware\SearchFilterParsingMiddleware`    | 100%      |
-| `Polis\Http\Middleware\ExpandParsingMiddleware`          | 100%      |
-| `Polis\Http\Middleware\Issue404IfPageAfterPaginationMiddleware` | 100% |
-| `Polis\Http\Middleware\LogMiddleware`                    | 100%      |
-| `Polis\Http\Middleware\TrimStrings`                      | 100%      |
-| `Polis\Models\Traits\HasValidationRules`                 | 100%      |
-| `Polis\Traits\CanGetAndUnset`                            | 100%      |
-| `Polis\Mail\TemplatedMailable`                           | 100%      |
-| `Polis\Mail\RenderedEmail` / `DefaultEmailTemplates`     | 100%      |
-| `Polis\Push\RenderedPushNotification` / `DefaultPushTemplates` | 100% |
-| `Polis\Services\Messaging\EmailTemplateRenderingService` | 100%      |
-| `Polis\Services\Messaging\PushTemplateRenderingService`  | 100%      |
-| `Polis\Listeners\User\SignUpListener`                    | 100%      |
-| `Polis\Listeners\Organization\OrganizationManagerCreatedListener` | 100% |
-| `Polis\Listeners\Statistic\StatisticCreatedListener`     | 100%      |
-| `Polis\Listeners\Statistic\StatisticUpdatedListener`     | 100%      |
-| All `Polis\Exceptions\*` exception classes               | 100%      |
-| `Polis\Providers\BaseAuthServiceProvider::guessPolicyName` | covered |
-| `Polis\Providers\BaseValidatorProvider::boot`            | covered   |
-| `Polis\Validators\OwnedByValidator`                      | 100%      |
-| `Polis\Validators\BaseValidatorAbstract`                 | 100%      |
-| `Polis\Validators\NotPresentValidator`                   | 100%      |
-| `Polis\Services\TokenGenerationService`                  | 100%      |
-| `Polis\Services\StringHelperService`                     | 100%      |
-| `Polis\Services\DirectoryCopyService`                    | 100%      |
-| `Polis\Services\ArchiveHelperService`                    | 100%      |
-| `Polis\Services\ProratingCalculationService::calculateRemainingYearlyCharge` | 100% |
-| `Polis\Services\Wiki\ArticleVersionCalculationService`   | ~96%      |
+## What the combined suite does NOT reach (the ~34% gap)
 
-Early-return branches covered for:
+The uncovered slice is concentrated in code paths that need live external
+integrations or fixtures neither suite provides:
 
-- `Polis\Validators\ArticleVersion\SelectedIterationBelongsToArticleValidator`
-- `Polis\Validators\ForgotPassword\TokenIsNotExpiredValidator`
-- `Polis\Validators\ForgotPassword\UserOwnsTokenValidator`
-- `Polis\Validators\InvitationTokenIsValidValidator`
+- Stripe billing paths (`Polis\Services\Stripe*`, `Console\Commands\
+  ChargeRenewal` body, most Payment/Subscription listeners) — need the
+  Cartalyst Stripe gateway.
+- Slack / push-notification delivery services — need live transports.
+- Some deep controller error branches and rarely-hit repository query
+  builders.
 
-## Intentionally NOT covered in this PR — requires consumer-app fixtures
-
-These files reference `App\Models\*` or `AdminUI\Laravel\EloquentJoin`
-in a way that prevents standalone instantiation/mocking inside the
-package's Testbench harness. They have rich coverage in the existing
-`Consumer-Only` suite and will move to the standalone Unit suite as
-each underlying contract is widened to accept package-side fixtures.
-
-- `Polis\Models\BaseModelAbstract` (uses `AdminUI\Laravel\EloquentJoin\Traits\EloquentJoin`)
-- All `Polis\Models\*` Eloquent models (extend `BaseModelAbstract`)
-- `Polis\Repositories\BaseRepositoryAbstract` + concrete repositories
-  (constructor parameters and `update()`/`create()` signatures require
-  concrete `BaseModelAbstract` subclasses; mocks can't satisfy the type
-  hint without the EloquentJoin trait)
-- `Polis\Policies\*` (`use App\Models\Role`, `App\Models\User\User` etc.)
-- `Polis\Http\Core\Controllers\*` (depend on Eloquent models + Laravel
-  controller bus)
-- `Polis\Services\StripeCustomerService`, `StripePaymentService` (need
-  Cartalyst Stripe + Eloquent fixtures)
-- `Polis\Services\Wiki\ArticleModificationApplicationService`
-  (`App\Models\Wiki\*`)
-- `Polis\Services\Statistic\*` (operate on `App\Models\Statistic\*`)
-- `Polis\Listeners\Vote\VoteCreatedListener` and most Payment / Article
-  / UserMerge listeners (their repository `update()` calls require
-  BaseModelAbstract subclasses)
-- `Polis\ThreadSecurity\PrivateThreadGate`, `GeneralThreadGate`
-  (constructor params and method signatures use `App\Models\User\User`
-  and `App\Models\Messaging\Thread`)
-- `Polis\Console\Commands\ChargeRenewal::handle` body (full Stripe +
-  Subscription fixtures needed; only constructor shape is verified by
-  the standalone test)
+These are the natural next targets for raising the floor.
 
 ## Real bugs surfaced
 
-None. The new tests exercised previously-uncovered branches and they
-all behaved as specified — no source changes were required.
+None. The validation matrix confirmed every typed rule already behaves to
+spec; no source changes were required to make the matrix green.

@@ -72,21 +72,14 @@ jobs:
         run: php -d memory_limit=2G ./vendor/bin/phpstan analyse --no-progress
 
       - name: Run Unit tests with coverage
-        run: php -d memory_limit=1G ./vendor/bin/phpunit --testsuite=Unit --coverage-clover=coverage.xml --coverage-text
-
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.php }}
-          path: coverage.xml
+        run: php -d memory_limit=1G ./vendor/bin/phpunit --testsuite=Unit --coverage-clover=coverage-unit.xml --coverage-text
 
       - name: Coverage summary
         if: success()
         run: |
-          echo "### Coverage (PHP ${{ matrix.php }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Unit coverage (PHP ${{ matrix.php }})" >> "$GITHUB_STEP_SUMMARY"
           php -r '
-            $xml = new SimpleXMLElement(file_get_contents("coverage.xml"));
+            $xml = new SimpleXMLElement(file_get_contents("coverage-unit.xml"));
             $metrics = $xml->project->metrics;
             $total = (int)$metrics["statements"];
             $covered = (int)$metrics["coveredstatements"];
@@ -94,9 +87,9 @@ jobs:
             echo "- Lines covered: {$covered}/{$total} ({$pct}%)\n";
           ' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Coverage threshold check (PHP 8.4 only)
+      - name: Unit coverage threshold check (PHP 8.4 only)
         if: matrix.php == '8.4'
-        run: php tools/check-coverage-threshold.php coverage.xml
+        run: php tools/check-coverage-threshold.php coverage-unit.xml
 
       # Application suites (Feature + Integration): these run the ported
       # PolisOS HTTP tests against the dummy consumer app under
@@ -108,9 +101,39 @@ jobs:
       # These are HARD gates: they must pass. The Feature/Integration suites in
       # phpunit-app.xml run the ENTIRE tests/Feature and tests/Integration
       # directories (no enumerated allow-list) — every ported PolisOS test runs
-      # here and must be green.
+      # here and must be green. They also emit clover so the combined-coverage
+      # gate below can guard Feature/Integration coverage against regression.
       - name: Run Feature tests (dummy consumer app)
-        run: php -d memory_limit=1G ./vendor/bin/phpunit -c phpunit-app.xml --testsuite=Feature
+        run: php -d memory_limit=1G ./vendor/bin/phpunit -c phpunit-app.xml --testsuite=Feature --coverage-clover=coverage-feature.xml
 
       - name: Run Integration tests (dummy consumer app)
-        run: php -d memory_limit=1G ./vendor/bin/phpunit -c phpunit-app.xml --testsuite=Integration
+        run: php -d memory_limit=1G ./vendor/bin/phpunit -c phpunit-app.xml --testsuite=Integration --coverage-clover=coverage-integration.xml
+
+      # Combined-coverage gate: union of covered lines across ALL THREE suites.
+      # This is the honest "how much of ./src does the whole corpus touch"
+      # figure (~65%). The floor keeps Feature/Integration coverage from
+      # silently regressing — the Unit-only gate above can't see it.
+      - name: Combined coverage gate (PHP 8.4 only)
+        if: matrix.php == '8.4'
+        run: |
+          php tools/merge-coverage.php \
+            --json coverage-combined.json \
+            --min 64.0 \
+            coverage-unit.xml coverage-feature.xml coverage-integration.xml
+          echo "### Combined coverage (PHP ${{ matrix.php }})" >> "$GITHUB_STEP_SUMMARY"
+          php -r '
+            $j = json_decode(file_get_contents("coverage-combined.json"), true);
+            printf("- Union lines covered: %d/%d (%.2f%%)\n", $j["covered"], $j["total"], $j["percent"]);
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.php }}
+          path: |
+            coverage-unit.xml
+            coverage-feature.xml
+            coverage-integration.xml
+            coverage-combined.json
+          if-no-files-found: ignore
