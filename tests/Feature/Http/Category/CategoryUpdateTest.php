@@ -101,7 +101,7 @@ final class CategoryUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', self::BASE_ROUTE.$category->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

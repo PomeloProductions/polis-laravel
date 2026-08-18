@@ -107,7 +107,7 @@ final class ArticleSummaryUpdateTest extends ApplicationTestCase
             'content' => 12345,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors(['content']);
     }
 }

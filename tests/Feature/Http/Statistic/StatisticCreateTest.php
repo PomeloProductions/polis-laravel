@@ -95,7 +95,7 @@ class StatisticCreateTest extends ApplicationTestCase
             'statistic_filters' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors([
             'name' => ['The name field is required.'],
             'model' => ['The model field is required.'],
@@ -118,7 +118,7 @@ class StatisticCreateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors([
             'statistic_filters.0' => ['The statistic_filters.0 must be an array.'],
             'statistic_filters.0.field' => ['The statistic_filters.0.field field is required.'],
@@ -134,7 +134,7 @@ class StatisticCreateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors([
             'statistic_filters.0.field' => ['The statistic_filters.0.field field is required.'],
             'statistic_filters.0.operator' => ['The statistic_filters.0.operator field is required.'],
@@ -153,7 +153,7 @@ class StatisticCreateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors([
             'statistic_filters.0.field' => ['The statistic_filters.0.field must be a string.'],
             'statistic_filters.0.operator' => ['The statistic_filters.0.operator must be a string.'],

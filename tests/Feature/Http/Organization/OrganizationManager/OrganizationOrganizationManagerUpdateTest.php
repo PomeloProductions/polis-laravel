@@ -122,7 +122,7 @@ final class OrganizationOrganizationManagerUpdateTest extends ApplicationTestCas
 
         $response = $this->json('PUT', $this->route);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -146,7 +146,7 @@ final class OrganizationOrganizationManagerUpdateTest extends ApplicationTestCas
 
         $response = $this->json('PUT', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -170,7 +170,7 @@ final class OrganizationOrganizationManagerUpdateTest extends ApplicationTestCas
 
         $response = $this->json('PUT', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

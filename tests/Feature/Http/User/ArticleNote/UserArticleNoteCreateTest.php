@@ -99,7 +99,7 @@ final class UserArticleNoteCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'article_id' => ['The article id field is required.'],
@@ -118,7 +118,7 @@ final class UserArticleNoteCreateTest extends ApplicationTestCase
             'completed' => 'not-a-boolean',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'completed' => ['The completed field must be true or false.'],
@@ -137,7 +137,7 @@ final class UserArticleNoteCreateTest extends ApplicationTestCase
             'response' => 12345,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'response' => ['The response must be a string.'],
@@ -153,7 +153,7 @@ final class UserArticleNoteCreateTest extends ApplicationTestCase
             'article_id' => 'not-an-integer',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'article_id' => ['The article id must be an integer.'],
@@ -169,7 +169,7 @@ final class UserArticleNoteCreateTest extends ApplicationTestCase
             'article_id' => 99999,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'article_id' => ['The selected article id is invalid.'],

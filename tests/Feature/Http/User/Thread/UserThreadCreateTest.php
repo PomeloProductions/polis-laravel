@@ -79,7 +79,7 @@ final class UserThreadCreateTest extends ApplicationTestCase
             'users' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -98,7 +98,7 @@ final class UserThreadCreateTest extends ApplicationTestCase
             'users' => ['hi'],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -117,7 +117,7 @@ final class UserThreadCreateTest extends ApplicationTestCase
             'users' => [546],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

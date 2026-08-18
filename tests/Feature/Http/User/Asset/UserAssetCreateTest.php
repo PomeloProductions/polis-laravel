@@ -72,7 +72,7 @@ final class UserAssetCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'file_contents' => ['The file contents field is required.'],
@@ -90,7 +90,7 @@ final class UserAssetCreateTest extends ApplicationTestCase
             'caption' => 35,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'file_contents' => ['The file contents must be a string.'],
@@ -110,7 +110,7 @@ final class UserAssetCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path, $properties);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'mime_type' => ['The selected mime type is invalid.'],

@@ -93,7 +93,7 @@ final class UserPaymentMethodCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -111,7 +111,7 @@ final class UserPaymentMethodCreateTest extends ApplicationTestCase
             'brand' => 1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -128,7 +128,7 @@ final class UserPaymentMethodCreateTest extends ApplicationTestCase
             'default' => 'hello',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -145,7 +145,7 @@ final class UserPaymentMethodCreateTest extends ApplicationTestCase
             'token' => str_repeat('a', 121),
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

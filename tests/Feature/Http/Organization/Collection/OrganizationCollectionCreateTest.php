@@ -83,7 +83,7 @@ final class OrganizationCollectionCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -105,7 +105,7 @@ final class OrganizationCollectionCreateTest extends ApplicationTestCase
             'name' => 1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -127,7 +127,7 @@ final class OrganizationCollectionCreateTest extends ApplicationTestCase
             'is_public' => 'hello',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

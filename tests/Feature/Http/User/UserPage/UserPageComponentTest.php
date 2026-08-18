@@ -84,7 +84,7 @@ class UserPageComponentTest extends ApplicationTestCase
             'component_type' => 'nonexistent_widget',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_update_successful()
@@ -165,7 +165,7 @@ class UserPageComponentTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path.$user->id.'/pages/'.$page->id.'/components', []);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_store_all_valid_component_types()

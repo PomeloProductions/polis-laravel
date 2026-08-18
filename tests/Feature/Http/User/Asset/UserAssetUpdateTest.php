@@ -99,7 +99,7 @@ final class UserAssetUpdateTest extends ApplicationTestCase
             'file_contents' => 'regoijer',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'file_contents' => ['The file contents field is not allowed or can not be set for this request.'],
@@ -119,7 +119,7 @@ final class UserAssetUpdateTest extends ApplicationTestCase
             'caption' => 45,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'name' => ['The name must be a string.'],

@@ -37,7 +37,7 @@ final class LoginTest extends ApplicationTestCase
                 ],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_string_fields_too_long(): void
@@ -57,7 +57,7 @@ final class LoginTest extends ApplicationTestCase
                 ],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_email_format_incorrect(): void
@@ -74,7 +74,7 @@ final class LoginTest extends ApplicationTestCase
                 ],
             ],
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
     }
 
     public function test_user_by_email_does_not_exist(): void

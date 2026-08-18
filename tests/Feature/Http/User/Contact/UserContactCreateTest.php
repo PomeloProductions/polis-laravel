@@ -83,7 +83,7 @@ final class UserContactCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'requested_id' => ['The requested id field is required.'],
@@ -101,7 +101,7 @@ final class UserContactCreateTest extends ApplicationTestCase
             'initiated_by_id' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'deny' => ['The deny field is not allowed or can not be set for this request.'],
@@ -119,7 +119,7 @@ final class UserContactCreateTest extends ApplicationTestCase
             'requested_id' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'requested_id' => ['The requested id must be an integer.'],
@@ -135,7 +135,7 @@ final class UserContactCreateTest extends ApplicationTestCase
             'requested_id' => 544,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'requested_id' => ['The selected requested id is invalid.'],

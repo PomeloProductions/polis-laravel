@@ -119,7 +119,7 @@ final class UserSubscriptionCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'membership_plan_rate_id' => ['The membership plan rate id field is required.'],
@@ -136,7 +136,7 @@ final class UserSubscriptionCreateTest extends ApplicationTestCase
             'cancel' => true,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'cancel' => ['The cancel field is not allowed or can not be set for this request.'],
@@ -153,7 +153,7 @@ final class UserSubscriptionCreateTest extends ApplicationTestCase
             'is_trial' => 'hello',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'recurring' => ['The recurring field must be true or false.'],
@@ -171,7 +171,7 @@ final class UserSubscriptionCreateTest extends ApplicationTestCase
             'payment_method_id' => 'hi',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'membership_plan_rate_id' => ['The membership plan rate id must be an integer.'],
@@ -189,7 +189,7 @@ final class UserSubscriptionCreateTest extends ApplicationTestCase
             'payment_method_id' => 54,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'membership_plan_rate_id' => ['The selected membership plan rate id is invalid.'],
@@ -210,7 +210,7 @@ final class UserSubscriptionCreateTest extends ApplicationTestCase
             'membership_plan_rate_id' => $membershipPlanRate->id,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'membership_plan_rate_id' => ['The membership plan rate must be active for you to purchase it.'],
@@ -228,7 +228,7 @@ final class UserSubscriptionCreateTest extends ApplicationTestCase
             'payment_method_id' => $paymentMethod->id,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'payment_method_id' => ['This payment method does not belong to this user.'],

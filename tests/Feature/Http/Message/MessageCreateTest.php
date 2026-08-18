@@ -78,7 +78,7 @@ final class MessageCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -95,7 +95,7 @@ final class MessageCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -112,7 +112,7 @@ final class MessageCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -129,7 +129,7 @@ final class MessageCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->route, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

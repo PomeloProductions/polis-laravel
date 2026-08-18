@@ -141,7 +141,7 @@ final class UserArticleNoteUpdateTest extends ApplicationTestCase
             'completed' => 'not-a-boolean',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'completed' => ['The completed field must be true or false.'],
@@ -161,7 +161,7 @@ final class UserArticleNoteUpdateTest extends ApplicationTestCase
             'response' => 12345,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'errors' => [
                 'response' => ['The response must be a string.'],

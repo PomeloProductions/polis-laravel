@@ -180,7 +180,7 @@ final class ArticleUpdateTest extends ApplicationTestCase
             'title' => 1,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -201,7 +201,7 @@ final class ArticleUpdateTest extends ApplicationTestCase
             'title' => str_repeat('a', 121),
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -222,7 +222,7 @@ final class ArticleUpdateTest extends ApplicationTestCase
             'categories' => 'not-an-array',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -245,7 +245,7 @@ final class ArticleUpdateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -268,7 +268,7 @@ final class ArticleUpdateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -291,7 +291,7 @@ final class ArticleUpdateTest extends ApplicationTestCase
             ],
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

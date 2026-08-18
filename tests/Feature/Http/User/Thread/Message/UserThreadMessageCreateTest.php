@@ -83,7 +83,7 @@ final class UserThreadMessageCreateTest extends ApplicationTestCase
             'message' => 3543,
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [

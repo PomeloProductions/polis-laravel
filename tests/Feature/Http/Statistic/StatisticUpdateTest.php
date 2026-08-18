@@ -111,7 +111,7 @@ class StatisticUpdateTest extends ApplicationTestCase
             'relation' => 'active',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -133,7 +133,7 @@ class StatisticUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', static::BASE_ROUTE.$statistic->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -154,7 +154,7 @@ class StatisticUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', static::BASE_ROUTE.$statistic->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -175,7 +175,7 @@ class StatisticUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', static::BASE_ROUTE.$statistic->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -198,7 +198,7 @@ class StatisticUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', static::BASE_ROUTE.$statistic->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -221,7 +221,7 @@ class StatisticUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', static::BASE_ROUTE.$statistic->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [
@@ -249,7 +249,7 @@ class StatisticUpdateTest extends ApplicationTestCase
 
         $response = $this->json('PATCH', static::BASE_ROUTE.$statistic->id, $data);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $response->assertJson([
             'message' => 'Sorry, something went wrong.',
             'errors' => [

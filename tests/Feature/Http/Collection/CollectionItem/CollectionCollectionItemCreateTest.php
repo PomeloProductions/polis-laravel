@@ -73,7 +73,7 @@ final class CollectionCollectionItemCreateTest extends ApplicationTestCase
 
         $response = $this->json('POST', $this->path);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -92,7 +92,7 @@ final class CollectionCollectionItemCreateTest extends ApplicationTestCase
             'item_type' => 'user',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
@@ -110,7 +110,7 @@ final class CollectionCollectionItemCreateTest extends ApplicationTestCase
             'order' => 'hello',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response->assertJson([
             'errors' => [
