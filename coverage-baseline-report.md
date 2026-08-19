@@ -78,3 +78,5 @@ These are the natural next targets for raising the floor.
 
 None. The validation matrix confirmed every typed rule already behaves to
 spec; no source changes were required to make the matrix green.
+
+<!-- 0.5.0: HTTP validation-error status changed 400 -> 422 (breaking). See PR #37. -->
