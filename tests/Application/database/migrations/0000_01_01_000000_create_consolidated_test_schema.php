@@ -38,13 +38,23 @@ use Illuminate\Support\Facades\Schema;
  *   - `ballot_subjects` (cusco) was renamed to `ballot_items` (2020_12_12).
  *   - `todo_rotating_items` was DROPPED (2026_04_16) and is therefore NOT
  *     created; `todo_task_nodes` instead gained `todo_rotating_group_id`.
+ *   - The Todo tables below are the fold of the consumer's todo/time-entry
+ *     migrations (creates + alters through 2026_07_16): balance/node decimals
+ *     carry the widened precisions (12,4 / 10,4), `last_date` is varchar(30)
+ *     (2026_04_14 expanded it to hold ISO timestamps), `todo_balance_logs` is
+ *     in its post-morph shape (source_type/source_id; time_entry_id dropped),
+ *     and `todo_task_nodes.count_this_group` is a nullable SIGNED integer
+ *     (cascade resets legitimately drive counts negative).
+ *   - `todo_templates`, `active_timers` and `check_offs` are intentionally
+ *     omitted: no harness test touches them.
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        // NOTE: No tables were skipped. All consumer tables required by the
-        // test factories are reconstructed below in their folded end state.
+        // NOTE: All consumer tables required by the test factories and suites
+        // are reconstructed below in their folded end state (todo_templates,
+        // active_timers and check_offs are the only omissions — see header).
 
         Schema::create('roles', function (Blueprint $table) {
             $table->increments('id');
@@ -538,6 +548,201 @@ return new class extends Migration
         });
 
         // -----------------------------------------------------------------
+        // Todo module (2026_03_29 .. 2026_07_16, folded)
+        // -----------------------------------------------------------------
+
+        // todo_settings: timezone added (2026_04_15)
+        Schema::create('todo_settings', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->tinyInteger('week_start_day')->unsigned()->default(0);
+            $table->string('timezone', 50)->default('UTC');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->unique(['user_id']);
+        });
+
+        // timer_sessions (2026_05_30). status: 'active' or 'completed'.
+        Schema::create('timer_sessions', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('component_id')->nullable();
+            $table->string('item_id', 255)->nullable();
+            $table->string('label', 255);
+            $table->unsignedInteger('session_budget_seconds')->default(0);
+            $table->string('status', 20)->default('active');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['user_id', 'status']);
+            $table->index(['user_id', 'item_id', 'status']);
+        });
+
+        // time_entries: timer_session_id (2026_05_30), todo_balance_id
+        // (2026_04_27), session_elapsed_seconds (2026_05_10)
+        Schema::create('time_entries', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('timer_session_id')->nullable();
+            $table->unsignedInteger('user_id');
+            $table->string('label', 255);
+            $table->string('note', 255)->nullable();
+            $table->unsignedInteger('component_id')->nullable();
+            $table->string('item_id', 255)->nullable();
+            $table->decimal('budget_hours', 8, 2)->nullable();
+            $table->decimal('session_budget_hours', 8, 2)->nullable();
+            $table->unsignedInteger('todo_balance_id')->nullable();
+            $table->unsignedInteger('session_elapsed_seconds')->default(0);
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('stopped_at')->nullable();
+            $table->unsignedInteger('duration_seconds')->default(0);
+            $table->string('color', 20)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['user_id', 'started_at']);
+        });
+
+        // todo_balances: precision widened to (12,4)/(10,4) (2026_04_14)
+        Schema::create('todo_balances', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->string('item_key', 255);
+            $table->string('tracking_mode', 10)->default('units');
+            $table->decimal('balance', 12, 4)->default(0);
+            $table->decimal('time_budget_hours', 10, 4)->nullable();
+            $table->decimal('tally_step', 10, 4)->default(1);
+            $table->json('schedule')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->unique(['user_id', 'item_key']);
+        });
+
+        // todo_balance_logs: post-morph shape (2026_04_09_000003 replaced
+        // time_entry_id with source_type/source_id); precision (2026_04_14)
+        Schema::create('todo_balance_logs', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('todo_balance_id');
+            $table->string('reason', 50);
+            $table->decimal('delta', 12, 4);
+            $table->decimal('balance_before', 12, 4);
+            $table->decimal('balance_after', 12, 4);
+            $table->date('occurred_on');
+            $table->string('source_type')->nullable();
+            $table->unsignedInteger('source_id')->nullable();
+            $table->json('meta_json')->nullable();
+            $table->timestamp('created_at')->nullable();
+            $table->softDeletes();
+            $table->index(['todo_balance_id', 'occurred_on']);
+            $table->index(['user_id', 'occurred_on']);
+            $table->index(['source_type', 'source_id']);
+        });
+
+        // todo_task_nodes: cascade_ratio (2026_04_13), last_date varchar(30)
+        // (2026_04_14), todo_rotating_group_id (2026_04_16), tally_step default
+        // 0 (2026_05_10) then back to 1 with (10,4) precision (2026_06_22),
+        // show_checkmark (2026_05_25), tally/time_budget_hours precision
+        // (2026_06_22), count_this_group nullable SIGNED int (2026_07_16)
+        Schema::create('todo_task_nodes', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_page_component_id');
+            $table->unsignedInteger('parent_id')->nullable();
+            $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->string('client_id', 50);
+            $table->string('task_type', 20);
+            $table->string('label', 255)->default('');
+            $table->text('description')->nullable();
+            $table->boolean('collapsed')->default(false);
+            $table->decimal('tally', 12, 4)->nullable();
+            $table->decimal('tally_step', 10, 4)->default(1);
+            $table->json('schedule')->nullable();
+            $table->string('on_copy', 20)->default('increment');
+            $table->decimal('time_budget_hours', 10, 4)->nullable();
+            $table->decimal('logged_hours', 10, 4)->default(0);
+            $table->decimal('logged_time', 10, 4)->default(0);
+            $table->decimal('deficit', 10, 4)->default(0);
+            $table->string('tracking_mode', 10)->default('units');
+            $table->boolean('decrement_on_done')->default(true);
+            $table->boolean('show_checkmark')->default(false);
+            $table->string('time_tracking_mode', 15)->default('reset');
+            $table->unsignedInteger('todo_balance_id')->nullable();
+            $table->unsignedInteger('todo_rotating_group_id')->nullable();
+            $table->boolean('completed')->default(false);
+            $table->string('last_date', 30)->nullable();
+            $table->boolean('custom_groups')->default(false);
+            $table->unsignedSmallInteger('cascade_ratio')->default(2);
+            $table->integer('count_this_group')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index('user_page_component_id');
+            $table->index('parent_id');
+            $table->index('todo_balance_id');
+            $table->index('todo_rotating_group_id');
+        });
+
+        // todo_rotating_groups: parent_group_id dropped (2026_04_16), last_date
+        // varchar(30) (2026_04_14), cascade_ratio (2026_04_15)
+        Schema::create('todo_rotating_groups', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('todo_task_node_id');
+            $table->unsignedSmallInteger('group_number')->default(0);
+            $table->string('label', 255)->nullable();
+            $table->integer('count_this_group')->default(0);
+            $table->string('on_copy', 20)->default('preserve');
+            $table->string('last_date', 30)->nullable();
+            $table->boolean('mark_done_on_group')->default(false);
+            $table->unsignedSmallInteger('cascade_ratio')->default(2);
+            $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index('todo_task_node_id');
+        });
+
+        Schema::create('todo_sub_items', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('todo_task_node_id');
+            $table->string('client_id', 50);
+            $table->string('text', 500);
+            $table->boolean('completed')->default(false);
+            $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index('todo_task_node_id');
+        });
+
+        // todo_calendars: active_on_vacation (2026_06_30)
+        Schema::create('todo_calendars', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->string('name', 100);
+            $table->json('days_of_week')->nullable();
+            $table->json('specific_dates')->nullable();
+            $table->boolean('is_exclusion')->default(false);
+            $table->boolean('active_on_vacation')->default(true);
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['user_id']);
+        });
+
+        // No timestamps/softDeletes on this pivot (matches the consumer create).
+        Schema::create('todo_node_calendars', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('todo_task_node_id');
+            $table->unsignedInteger('todo_calendar_id');
+            $table->string('mode', 10)->default('add');
+            $table->unsignedInteger('sort_order')->default(0);
+        });
+
+        // [start_date, end_date] inclusive; null end_date = ongoing vacation.
+        Schema::create('todo_vacation_periods', function (Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('user_id');
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['user_id']);
+        });
+
+        // -----------------------------------------------------------------
         // Framework / infra tables
         // -----------------------------------------------------------------
         Schema::create('failed_jobs', function (Blueprint $table) {
@@ -564,6 +769,17 @@ return new class extends Migration
     {
         Schema::dropIfExists('websockets_statistics_entries');
         Schema::dropIfExists('failed_jobs');
+        Schema::dropIfExists('todo_vacation_periods');
+        Schema::dropIfExists('todo_node_calendars');
+        Schema::dropIfExists('todo_calendars');
+        Schema::dropIfExists('todo_sub_items');
+        Schema::dropIfExists('todo_rotating_groups');
+        Schema::dropIfExists('todo_task_nodes');
+        Schema::dropIfExists('todo_balance_logs');
+        Schema::dropIfExists('todo_balances');
+        Schema::dropIfExists('time_entries');
+        Schema::dropIfExists('timer_sessions');
+        Schema::dropIfExists('todo_settings');
         Schema::dropIfExists('user_page_components');
         Schema::dropIfExists('user_pages');
         Schema::dropIfExists('target_statistics');

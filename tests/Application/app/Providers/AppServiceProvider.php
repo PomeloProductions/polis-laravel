@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Polis\Console\Commands\TodoApplyDailyIncrements;
+use Polis\Console\Commands\TodoMigrateGroupsToNodes;
 use Polis\Providers\BaseServiceProvider;
 
 class AppServiceProvider extends BaseServiceProvider
@@ -15,8 +17,13 @@ class AppServiceProvider extends BaseServiceProvider
 
     public function registerApp(): void
     {
-        // The dummy consumer app registers no app-specific services. The Todo
-        // subsystem is PolisOS-specific and intentionally lives only in the
-        // PolisOS API app, not in the package's test harness.
+        // The dummy consumer app registers no app-specific services. Register
+        // the package's Todo console commands the way a consumer's console
+        // kernel would (PolisOS loads them via Polis\Console\BaseKernel), so
+        // the ported command tests can invoke them through $this->artisan().
+        $this->commands([
+            TodoApplyDailyIncrements::class,
+            TodoMigrateGroupsToNodes::class,
+        ]);
     }
 }

@@ -190,8 +190,13 @@
       <file>./tests/Unit/Models/User/TodoTaskNodeTest.php</file>
       <file>./tests/Unit/Models/User/TodoTaskNodeTreeContractTest.php</file>
       <file>./tests/Unit/Models/User/TodoTemplateTest.php</file>
+      <file>./tests/Unit/Models/User/TodoVacationPeriodTest.php</file>
       <file>./tests/Unit/Services/Todo/TodoPeriodLadderTest.php</file>
       <file>./tests/Unit/Services/Todo/TodoPeriodComponentCopierTest.php</file>
+      <file>./tests/Unit/Console/Commands/TodoApplyDailyIncrementsTest.php</file>
+      <file>./tests/Unit/Console/Commands/TodoMigrateGroupsToNodesTest.php</file>
+      <file>./tests/Unit/Jobs/RecalcTodoBalanceJobTest.php</file>
+      <file>./tests/Unit/Observers/TodoBalanceLogObserverTest.php</file>
       <file>./tests/Unit/Validation/ValidationMatrixTest.php</file>
     </testsuite>
 
@@ -369,8 +374,13 @@
       <exclude>./tests/Unit/Models/User/TodoTaskNodeTest.php</exclude>
       <exclude>./tests/Unit/Models/User/TodoTaskNodeTreeContractTest.php</exclude>
       <exclude>./tests/Unit/Models/User/TodoTemplateTest.php</exclude>
+      <exclude>./tests/Unit/Models/User/TodoVacationPeriodTest.php</exclude>
       <exclude>./tests/Unit/Services/Todo/TodoPeriodLadderTest.php</exclude>
       <exclude>./tests/Unit/Services/Todo/TodoPeriodComponentCopierTest.php</exclude>
+      <exclude>./tests/Unit/Console/Commands/TodoApplyDailyIncrementsTest.php</exclude>
+      <exclude>./tests/Unit/Console/Commands/TodoMigrateGroupsToNodesTest.php</exclude>
+      <exclude>./tests/Unit/Jobs/RecalcTodoBalanceJobTest.php</exclude>
+      <exclude>./tests/Unit/Observers/TodoBalanceLogObserverTest.php</exclude>
       <exclude>./tests/Unit/Validation/ValidationMatrixTest.php</exclude>
     </testsuite>
   </testsuites>
