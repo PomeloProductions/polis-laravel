@@ -44,12 +44,19 @@ class TodoVacationPeriod extends BaseModelAbstract implements HasValidationRules
      */
     public function coversDate(Carbon $date): bool
     {
-        if ($date->lt($this->start_date->copy()->startOfDay())) {
+        // Compare CALENDAR DATES (Y-m-d strings), not instants: callers pass dates in the
+        // user's timezone while start/end are stored as plain UTC dates, so instant comparison
+        // shifts the boundary by the UTC offset (e.g. for UTC+2, midnight on the day AFTER
+        // end_date is still 22:00 UTC on end_date — which wrongly extended vacations by a day
+        // and suppressed the first post-vacation increment).
+        $ymd = $date->toDateString();
+
+        if ($ymd < $this->start_date->toDateString()) {
             return false;
         }
 
         return $this->end_date === null
-            || $date->lte($this->end_date->copy()->endOfDay());
+            || $ymd <= $this->end_date->toDateString();
     }
 
     /**

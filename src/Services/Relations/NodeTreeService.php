@@ -164,6 +164,18 @@ class NodeTreeService implements NodeTreeServiceContract
         $parentColumn = $node->nodeParentColumn();
         $sortColumn = $node->nodeSortColumn();
 
+        // Cycle guard: refuse to move a node under itself or one of its own descendants —
+        // rescopeDescendants would otherwise recurse forever (observed live via a drag that
+        // combined a card with a row inside its own subtree, crashing mid-transaction).
+        $cursor = $targetParentId;
+        while ($cursor !== null) {
+            if ((int) $cursor === (int) $node->getKey()) {
+                throw new \InvalidArgumentException('Cannot move a node into its own subtree.');
+            }
+            $parent = $node::query()->find($cursor);
+            $cursor = $parent?->{$parentColumn};
+        }
+
         DB::transaction(function () use ($node, $targetScopeValue, $targetParentId, $targetSortOrder, $scopeColumn, $parentColumn, $sortColumn): void {
             $originalScope = $scopeColumn !== null ? $node->{$scopeColumn} : null;
             $originalParent = $node->{$parentColumn};

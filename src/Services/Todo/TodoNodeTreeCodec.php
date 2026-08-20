@@ -59,6 +59,8 @@ class TodoNodeTreeCodec implements NodeTreeCodecContract
             'last_date' => $data['last_date'] ?? null,
             'custom_groups' => (bool) ($data['custom_groups'] ?? false),
             'cascade_ratio' => (int) ($data['cascade_ratio'] ?? 2),
+            'show_checkmark' => (bool) ($data['show_checkmark'] ?? false),
+            'count_this_group' => isset($data['count_this_group']) ? (int) $data['count_this_group'] : null,
         ];
     }
 
@@ -170,9 +172,10 @@ class TodoNodeTreeCodec implements NodeTreeCodecContract
         if ((float) $node->deficit !== 0.0) {
             $json['deficit'] = (float) $node->deficit;
         }
-        if ($node->tracking_mode !== 'units') {
-            $json['tracking_mode'] = $node->tracking_mode;
-        }
+        // Always serialize tracking_mode. The frontend applies a shared default (getTrackingMode)
+        // when it's absent, and that default is 'hours' — so omitting 'units' here would make the
+        // frontend mis-treat units nodes as hours. Send it explicitly so both sides agree.
+        $json['tracking_mode'] = $node->tracking_mode;
         if (! $node->decrement_on_done) {
             $json['decrement_on_done'] = false;
         }
@@ -195,21 +198,36 @@ class TodoNodeTreeCodec implements NodeTreeCodecContract
             ])->toArray();
         }
 
-        // Type-specific fields
-        if ($node->task_type === TodoTaskNode::TASK_TYPE_CATEGORY) {
+        // Rotation-slot cycle count (any direct child of a rotating node can carry one)
+        if ($node->count_this_group !== null) {
+            $json['count_this_group'] = (int) $node->count_this_group;
+        }
+
+        // Type-specific fields. Container types serialize their children — for rotating nodes the
+        // children ARE the slots (priority_group / bare task / nested rotating) post-migration.
+        $containerTypes = [
+            TodoTaskNode::TASK_TYPE_CATEGORY,
+            TodoTaskNode::TASK_TYPE_ROTATING,
+            TodoTaskNode::TASK_TYPE_PRIORITY_GROUP,
+        ];
+        if (in_array($node->task_type, $containerTypes, true)) {
             $json['children'] = $node->children->map(fn (TodoTaskNode $child) => $serializeChild($child))->toArray();
         }
 
         if ($node->task_type === TodoTaskNode::TASK_TYPE_ROTATING) {
-            if ($node->custom_groups) {
-                $json['custom_groups'] = true;
-            }
             if ($node->cascade_ratio !== 2) {
                 $json['cascade_ratio'] = $node->cascade_ratio;
             }
-            $json['groups'] = $node->groups->values()
-                ->map(fn (TodoRotatingGroup $group) => $this->groupToJson($group, $serializeChild))
-                ->toArray();
+            // Legacy groups: emitted only while un-migrated rows exist (shape-follows-data).
+            // custom_groups rides along for the pre-cutover frontend and retires with them.
+            if ($node->groups->isNotEmpty()) {
+                if ($node->custom_groups) {
+                    $json['custom_groups'] = true;
+                }
+                $json['groups'] = $node->groups->values()
+                    ->map(fn (TodoRotatingGroup $group) => $this->groupToJson($group, $serializeChild))
+                    ->toArray();
+            }
         }
 
         if ($node->completed) {

@@ -198,9 +198,20 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
             }
         }
 
+        // For hours-mode tasks, include the current balance so the frontend can rebuild the
+        // balance progress bar after a reload (balanceHours isn't persisted on the entry).
+        $balance = null;
+        if ($running->todo_balance_id) {
+            $bal = TodoBalance::find($running->todo_balance_id);
+            if ($bal && ($bal->tracking_mode ?? 'units') === 'hours') {
+                $balance = (float) $bal->balance;
+            }
+        }
+
         return response()->json([
             'entry' => $running,
             'session' => $sessionData,
+            'balance' => $balance,
         ]);
     }
 
@@ -221,10 +232,19 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
                 continue;
             }
 
-            $entry->update([
-                'stopped_at' => $now,
-                'duration_seconds' => $durationSeconds,
-            ]);
+            // Guarded transition: only the request that actually flips running->stopped may log
+            // the time. A concurrent stop (timerStop racing this auto-stop) would otherwise
+            // double-count the entry into the balance.
+            $stopped = TimeEntry::where('id', $entry->id)
+                ->whereNull('stopped_at')
+                ->update([
+                    'stopped_at' => $now,
+                    'duration_seconds' => $durationSeconds,
+                ]);
+            if (! $stopped) {
+                continue;
+            }
+            $entry->refresh();
             $hours = $durationSeconds / 3600;
             $this->logBalanceChange($user, $entry->label, $hours, TodoBalanceLog::REASON_TIMER_LOGGED, $entry, $this->userLocalDate($user, $entry->started_at));
             $this->syncLoggedHoursForEntry($user, $entry->label, $entry->started_at, $hours);
@@ -352,9 +372,22 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
 
     public function timerStop(Todo\ViewRequest $request, User $user): JsonResponse
     {
-        $running = TimeEntry::where('user_id', $user->id)
-            ->whereNull('stopped_at')
-            ->first();
+        // The client identifies WHICH entry it means to stop. A stop-then-switch fired two
+        // requests, and when the new task's start was processed first, an untargeted stop
+        // zeroed out the freshly-created entry (observed live: a 6-minute entry stopped at
+        // ~0s, below the balance-logging threshold, so its time silently vanished). An
+        // untargeted stop is kept as fallback for stale clients.
+        $entryId = (int) $request->input('entry_id', 0);
+        $itemId = $request->input('item_id');
+
+        $query = TimeEntry::where('user_id', $user->id)
+            ->whereNull('stopped_at');
+        if ($entryId > 0) {
+            $query->where('id', $entryId);
+        } elseif ($itemId) {
+            $query->where('item_id', $itemId);
+        }
+        $running = $query->first();
 
         if (! $running) {
             return response()->json(null, 204);
@@ -364,10 +397,18 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
         $started = Carbon::parse($running->started_at);
         $durationSeconds = (int) abs($now->diffInSeconds($started));
 
-        $running->update([
-            'stopped_at' => $now,
-            'duration_seconds' => $durationSeconds,
-        ]);
+        // Guarded transition (see timerStart): if another request stopped it in the meantime,
+        // that request logged the time — bail without double-counting.
+        $stopped = TimeEntry::where('id', $running->id)
+            ->whereNull('stopped_at')
+            ->update([
+                'stopped_at' => $now,
+                'duration_seconds' => $durationSeconds,
+            ]);
+        if (! $stopped) {
+            return response()->json(null, 204);
+        }
+        $running->refresh();
 
         $hours = $durationSeconds / 3600;
         $this->logBalanceChange($user, $running->label, $hours, TodoBalanceLog::REASON_TIMER_LOGGED, $running, $this->userLocalDate($user, $running->started_at));
@@ -654,6 +695,7 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
             'on_copy', 'time_budget_hours', 'logged_hours', 'logged_time', 'deficit',
             'tracking_mode', 'decrement_on_done', 'time_tracking_mode', 'completed',
             'last_date', 'custom_groups', 'cascade_ratio', 'task_type', 'show_checkmark',
+            'count_this_group',
         ];
 
         $nodeUpdates = [];
@@ -662,10 +704,17 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
 
         foreach ($scalarFields as $field) {
             if (array_key_exists($field, $data)) {
-                if ($trackingMode === 'hours' && ! $isManualEdit) {
-                    if (in_array($field, ['tally', 'logged_hours', 'logged_time'])) {
-                        continue;
-                    }
+                // logged_hours/logged_time are maintained authoritatively by the timer flow
+                // (syncLoggedHoursForEntry adds each entry's elapsed on stop). Applying them from a
+                // PATCH body too double-counts — the timer's onStop sends the same delta, so the
+                // value inflated (this is why units/rotating logged_time drifted far above the real
+                // entries). Never apply these from a PATCH unless it's an explicit manual edit.
+                if (! $isManualEdit && in_array($field, ['logged_hours', 'logged_time'])) {
+                    continue;
+                }
+                // Hours-mode tally is derived from the balance; skip non-manual tally patches.
+                if ($trackingMode === 'hours' && ! $isManualEdit && $field === 'tally') {
+                    continue;
                 }
                 $nodeUpdates[$field] = $data[$field];
             }
@@ -678,15 +727,67 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
         if (array_key_exists('tally_step', $data) && $node->todo_balance_id) {
             $balance = TodoBalance::find($node->todo_balance_id);
             if ($balance) {
-                $balance->updateQuietly(['tally_step' => (float) $data['tally_step']]);
+                $oldStep = (float) $balance->tally_step;
+                $newStep = (float) $data['tally_step'];
+                $balance->updateQuietly(['tally_step' => $newStep]);
+
+                // When the user chooses to apply the new daily allotment starting TODAY, and
+                // today's increment was already accrued at the old rate, add a manual adjustment
+                // for the difference so today reflects the new rate. If today's increment hasn't
+                // run yet (weekend, vacation, or the cron simply hasn't fired), there's nothing to
+                // correct — the daily job will accrue the new rate directly. "Tomorrow" is the
+                // default: just changing tally_step already takes effect on the next increment.
+                if (! empty($data['_allotment_change_today'])) {
+                    $settings = $this->settingRepository->findAll([['user_id', '=', $user->id]])->first();
+                    $timezone = $settings->timezone ?? 'UTC';
+                    $today = Carbon::now($timezone)->toDateString();
+
+                    $accruedToday = TodoBalanceLog::where('todo_balance_id', $balance->id)
+                        ->where('reason', TodoBalanceLog::REASON_DAILY_INCREMENT)
+                        ->where('occurred_on', $today)
+                        ->exists();
+                    $delta = round($newStep - $oldStep, 4);
+
+                    if ($accruedToday && abs($delta) > 0.0001) {
+                        $before = (float) $balance->balance;
+                        $after = round($before + $delta, 4);
+                        TodoBalanceLog::create([
+                            'user_id' => $user->id,
+                            'todo_balance_id' => $balance->id,
+                            'reason' => TodoBalanceLog::REASON_MANUAL_EDIT,
+                            'delta' => $delta,
+                            'balance_before' => $before,
+                            'balance_after' => $after,
+                            'occurred_on' => $today,
+                            'meta_json' => ['allotment_change' => true, 'from' => $oldStep, 'to' => $newStep],
+                        ]);
+                        $balance->updateQuietly(['balance' => $after]);
+                        // Keep the hours-mode node snapshot in sync with the authoritative balance.
+                        if (($node->tracking_mode ?? 'units') === 'hours') {
+                            $node->updateQuietly(['tally' => $after]);
+                        }
+                    }
+                }
             }
         }
 
+        // If mark-done occurred (last_date was set), complete active sessions for this task.
+        // Order matters: stop+log any running entry FIRST (so its time is banked by the reset),
+        // then complete the session and reset, then continue the timer into a fresh session.
         if (array_key_exists('last_date', $data) && $data['last_date']) {
-            TimerSession::where('user_id', $user->id)
+            $splitEntry = $this->splitRunningEntryAtMarkOff($user, $node);
+            $completed = TimerSession::where('user_id', $user->id)
                 ->where('item_id', $node->client_id)
                 ->where('status', TimerSession::STATUS_ACTIVE)
                 ->update(['status' => TimerSession::STATUS_COMPLETED]);
+            // Completing a session banks its time against the finished item, so the next session
+            // must start fresh — reset the node's logged time (matches the timer's session reset).
+            if ($completed > 0) {
+                $node->updateQuietly(['logged_time' => 0, 'logged_hours' => 0]);
+            }
+            if ($splitEntry) {
+                $this->continueTimerAfterMarkOff($user, $node, $splitEntry);
+            }
         }
 
         $node = $node->fresh();
@@ -714,10 +815,22 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
         if (array_key_exists('groups', $data) && is_array($data['groups'])) {
             $this->syncGroups($node, $data['groups']);
 
-            TimerSession::where('user_id', $user->id)
+            // Complete active sessions for this task (mark-done on group items).
+            // Stop+log any running entry FIRST so the reset banks it, then continue the timer
+            // into a fresh session (see splitRunningEntryAtMarkOff).
+            $splitEntry = $this->splitRunningEntryAtMarkOff($user, $node);
+            $completed = TimerSession::where('user_id', $user->id)
                 ->where('item_id', $node->client_id)
                 ->where('status', TimerSession::STATUS_ACTIVE)
                 ->update(['status' => TimerSession::STATUS_COMPLETED]);
+            // A completed session's time is banked against the finished item — reset the node's
+            // logged time so the next session starts from a clean slate.
+            if ($completed > 0) {
+                $node->updateQuietly(['logged_time' => 0, 'logged_hours' => 0]);
+            }
+            if ($splitEntry) {
+                $this->continueTimerAfterMarkOff($user, $node, $splitEntry);
+            }
         }
 
         if (array_key_exists('calendar_rules', $data)) {
@@ -738,39 +851,82 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
             $this->syncSubItems($node, $data['sub_items']);
         }
 
+        // Handle children update (categories AND rotating slots — add/remove/reorder/re-home)
         if (array_key_exists('children', $data) && is_array($data['children'])) {
             $this->syncChildren($node, $data['children']);
         }
 
+        // Explicit mark-off flag (sent by mark-done children patches). Runs the same atomic
+        // timer/session sequence as the legacy groups and last_date blocks: stop+log any running
+        // entry FIRST (so the reset banks it), complete the session, reset logged time, continue
+        // the timer into a fresh session. Deliberately NOT keyed on `children` presence — drawer
+        // and category edits also send children without any mark-off semantics.
+        if (! empty($data['_mark_off'])) {
+            $splitEntry = $this->splitRunningEntryAtMarkOff($user, $node);
+            $completed = TimerSession::where('user_id', $user->id)
+                ->where('item_id', $node->client_id)
+                ->where('status', TimerSession::STATUS_ACTIVE)
+                ->update(['status' => TimerSession::STATUS_COMPLETED]);
+            if ($completed > 0) {
+                $node->updateQuietly(['logged_time' => 0, 'logged_hours' => 0]);
+            }
+            if ($splitEntry) {
+                $this->continueTimerAfterMarkOff($user, $node, $splitEntry);
+            }
+        }
+
+        // Log tally change to balance.
+        // For hours-mode: only update balance on explicit manual edits (_manual_balance_edit flag).
+        // Timer-triggered tally changes are handled by timerStop/syncLoggedHoursForEntry.
+        // For units-mode: always update balance on tally change.
+        // Skip balance logging when structural fields are being modified to prevent accidental balance changes.
         $node = $node->fresh();
         $newTally = (float) $node->tally;
-        $tallyDelta = round($newTally - $oldTally, 4);
         $trackingMode = $node->tracking_mode ?? 'units';
         $isManualEdit = ! empty($data['_manual_balance_edit']);
         $isStructuralChange = array_key_exists('groups', $data)
             || array_key_exists('children', $data)
             || array_key_exists('task_type', $data)
             || array_key_exists('tracking_mode', $data);
-        $shouldLogBalance = abs($tallyDelta) > 0.001
-            && $node->todo_balance_id
-            && ($trackingMode !== 'hours' || $isManualEdit)
-            && ! $isStructuralChange;
-        if ($shouldLogBalance) {
+
+        if ($node->todo_balance_id && ! $isStructuralChange) {
             $balance = TodoBalance::find($node->todo_balance_id);
             if ($balance) {
-                $reason = $tallyDelta < 0 ? TodoBalanceLog::REASON_MARK_DONE : TodoBalanceLog::REASON_MANUAL_EDIT;
                 $before = (float) $balance->balance;
-                $after = round($before + $tallyDelta, 4);
-                TodoBalanceLog::create([
-                    'user_id' => $user->id,
-                    'todo_balance_id' => $balance->id,
-                    'reason' => $reason,
-                    'delta' => $tallyDelta,
-                    'balance_before' => $before,
-                    'balance_after' => $after,
-                    'occurred_on' => Carbon::today()->toDateString(),
-                ]);
-                $balance->updateQuietly(['balance' => $after]);
+                $after = null;
+
+                if ($trackingMode === 'hours') {
+                    // Hours mode: the balance is authoritative and node.tally can drift out of
+                    // sync with it. A manual balance edit sets the balance directly to the target
+                    // value (node.tally holds what the user typed), computing the delta from the
+                    // balance — never from node.tally. Non-manual (timer) changes are handled by
+                    // syncLoggedHoursForEntry, not here.
+                    if ($isManualEdit && array_key_exists('tally', $data)) {
+                        $after = $newTally;
+                    }
+                } else {
+                    // Units mode: balance follows the change in tally (count).
+                    $after = round($before + round($newTally - $oldTally, 4), 4);
+                }
+
+                if ($after !== null) {
+                    $delta = round($after - $before, 4);
+                    if (abs($delta) > 0.001) {
+                        $reason = $isManualEdit
+                            ? TodoBalanceLog::REASON_MANUAL_EDIT
+                            : ($delta < 0 ? TodoBalanceLog::REASON_MARK_DONE : TodoBalanceLog::REASON_MANUAL_EDIT);
+                        TodoBalanceLog::create([
+                            'user_id' => $user->id,
+                            'todo_balance_id' => $balance->id,
+                            'reason' => $reason,
+                            'delta' => $delta,
+                            'balance_before' => $before,
+                            'balance_after' => $after,
+                            'occurred_on' => Carbon::today()->toDateString(),
+                        ]);
+                        $balance->updateQuietly(['balance' => $after]);
+                    }
+                }
             }
         }
 
@@ -793,6 +949,21 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
             ->keyBy('group_number');
 
         $incomingGroupNums = [];
+        // Track every child client_id present anywhere in the payload, and which groups actually
+        // provided a children array. Children absent from the payload must be DELETED after all
+        // groups are processed (not per-group — an item may have moved between groups in the same
+        // patch). Without this, removing an item from a group was silently ignored server-side
+        // and the item resurrected on the next render/daily copy.
+        $incomingChildIds = [];
+        $groupIdsWithChildrenPayload = [];
+
+        foreach ($groupsData as $gData) {
+            foreach (($gData['children'] ?? []) as $childData) {
+                if (! empty($childData['id'])) {
+                    $incomingChildIds[] = $childData['id'];
+                }
+            }
+        }
 
         foreach ($groupsData as $idx => $gData) {
             $groupNum = $gData['group_number'] ?? ($idx + 1);
@@ -823,6 +994,7 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
 
             if (isset($gData['children']) && is_array($gData['children'])) {
                 $this->syncGroupChildren($group, $gData['children']);
+                $groupIdsWithChildrenPayload[] = $group->id;
             }
         }
 
@@ -833,6 +1005,19 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
                 $childNode->forceDelete();
             }
             $g->forceDelete();
+        }
+
+        // Delete children removed from the payload. Runs after ALL groups synced, so items moved
+        // between groups have already been re-homed (and are in $incomingChildIds regardless).
+        // Only groups that explicitly provided a children array participate — a partial patch
+        // that omits children must not wipe them.
+        foreach ($groupIdsWithChildrenPayload as $groupId) {
+            $stale = TodoTaskNode::where('todo_rotating_group_id', $groupId)
+                ->whereNotIn('client_id', $incomingChildIds)
+                ->get();
+            foreach ($stale as $staleChild) {
+                $staleChild->forceDelete();
+            }
         }
     }
 
@@ -869,10 +1054,30 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
                     }
                 }
                 $child->update($updates);
+            } else {
+                // Brand-new item added to the group — create it (previously silently dropped,
+                // the mirror image of removals being silently ignored).
+                $child = TodoTaskNode::create([
+                    'user_page_component_id' => $group->taskNode->user_page_component_id ?? 0,
+                    'todo_rotating_group_id' => $group->id,
+                    'sort_order' => $idx,
+                    'client_id' => $clientId ?? ('tn-'.time().'-'.substr(md5((string) rand()), 0, 6)),
+                    'task_type' => $childData['task_type'] ?? 'line_item',
+                    'label' => $childData['label'] ?? '',
+                    'tally' => $childData['tally'] ?? null,
+                    'tally_step' => $childData['tally_step'] ?? 1,
+                    'on_copy' => $childData['on_copy'] ?? 'increment',
+                    'tracking_mode' => $childData['tracking_mode'] ?? 'units',
+                    'time_budget_hours' => $childData['time_budget_hours'] ?? null,
+                    'last_date' => $childData['last_date'] ?? null,
+                    'completed' => (bool) ($childData['completed'] ?? false),
+                    'cascade_ratio' => (int) ($childData['cascade_ratio'] ?? 2),
+                ]);
+            }
 
-                if ($child->task_type === 'rotating' && isset($childData['groups'])) {
-                    $this->syncGroups($child, $childData['groups']);
-                }
+            // If this child is a rotating node, sync its groups recursively
+            if ($child->task_type === 'rotating' && isset($childData['groups'])) {
+                $this->syncGroups($child, $childData['groups']);
             }
         }
     }
@@ -923,9 +1128,63 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
      *
      * @param  array<int, array<string, mixed>>  $childrenData
      */
+    /**
+     * Fields a children payload may write on a node. logged_hours/logged_time are deliberately
+     * absent — the timer flow is their single writer (double-count corruption otherwise).
+     */
+    protected const CHILD_SYNC_FIELDS = [
+        'label', 'task_type', 'schedule', 'description', 'collapsed',
+        'tally', 'tally_step', 'time_budget_hours', 'tracking_mode',
+        'last_date', 'on_copy', 'completed', 'decrement_on_done',
+        'cascade_ratio', 'show_checkmark', 'count_this_group',
+    ];
+
+    /**
+     * Recursively sync a node's children subtree from a PATCH payload — the single write path for
+     * categories, rotating slots (priority_group / bare task / nested rotating), and slot items.
+     * Two-phase like syncGroups: upsert (match under parent → re-home within component → create)
+     * across the WHOLE payload first, then delete stale children — so an item moved between
+     * parents/slots in one patch is re-homed, never mistaken for a removal.
+     */
     protected function syncChildren(TodoTaskNode $node, array $childrenData): void
     {
-        $existing = TodoTaskNode::where('parent_id', $node->id)
+        // Every client_id anywhere in the payload subtree survives deletion.
+        $incomingIds = [];
+        $collect = function (array $items) use (&$collect, &$incomingIds) {
+            foreach ($items as $item) {
+                if (! empty($item['id'])) {
+                    $incomingIds[] = $item['id'];
+                }
+                if (! empty($item['children']) && is_array($item['children'])) {
+                    $collect($item['children']);
+                }
+            }
+        };
+        $collect($childrenData);
+
+        // Parents whose payload explicitly provided a children array — only these participate in
+        // stale deletion (a partial patch omitting children must not wipe them).
+        $parentsWithChildrenPayload = [];
+        $this->upsertChildLevel($node, $childrenData, $parentsWithChildrenPayload);
+
+        foreach ($parentsWithChildrenPayload as $parentId) {
+            $stale = TodoTaskNode::where('parent_id', $parentId)
+                ->whereNotIn('client_id', $incomingIds)
+                ->get();
+            foreach ($stale as $staleChild) {
+                $staleChild->forceDelete();
+            }
+        }
+    }
+
+    /**
+     * Upsert one level of children under $parent and recurse into provided grandchildren.
+     */
+    protected function upsertChildLevel(TodoTaskNode $parent, array $childrenData, array &$parentsWithChildrenPayload): void
+    {
+        $parentsWithChildrenPayload[] = $parent->id;
+
+        $existing = TodoTaskNode::where('parent_id', $parent->id)
             ->orderBy('sort_order')
             ->get()
             ->keyBy('client_id');
@@ -934,35 +1193,56 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
             $clientId = $childData['id'] ?? null;
             $child = $clientId ? $existing->get($clientId) : null;
 
+            // Moved from another parent/slot within this component — re-home instead of recreate,
+            // preserving identity (balances, sessions, history key on the node/client_id).
+            if (! $child && $clientId) {
+                $child = TodoTaskNode::where('client_id', $clientId)
+                    ->where('user_page_component_id', $parent->user_page_component_id)
+                    ->first();
+                if ($child) {
+                    $child->update(['parent_id' => $parent->id, 'todo_rotating_group_id' => null]);
+                }
+            }
+
             if ($child) {
                 $updates = ['sort_order' => $idx];
-                foreach (['label', 'task_type', 'schedule'] as $f) {
-                    if (isset($childData[$f]) && $childData[$f] !== $child->$f) {
+                foreach (self::CHILD_SYNC_FIELDS as $f) {
+                    if (array_key_exists($f, $childData)) {
                         $updates[$f] = $childData[$f];
                     }
                 }
                 $child->update($updates);
             } else {
-                TodoTaskNode::create([
-                    'user_page_component_id' => $node->user_page_component_id,
-                    'parent_id' => $node->id,
+                $child = TodoTaskNode::create([
+                    'user_page_component_id' => $parent->user_page_component_id,
+                    'parent_id' => $parent->id,
                     'sort_order' => $idx,
                     'client_id' => $clientId ?? ('tn-'.time().'-'.substr(md5((string) rand()), 0, 6)),
                     'task_type' => $childData['task_type'] ?? 'line_item',
                     'label' => $childData['label'] ?? '',
-                    'schedule' => $childData['schedule'] ?? $node->schedule,
+                    'schedule' => $childData['schedule'] ?? $parent->schedule,
+                    'tally' => $childData['tally'] ?? null,
+                    'tally_step' => $childData['tally_step'] ?? 1,
+                    'time_budget_hours' => $childData['time_budget_hours'] ?? null,
+                    'tracking_mode' => $childData['tracking_mode'] ?? 'units',
+                    'last_date' => $childData['last_date'] ?? null,
+                    'on_copy' => $childData['on_copy'] ?? 'increment',
+                    'completed' => (bool) ($childData['completed'] ?? false),
+                    'cascade_ratio' => (int) ($childData['cascade_ratio'] ?? 2),
+                    'show_checkmark' => (bool) ($childData['show_checkmark'] ?? false),
+                    'count_this_group' => isset($childData['count_this_group']) ? (int) $childData['count_this_group'] : null,
+                    'description' => $childData['description'] ?? null,
                 ]);
             }
-        }
 
-        $keepIds = collect($childrenData)->pluck('id')->filter()->toArray();
-        if (count($keepIds) > 0 || count($childrenData) === 0) {
-            $existingIds = $existing->pluck('client_id')->toArray();
-            $toRemove = array_diff($existingIds, $keepIds);
-            if (count($toRemove) > 0) {
-                TodoTaskNode::where('parent_id', $node->id)
-                    ->whereIn('client_id', $toRemove)
-                    ->delete();
+            // Recurse into provided grandchildren (priority_group items, nested containers)
+            if (isset($childData['children']) && is_array($childData['children'])) {
+                $this->upsertChildLevel($child, $childData['children'], $parentsWithChildrenPayload);
+            }
+
+            // Legacy: nested rotating children may still carry a groups payload until cleanup
+            if ($child->task_type === TodoTaskNode::TASK_TYPE_ROTATING && isset($childData['groups'])) {
+                $this->syncGroups($child, $childData['groups']);
             }
         }
     }
@@ -1096,23 +1376,45 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
     }
 
     /**
-     * Current vacation status: whether an open period exists, plus the open period if any.
+     * Current vacation status: whether a period is in effect today (start <= today and end is
+     * either unset or still in the future), plus that period — which may carry a scheduled end
+     * date so vacation auto-ends without the user toggling it off.
      */
     public function vacationShow(Todo\ViewRequest $request, User $user): JsonResponse
     {
-        $open = TodoVacationPeriod::where('user_id', $user->id)
-            ->whereNull('end_date')
-            ->orderByDesc('id')
-            ->first();
+        $current = $this->currentVacationPeriod($user);
 
         return response()->json([
-            'on_vacation' => $open !== null,
-            'current_period' => $open,
+            'on_vacation' => $current !== null,
+            'current_period' => $current,
         ]);
     }
 
     /**
-     * Toggle vacation on/off.
+     * The vacation period in effect for the user's "today": started on/before today and not yet
+     * ended (no end_date, or an end_date today or later).
+     */
+    protected function currentVacationPeriod(User $user): ?TodoVacationPeriod
+    {
+        $settings = $this->settingRepository->findAll([['user_id', '=', $user->id]])->first();
+        $timezone = $settings->timezone ?? 'UTC';
+        $today = Carbon::now($timezone)->toDateString();
+
+        return TodoVacationPeriod::where('user_id', $user->id)
+            ->where('start_date', '<=', $today)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', $today);
+            })
+            ->orderByDesc('id')
+            ->first();
+    }
+
+    /**
+     * Update vacation state. Body:
+     *   - on_vacation (bool): false ends the active period today; true starts one (if none) or
+     *     leaves the active one in place.
+     *   - end_date (string 'YYYY-MM-DD' | null, optional): schedules when vacation ends. Pass null
+     *     to make it open-ended. Only applied while turning/keeping vacation on.
      */
     public function vacationUpdate(Todo\ViewRequest $request, User $user): JsonResponse
     {
@@ -1121,22 +1423,99 @@ abstract class TodoControllerAbstract extends BaseControllerAbstract
         $timezone = $settings->timezone ?? 'UTC';
         $today = Carbon::now($timezone)->toDateString();
 
-        $open = TodoVacationPeriod::where('user_id', $user->id)
-            ->whereNull('end_date')
-            ->orderByDesc('id')
-            ->first();
+        $current = $this->currentVacationPeriod($user);
+        $hasEndDate = $request->has('end_date');
+        $endDate = $request->input('end_date') ?: null; // '' -> null (open-ended)
 
-        if ($onVacation && ! $open) {
+        if (! $onVacation) {
+            // End the vacation now.
+            if ($current) {
+                $current->update(['end_date' => $today]);
+            }
+        } elseif (! $current) {
+            // Start a new vacation, optionally with a scheduled end date.
             TodoVacationPeriod::create([
                 'user_id' => $user->id,
                 'start_date' => $today,
-                'end_date' => null,
+                'end_date' => $hasEndDate ? $endDate : null,
             ]);
-        } elseif (! $onVacation && $open) {
-            $open->update(['end_date' => $today]);
+        } elseif ($hasEndDate) {
+            // Already on vacation — (re)schedule the end date.
+            $current->update(['end_date' => $endDate]);
         }
 
         return $this->vacationShow($request, $user);
+    }
+
+    /**
+     * Split a running time entry at a mark-off boundary. The pre-mark-off portion is stopped and
+     * logged NOW — before the caller completes the session and banks/resets the node's logged
+     * time — so the ordering is deterministic within one request. Previously the frontend issued
+     * separate stop/start calls concurrently with the mark-off PATCH; depending on which landed
+     * first, already-banked time was re-credited onto the node and/or the continuation entry got
+     * attached to the just-completed session (loose credit belonging to no visible session).
+     */
+    protected function splitRunningEntryAtMarkOff(User $user, TodoTaskNode $node): ?TimeEntry
+    {
+        $running = TimeEntry::where('user_id', $user->id)
+            ->whereNull('stopped_at')
+            ->where('item_id', $node->client_id)
+            ->first();
+        if (! $running) {
+            return null;
+        }
+
+        $now = Carbon::now();
+        $durationSeconds = (int) abs($now->diffInSeconds(Carbon::parse($running->started_at)));
+        // Guarded transition (see timerStart): a concurrent stop already logged this entry —
+        // splitting it again would double-count, and continuing a user-stopped timer is wrong.
+        $stopped = TimeEntry::where('id', $running->id)
+            ->whereNull('stopped_at')
+            ->update(['stopped_at' => $now, 'duration_seconds' => $durationSeconds]);
+        if (! $stopped) {
+            return null;
+        }
+        $running->refresh();
+
+        if ($durationSeconds >= 2) {
+            $hours = $durationSeconds / 3600;
+            $this->logBalanceChange($user, $running->label, $hours, TodoBalanceLog::REASON_TIMER_LOGGED, $running, $this->userLocalDate($user, $running->started_at));
+            $this->syncLoggedHoursForEntry($user, $running->label, $running->started_at, $hours);
+        }
+
+        return $running;
+    }
+
+    /**
+     * Continue the timer after a mark-off split: open a fresh ACTIVE session and a new running
+     * entry carrying the same target/budgets as the entry that was just closed, so time after
+     * the mark-off accrues to the next session — consistently visible in both the session bar
+     * and the node's displayed value.
+     */
+    protected function continueTimerAfterMarkOff(User $user, TodoTaskNode $node, TimeEntry $closed): void
+    {
+        $session = TimerSession::create([
+            'user_id' => $user->id,
+            'component_id' => $closed->component_id,
+            'item_id' => $closed->item_id,
+            'label' => $node->label,
+            'session_budget_seconds' => (int) (((float) ($closed->session_budget_hours ?? 0)) * 3600),
+            'status' => TimerSession::STATUS_ACTIVE,
+        ]);
+
+        $this->timeEntryRepository->create([
+            'user_id' => $user->id,
+            'timer_session_id' => $session->id,
+            'label' => $closed->label,
+            'component_id' => $closed->component_id,
+            'item_id' => $closed->item_id,
+            'budget_hours' => $closed->budget_hours,
+            'session_budget_hours' => $closed->session_budget_hours,
+            'todo_balance_id' => $closed->todo_balance_id,
+            'started_at' => Carbon::now(),
+            'stopped_at' => null,
+            'duration_seconds' => 0,
+        ]);
     }
 
     /**

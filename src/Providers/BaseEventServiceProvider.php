@@ -44,9 +44,11 @@ use Polis\Listeners\User\UserMerge\UserMessagesMergeListener;
 use Polis\Listeners\User\UserMerge\UserPropertiesMergeListener;
 use Polis\Listeners\User\UserMerge\UserSubscriptionsMergeListener;
 use Polis\Listeners\Vote\VoteCreatedListener;
+use Polis\Models\User\TodoBalanceLog;
 use Polis\Observers\AggregatedModelObserver;
 use Polis\Observers\IndexableModelObserver;
 use Polis\Observers\Payment\PaymentMethodObserver;
+use Polis\Observers\TodoBalanceLogObserver;
 
 /**
  * Base event service provider for polis-laravel.
@@ -169,6 +171,8 @@ abstract class BaseEventServiceProvider extends ServiceProvider
         $paymentMethodClass::observe(PaymentMethodObserver::class);
         $collectionItemClass::observe(AggregatedModelObserver::class);
         $articleNoteClass::observe(AggregatedModelObserver::class);
+        // Todo models have no consumer-override variants — the package concrete is the model.
+        TodoBalanceLog::observe(TodoBalanceLogObserver::class);
 
         $this->registerObservers();
     }

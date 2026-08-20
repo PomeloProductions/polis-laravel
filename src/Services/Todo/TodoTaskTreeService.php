@@ -176,6 +176,11 @@ class TodoTaskTreeService
             'last_date' => $source->last_date,
             'custom_groups' => $source->custom_groups,
             'cascade_ratio' => $source->cascade_ratio,
+            'show_checkmark' => $source->show_checkmark,
+            // Rotation-slot cycle count is ALWAYS preserved verbatim — never routed through the
+            // node's on_copy tally rule (an 'increment' slot would otherwise gain a phantom
+            // completion every midnight and corrupt the rotation focus).
+            'count_this_group' => $source->count_this_group,
         ]);
 
         // Copy calendar associations (junction table — persists schedule overrides across days)

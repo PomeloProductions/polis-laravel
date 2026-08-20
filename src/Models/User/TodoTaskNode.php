@@ -44,6 +44,7 @@ use Polis\Models\Traits\HasValidationRules;
  * @property string|null $last_date
  * @property bool $custom_groups
  * @property int $cascade_ratio
+ * @property int|null $count_this_group
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -70,6 +71,9 @@ class TodoTaskNode extends BaseModelAbstract implements HasNodeTreeContract, Has
 
     public const TASK_TYPE_LINE_ITEM = 'line_item';
 
+    /** A rotation slot under a rotating node — an ordinary child node that groups items. */
+    public const TASK_TYPE_PRIORITY_GROUP = 'priority_group';
+
     protected $casts = [
         'sort_order' => 'integer',
         'collapsed' => 'boolean',
@@ -85,6 +89,7 @@ class TodoTaskNode extends BaseModelAbstract implements HasNodeTreeContract, Has
         'completed' => 'boolean',
         'custom_groups' => 'boolean',
         'cascade_ratio' => 'integer',
+        'count_this_group' => 'integer',
     ];
 
     /**
@@ -132,7 +137,7 @@ class TodoTaskNode extends BaseModelAbstract implements HasNodeTreeContract, Has
         return [
             static::VALIDATION_RULES_BASE => [
                 'client_id' => ['string', 'max:50'],
-                'task_type' => ['string', 'in:category,rotating,line_item'],
+                'task_type' => ['string', 'in:category,rotating,line_item,priority_group'],
                 'label' => ['string', 'max:255'],
                 'description' => ['string', 'nullable'],
                 'collapsed' => ['boolean'],
@@ -151,6 +156,7 @@ class TodoTaskNode extends BaseModelAbstract implements HasNodeTreeContract, Has
                 'last_date' => ['string', 'nullable', 'max:10'],
                 'custom_groups' => ['boolean'],
                 'cascade_ratio' => ['integer', 'min:1', 'max:10'],
+                'count_this_group' => ['integer', 'nullable'],
             ],
             static::VALIDATION_RULES_CREATE => [
                 static::VALIDATION_PREPEND_REQUIRED => [
