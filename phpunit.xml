@@ -180,18 +180,9 @@
       <file>./tests/Unit/Validators/InvitationTokenIsValidValidatorStandaloneTest.php</file>
       <file>./tests/Unit/Validators/NotPresentValidatorTest.php</file>
       <file>./tests/Unit/Validators/OwnedByValidatorStandaloneTest.php</file>
-      <!-- Todo module + generic period/node-tree framework (standalone-runnable). -->
+      <!-- Generic period/node-tree framework (standalone-runnable). -->
       <file>./tests/Unit/Support/CopyRuleSetTest.php</file>
       <file>./tests/Unit/Models/Traits/HasNodeTreeTest.php</file>
-      <file>./tests/Unit/Models/User/TodoRotatingGroupTest.php</file>
-      <file>./tests/Unit/Models/User/TodoRotatingItemTest.php</file>
-      <file>./tests/Unit/Models/User/TodoSettingTest.php</file>
-      <file>./tests/Unit/Models/User/TodoSubItemTest.php</file>
-      <file>./tests/Unit/Models/User/TodoTaskNodeTest.php</file>
-      <file>./tests/Unit/Models/User/TodoTaskNodeTreeContractTest.php</file>
-      <file>./tests/Unit/Models/User/TodoTemplateTest.php</file>
-      <file>./tests/Unit/Services/Todo/TodoPeriodLadderTest.php</file>
-      <file>./tests/Unit/Services/Todo/TodoPeriodComponentCopierTest.php</file>
       <file>./tests/Unit/Validation/ValidationMatrixTest.php</file>
     </testsuite>
 
@@ -359,18 +350,9 @@
       <exclude>./tests/Unit/Validators/InvitationTokenIsValidValidatorStandaloneTest.php</exclude>
       <exclude>./tests/Unit/Validators/NotPresentValidatorTest.php</exclude>
       <exclude>./tests/Unit/Validators/OwnedByValidatorStandaloneTest.php</exclude>
-      <!-- Todo module + generic framework unit tests run in the Unit suite. -->
+      <!-- Generic framework unit tests run in the Unit suite. -->
       <exclude>./tests/Unit/Support/CopyRuleSetTest.php</exclude>
       <exclude>./tests/Unit/Models/Traits/HasNodeTreeTest.php</exclude>
-      <exclude>./tests/Unit/Models/User/TodoRotatingGroupTest.php</exclude>
-      <exclude>./tests/Unit/Models/User/TodoRotatingItemTest.php</exclude>
-      <exclude>./tests/Unit/Models/User/TodoSettingTest.php</exclude>
-      <exclude>./tests/Unit/Models/User/TodoSubItemTest.php</exclude>
-      <exclude>./tests/Unit/Models/User/TodoTaskNodeTest.php</exclude>
-      <exclude>./tests/Unit/Models/User/TodoTaskNodeTreeContractTest.php</exclude>
-      <exclude>./tests/Unit/Models/User/TodoTemplateTest.php</exclude>
-      <exclude>./tests/Unit/Services/Todo/TodoPeriodLadderTest.php</exclude>
-      <exclude>./tests/Unit/Services/Todo/TodoPeriodComponentCopierTest.php</exclude>
       <exclude>./tests/Unit/Validation/ValidationMatrixTest.php</exclude>
     </testsuite>
   </testsuites>

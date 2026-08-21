@@ -23,8 +23,6 @@ use Polis\Contracts\Repositories\Payment\PaymentRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\StatisticRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\TargetStatisticRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
-use Polis\Contracts\Repositories\User\TodoSettingRepositoryContract;
-use Polis\Contracts\Repositories\User\UserPageComponentRepositoryContract;
 use Polis\Contracts\Repositories\User\UserPageRepositoryContract;
 use Polis\Contracts\Services\ArchiveHelperServiceContract;
 use Polis\Contracts\Services\Asset\AssetConfigurationServiceContract;
@@ -84,10 +82,6 @@ use Polis\Services\Statistic\StatisticSynchronizationService;
 use Polis\Services\Statistic\TargetStatisticProcessingService;
 use Polis\Services\StringHelperService;
 use Polis\Services\StripePaymentService;
-use Polis\Services\Todo\TodoGenerationService;
-use Polis\Services\Todo\TodoPeriodComponentCopier;
-use Polis\Services\Todo\TodoPeriodLadder;
-use Polis\Services\Todo\TodoTaskTreeService;
 use Polis\Services\TokenGenerationService;
 use Polis\Services\Wiki\ArticleVersionCalculationService;
 
@@ -371,40 +365,15 @@ abstract class BaseServiceProvider extends ServiceProvider
             NodeTreeServiceContract::class,
             fn () => new NodeTreeService,
         );
+        // The generic period generator depends on a PeriodComponentCopierContract.
+        // The package ships no default copier (that was Todo-specific); a consumer
+        // binds its own implementation. The binding stays lazy so the generic
+        // engine is available to any consumer that supplies a copier.
         $this->app->bind(
             PeriodGenerationServiceContract::class,
             fn () => new PeriodPageGenerationService(
                 $this->app->make(UserPageRepositoryContract::class),
                 $this->app->make(PeriodComponentCopierContract::class),
-            ),
-        );
-
-        // Todo module services (built on top of the generic framework).
-        $this->app->bind(
-            TodoTaskTreeService::class,
-            fn () => new TodoTaskTreeService(
-                $this->app->make(NodeTreeServiceContract::class),
-            ),
-        );
-        $this->app->bind(
-            TodoPeriodLadder::class,
-            fn () => new TodoPeriodLadder(
-                $this->app->make(TodoSettingRepositoryContract::class),
-            ),
-        );
-        $this->app->bind(
-            PeriodComponentCopierContract::class,
-            fn () => new TodoPeriodComponentCopier(
-                $this->app->make(UserPageComponentRepositoryContract::class),
-                $this->app->make(TodoTaskTreeService::class),
-            ),
-        );
-        $this->app->bind(
-            TodoGenerationService::class,
-            fn () => new TodoGenerationService(
-                $this->app->make(PeriodGenerationServiceContract::class),
-                $this->app->make(TodoPeriodLadder::class),
-                $this->app->make(UserPageRepositoryContract::class),
             ),
         );
 
