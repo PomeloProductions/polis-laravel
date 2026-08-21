@@ -43,10 +43,10 @@ class UserPageComponent extends BaseModelAbstract implements HasValidationRulesC
     }
 
     /**
-     * The node-tree model these component relations resolve to. Configurable via
-     * `polis.node_tree.node_model` so the package no longer hard-references a
-     * consumer class; defaults to the package Todo node model and lets a
-     * consumer point it at their own subclass.
+     * The node-tree model these component relations resolve to. Configured via
+     * `polis.node_tree.node_model`. The package ships no default node model, so
+     * a consumer that uses the node-tree relations must point this at their own
+     * model (any {@see HasNodeTree} model) via config.
      *
      * @return class-string<Model>
      */
@@ -60,7 +60,10 @@ class UserPageComponent extends BaseModelAbstract implements HasValidationRulesC
             return $configured;
         }
 
-        return TodoTaskNode::class;
+        throw new \RuntimeException(
+            'No node-tree model configured. Set polis.node_tree.node_model to a '
+            .'model class before using UserPageComponent node-tree relations.'
+        );
     }
 
     protected static function nodeForeignKey(): string

@@ -22,19 +22,7 @@ use Polis\Models\Statistic\Statistic;
 use Polis\Models\Subscription\MembershipPlan;
 use Polis\Models\Subscription\Subscription;
 use Polis\Models\User\ArticleNote;
-use Polis\Models\User\CheckOff;
 use Polis\Models\User\Contact;
-use Polis\Models\User\TimeEntry;
-use Polis\Models\User\TodoBalance;
-use Polis\Models\User\TodoBalanceLog;
-use Polis\Models\User\TodoCalendar;
-use Polis\Models\User\TodoRotatingGroup;
-use Polis\Models\User\TodoRotatingItem;
-use Polis\Models\User\TodoSetting;
-use Polis\Models\User\TodoSubItem;
-use Polis\Models\User\TodoTaskNode;
-use Polis\Models\User\TodoTemplate;
-use Polis\Models\User\TodoVacationPeriod;
 use Polis\Models\User\UserPage;
 use Polis\Models\User\UserPageComponent;
 use Polis\Models\Vote\BallotCompletion;
@@ -56,7 +44,7 @@ use Polis\Tests\Unit\Exceptions\HandlerBranchCoverageTest;
  * WHY rule/model-level (not HTTP): the harness instantiates each Polis model
  * directly and runs Laravel's Validator against its declared rules. This
  * covers EVERY rule-bearing model — including ones whose HTTP endpoints are
- * not routed in this package (e.g. Todo / Messaging) — and is completely
+ * not routed in this package (e.g. Messaging) — and is completely
  * decoupled from the consumer-app routing layer and the Application-suite
  * lang overrides. End-to-end proof that the Handler maps these failures to
  * HTTP 422 lives in the swept Feature suite (phpunit-app.xml) and in
@@ -99,19 +87,7 @@ final class ValidationMatrixTest extends TestCase
         MembershipPlan::class,
         Subscription::class,
         ArticleNote::class,
-        CheckOff::class,
         Contact::class,
-        TimeEntry::class,
-        TodoBalance::class,
-        TodoBalanceLog::class,
-        TodoCalendar::class,
-        TodoRotatingGroup::class,
-        TodoRotatingItem::class,
-        TodoSetting::class,
-        TodoSubItem::class,
-        TodoTaskNode::class,
-        TodoTemplate::class,
-        TodoVacationPeriod::class,
         UserPage::class,
         UserPageComponent::class,
         BallotCompletion::class,
@@ -346,7 +322,7 @@ final class ValidationMatrixTest extends TestCase
         $cases = iterator_to_array(self::providesTypedRules());
 
         $this->assertGreaterThanOrEqual(
-            120,
+            90,
             count($cases),
             'Validation matrix regressed: fewer typed-rule cases than expected.'
         );
@@ -357,8 +333,8 @@ final class ValidationMatrixTest extends TestCase
         foreach (array_keys($cases) as $key) {
             $modelsSeen[explode('::', $key)[0]] = true;
         }
-        // Sanity: the enum-heavy Todo models and the core models are present.
-        foreach (['UserPage', 'TodoTaskNode', 'Statistic', 'MembershipPlan', 'Organization'] as $short) {
+        // Sanity: the page/component control models and the core models are present.
+        foreach (['UserPage', 'UserPageComponent', 'Statistic', 'MembershipPlan', 'Organization'] as $short) {
             $this->assertArrayHasKey($short, $modelsSeen, "Model {$short} missing from matrix.");
         }
     }
