@@ -7,6 +7,17 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.6.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.5.0...v0.6.0) (2026-08-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* the packaged Todo/time-management classes (Todo* models, repositories, services, controller, requests, policies) are removed. Consumers that used them must vendor their own module (as PolisOS now does).
+
+### Features
+
+* remove Todo/time-management module from the package ([77ec18b](https://github.com/PomeloProductions/polis-laravel/commit/77ec18b25018d222ae5a517655160f63926e33ab))
+
 ## [0.5.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.4.0...v0.5.0) (2026-08-19)
 
 
