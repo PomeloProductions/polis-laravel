@@ -81,6 +81,7 @@ return new class extends Migration
             $table->integer('role_id')->unsigned()->index('role_user_role_id_foreign');
             $table->integer('user_id')->unsigned()->index('role_user_user_id_foreign');
             $table->timestamps();
+            $table->primary(['role_id', 'user_id']);
         });
 
         Schema::create('password_tokens', function (Blueprint $table) {
