@@ -119,6 +119,7 @@
       <file>./tests/Unit/Providers/BaseRouteServiceProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseServiceProviderAbstractFallbackTest.php</file>
       <file>./tests/Unit/Providers/BaseServiceProviderPushBindingTest.php</file>
+      <file>./tests/Unit/Providers/BaseServiceProviderRedisGapFillTest.php</file>
       <file>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</file>
       <file>./tests/Unit/Providers/BaseValidatorProviderTest.php</file>
       <file>./tests/Unit/Push/DefaultPushTemplatesTest.php</file>
@@ -293,6 +294,7 @@
       <exclude>./tests/Unit/Providers/BaseRouteServiceProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseServiceProviderAbstractFallbackTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseServiceProviderPushBindingTest.php</exclude>
+      <exclude>./tests/Unit/Providers/BaseServiceProviderRedisGapFillTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseValidatorProviderTest.php</exclude>
       <exclude>./tests/Unit/Push/RenderedPushNotificationTest.php</exclude>
