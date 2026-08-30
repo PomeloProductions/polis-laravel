@@ -125,6 +125,86 @@ abstract class BaseServiceProvider extends ServiceProvider
         return class_exists($appClass) ? $appClass : $polisClass;
     }
 
+    /**
+     * Gap-fill the runtime redis configuration so the platform's redis env
+     * (CACHE_STORE=redis / SESSION_DRIVER=redis / QUEUE_CONNECTION=redis +
+     * REDIS_PREFIX) works on every consumer WITHOUT that consumer having to
+     * edit its own config/database.php.
+     *
+     * Why this exists
+     * ---------------
+     * The Athenia-based consumer apps ship a stripped `config/database.php`
+     * whose `redis` section defines ONLY a `default` connection and has no
+     * `options.prefix`. But Laravel's stock `config/cache.php` hardcodes the
+     * redis cache store to the `cache` connection. So the moment the platform
+     * sets `CACHE_STORE=redis` those apps blow up with:
+     *
+     *   RedisManager: Redis connection [cache] not configured
+     *
+     * crashing queue workers / schedulers and 500ing cache & session
+     * requests. On top of that `REDIS_PREFIX` was silently ignored (no
+     * `options.prefix`), so tenant keys were NOT isolated inside the shared
+     * redis. PolisOS was hotfixed directly in its own config/database.php
+     * (PolisOS #40), but that is per-app — every other Athenia tenant would
+     * hit the same wall. This fixes it once, in the package.
+     *
+     * How it behaves
+     * --------------
+     * Pure gap-fill: it only writes a key when the app has NOT already
+     * defined it, so any app-provided redis config (including PolisOS #40's
+     * explicit edit) is respected and left untouched. It does NOT touch the
+     * cache/session/queue DRIVER values — the platform env controls those;
+     * this only guarantees the redis CONNECTIONS + key prefix EXIST so those
+     * drivers can resolve.
+     *
+     * It runs from register() (before redis is ever used) and mutates the
+     * LIVE config repository, so it takes effect even when the consumer has
+     * run `config:cache` — cached config is loaded into that same repository
+     * instance, and these writes override it at runtime.
+     *
+     * @param  \Illuminate\Contracts\Config\Repository  $config  The live config repository to mutate.
+     */
+    public static function applyRedisConfigGapFill($config): void
+    {
+        // 1. Key prefix for tenant isolation in the shared redis. The Athenia
+        //    stripped config has no `options.prefix`, so REDIS_PREFIX was
+        //    ignored. Fill it only when the app hasn't set one (null/empty).
+        $existingPrefix = $config->get('database.redis.options.prefix');
+        if ($existingPrefix === null || $existingPrefix === '') {
+            $config->set('database.redis.options.prefix', env('REDIS_PREFIX', ''));
+        }
+
+        // 2. The `cache` redis connection that config/cache.php points at when
+        //    CACHE_STORE=redis. Define it from env — mirroring Laravel's stock
+        //    `cache` connection — only if the app hasn't defined it already.
+        //    Uses a separate logical DB (REDIS_CACHE_DB, default 1) so cache
+        //    flushes don't wipe queue/session data on DB 0.
+        if ($config->get('database.redis.cache') === null) {
+            $config->set('database.redis.cache', [
+                'url' => env('REDIS_URL'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'username' => env('REDIS_USERNAME'),
+                'password' => env('REDIS_PASSWORD'),
+                'port' => env('REDIS_PORT', '6379'),
+                'database' => env('REDIS_CACHE_DB', '1'),
+            ]);
+        }
+
+        // 3. Safety net: ensure a `default` redis connection exists (used by
+        //    sessions/queues). The Athenia config usually ships this, but fill
+        //    it if it's somehow missing. Never clobber an existing one.
+        if ($config->get('database.redis.default') === null) {
+            $config->set('database.redis.default', [
+                'url' => env('REDIS_URL'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'username' => env('REDIS_USERNAME'),
+                'password' => env('REDIS_PASSWORD'),
+                'port' => env('REDIS_PORT', '6379'),
+                'database' => env('REDIS_DB', '0'),
+            ]);
+        }
+    }
+
     public function provides(): array
     {
         return array_merge([
@@ -192,6 +272,12 @@ abstract class BaseServiceProvider extends ServiceProvider
         // Merge the package's default config so consumers that have not
         // published `config/polis.php` still get the defaults at runtime.
         $this->mergeConfigFrom($this->packageConfigPath(), 'polis');
+
+        // Gap-fill the redis config (cache connection + tenant key prefix) so
+        // the platform's redis env works on every consumer without each app
+        // editing its own config/database.php. See applyRedisConfigGapFill().
+        // Runs here in register() so it lands before redis is ever resolved.
+        self::applyRedisConfigGapFill($this->app->make('config'));
 
         $this->registerEnvironmentSpecificProviders();
 
