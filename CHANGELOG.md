@@ -7,6 +7,14 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.8.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.7.0...v0.8.0) (2026-08-30)
+
+
+### Features
+
+* **redis:** auto-provide cache connection + key prefix for all tenants ([03c1341](https://github.com/PomeloProductions/polis-laravel/commit/03c13412272d17a5924305d388d6127b8288c1b5))
+* **redis:** auto-provide cache connection + key prefix for all tenants ([6d1a59c](https://github.com/PomeloProductions/polis-laravel/commit/6d1a59c93c6ebecedc462c2822f592e8e0b10ea3))
+
 ## [0.7.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.6.0...v0.7.0) (2026-08-30)
 
 
