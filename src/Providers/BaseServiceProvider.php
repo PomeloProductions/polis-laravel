@@ -108,6 +108,13 @@ use Polis\Services\Wiki\ArticleVersionCalculationService;
 abstract class BaseServiceProvider extends ServiceProvider
 {
     /**
+     * Platform default for jwt.blacklist_grace_period (seconds). A short window
+     * that lets a just-rotated token still authenticate during concurrent
+     * refreshes, preventing race-driven logouts. See applyJwtConfigGapFill().
+     */
+    public const DEFAULT_JWT_BLACKLIST_GRACE_PERIOD = 30;
+
+    /**
      * Resolve a class name preferring a consumer-app override over the
      * package-provided concrete fallback.
      *
@@ -205,6 +212,54 @@ abstract class BaseServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Platform default for the JWT blacklist grace period.
+     *
+     * When a token is refreshed, jwt-auth blacklists the old one. With
+     * tymon/jwt-auth's stock `blacklist_grace_period` of 0, the old token is
+     * invalid the instant it is rotated — so two concurrent refreshes (React
+     * StrictMode double-mount, a burst of requests all hitting an expired
+     * access token at once) race: the second refresh presents a token the
+     * first just blacklisted, gets a 401, and logs the user out. A short grace
+     * window lets a just-rotated token keep working for a few seconds so those
+     * concurrent refreshes don't self-invalidate.
+     *
+     * This is a platform-wide default so every consumer app benefits without
+     * editing its own config/jwt.php. It:
+     *   - honours an explicit JWT_BLACKLIST_GRACE_PERIOD env if the app sets one;
+     *   - otherwise raises the value to {@see self::DEFAULT_JWT_BLACKLIST_GRACE_PERIOD}
+     *     ONLY when the current config is still jwt-auth's stock 0 (i.e. nobody
+     *     chose a value), so an app that deliberately set a different grace
+     *     period is left untouched.
+     *
+     * Like applyRedisConfigGapFill(), it runs from register() and mutates the
+     * LIVE config repository, so it takes effect even under `config:cache`.
+     *
+     * @param  \Illuminate\Contracts\Config\Repository  $config  The live config repository to mutate.
+     */
+    public static function applyJwtConfigGapFill($config): void
+    {
+        // App has no jwt config published at all — nothing to gap-fill against
+        // (jwt-auth isn't installed / configured for this consumer).
+        if ($config->get('jwt') === null) {
+            return;
+        }
+
+        $envValue = env('JWT_BLACKLIST_GRACE_PERIOD');
+        if ($envValue !== null && $envValue !== '') {
+            $config->set('jwt.blacklist_grace_period', (int) $envValue);
+
+            return;
+        }
+
+        // No env override: only bump the stock jwt-auth default of 0. Leave any
+        // value an app deliberately chose (including a deliberate 0 via env,
+        // which would have been handled above) untouched.
+        if ((int) $config->get('jwt.blacklist_grace_period') === 0) {
+            $config->set('jwt.blacklist_grace_period', self::DEFAULT_JWT_BLACKLIST_GRACE_PERIOD);
+        }
+    }
+
     public function provides(): array
     {
         return array_merge([
@@ -278,6 +333,11 @@ abstract class BaseServiceProvider extends ServiceProvider
         // editing its own config/database.php. See applyRedisConfigGapFill().
         // Runs here in register() so it lands before redis is ever resolved.
         self::applyRedisConfigGapFill($this->app->make('config'));
+
+        // Raise the JWT blacklist grace period platform-wide so concurrent
+        // token refreshes don't self-invalidate (stock jwt-auth ships 0). See
+        // applyJwtConfigGapFill(). Runs before the auth guard resolves a token.
+        self::applyJwtConfigGapFill($this->app->make('config'));
 
         $this->registerEnvironmentSpecificProviders();
 
