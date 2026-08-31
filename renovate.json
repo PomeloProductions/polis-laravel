@@ -1,6 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["orchestra/testbench"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false,
+      "description": "testbench's major version tracks the Laravel major (v11 requires laravel/framework ^13). Never bump it on its own — only as part of a deliberate Laravel major upgrade."
+    },
+    {
+      "matchPackageNames": ["guzzlehttp/guzzle"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false,
+      "description": "guzzle's major is gated by laravel/framework — illuminate/http still requires guzzle ^7.8. Hold guzzle 8 until Laravel adopts it."
+    }
   ]
 }
