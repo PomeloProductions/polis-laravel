@@ -7,6 +7,7 @@ namespace Polis\Providers;
 use App\Models\Messaging\Message;
 use App\Services\Indexing\ResourceRepositoryService;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use Cartalyst\Stripe\Stripe;
 use GuzzleHttp\Client;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Contracts\Cache\Repository;
@@ -419,6 +420,18 @@ abstract class BaseServiceProvider extends ServiceProvider
         // (e.g. \Polis\Services\StripeCustomerService) BEFORE this provider runs,
         // or in a subclass's registerApp(); bindIf() leaves their binding intact.
         $this->app->bindIf(StripeCustomerServiceContract::class, fn () => new NoopStripeCustomerService);
+        // Bind the Cartalyst Stripe SDK ourselves instead of depending on the
+        // abandoned-for-Laravel-13 cartalyst/stripe-laravel wrapper. This
+        // replicates that package's StripeServiceProvider binding: it reads the
+        // same config('services.stripe.{secret,version}') keys and constructs
+        // the framework-agnostic Cartalyst\Stripe\Stripe SDK. Consumers that
+        // relied on the 'stripe' container alias keep working unchanged.
+        $this->app->singleton('stripe', function ($app) {
+            $config = $app['config']->get('services.stripe');
+
+            return new Stripe($config['secret'] ?? null, $config['version'] ?? null);
+        });
+        $this->app->alias('stripe', Stripe::class);
         $this->app->bind(StripePaymentServiceContract::class, function () {
             $stripe = $this->app->make('stripe');
 

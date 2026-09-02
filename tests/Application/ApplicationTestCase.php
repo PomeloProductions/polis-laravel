@@ -12,7 +12,6 @@ use App\Providers\AppValidatorProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\RouteServiceProvider;
-use Cartalyst\Stripe\Laravel\StripeServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\DB;
@@ -57,7 +56,10 @@ abstract class ApplicationTestCase extends OrchestraTestCase
     {
         return [
             LaravelServiceProvider::class,
-            StripeServiceProvider::class,
+            // The cartalyst/stripe-laravel wrapper was dropped for Laravel 13
+            // (it has no L13-compatible release). Polis\BaseServiceProvider now
+            // binds the 'stripe' container alias itself from the base
+            // cartalyst/stripe SDK, so no separate Stripe provider is needed.
             AppServiceProvider::class,
             AppRepositoryProvider::class,
             AppValidatorProvider::class,

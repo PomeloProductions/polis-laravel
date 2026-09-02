@@ -51,7 +51,16 @@ trait HasModelCache
             return;
         }
 
-        static::observe(static::modelCacheObserver());
+        // As of Laravel 13, instantiating a model while it is still booting
+        // throws a LogicException (see the "Model Booting and Nested
+        // Instantiation" upgrade note). `Model::observe()` internally does
+        // `new static`, so calling it directly from a boot* method would trip
+        // that guard. Defer the observer registration until boot completes via
+        // `whenBooted()` — this mirrors how the framework's own #[ObservedBy]
+        // attribute registers observers.
+        static::whenBooted(function () {
+            static::observe(static::modelCacheObserver());
+        });
     }
 
     /**
