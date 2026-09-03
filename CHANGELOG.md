@@ -7,6 +7,44 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.9.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.8.0...v0.9.0) (2026-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to Laravel 13
+
+### Features
+
+* upgrade to Laravel 13 ([a4fc384](https://github.com/PomeloProductions/polis-laravel/commit/a4fc3848c85dabc8c6b5b2b2699a46e0c1c390c0))
+
+
+### Bug Fixes
+
+* **deps:** update dependency adminui/laravel-eloquent-joins to v13 ([5e78d0d](https://github.com/PomeloProductions/polis-laravel/commit/5e78d0d922a72f6ad4f24a9b261576a2b662bf07))
+* **deps:** update dependency adminui/laravel-eloquent-joins to v13 ([fdd8f67](https://github.com/PomeloProductions/polis-laravel/commit/fdd8f67f7b00cae694585d7ea730d0502dffb4ee))
+* **deps:** update dependency kreait/laravel-firebase to v7 ([ee88f93](https://github.com/PomeloProductions/polis-laravel/commit/ee88f931d73f7847dd1703edad6ec6ad0dfc937a))
+* **deps:** update dependency kreait/laravel-firebase to v7 ([4530eaf](https://github.com/PomeloProductions/polis-laravel/commit/4530eaf698d4d39d014f3a7c280558646aff40d1))
+* **deps:** update dependency sebastian/diff to v9 ([c292462](https://github.com/PomeloProductions/polis-laravel/commit/c292462d9207d48e795491422e3f960b722f73ca))
+* **deps:** update dependency sebastian/diff to v9 ([287339e](https://github.com/PomeloProductions/polis-laravel/commit/287339effa55e4b40f828c57912a475a4c2aa8bd))
+
+
+### Miscellaneous Chores
+
+* Configure Renovate ([54c56c1](https://github.com/PomeloProductions/polis-laravel/commit/54c56c17d4e1fe4b4204d350113f6e0769113636))
+* **deps:** update actions/cache action to v6 ([93acd1a](https://github.com/PomeloProductions/polis-laravel/commit/93acd1a7109a49c4212e5eb1c200ba3b843fa47c))
+* **deps:** update actions/cache action to v6 ([aff169c](https://github.com/PomeloProductions/polis-laravel/commit/aff169c75ae66c89ecddd5d8050b84542ad7c669))
+* **deps:** update actions/checkout action to v7 ([d3f2367](https://github.com/PomeloProductions/polis-laravel/commit/d3f23678a931019857ca76da66b9934556c4ad04))
+* **deps:** update actions/checkout action to v7 ([55e95d7](https://github.com/PomeloProductions/polis-laravel/commit/55e95d78603e883ff09156d5363d4c12f96ec482))
+* **deps:** update actions/upload-artifact action to v7 ([c116726](https://github.com/PomeloProductions/polis-laravel/commit/c116726e4fb4a652884684506460ac543454d068))
+* **deps:** update actions/upload-artifact action to v7 ([7bbb519](https://github.com/PomeloProductions/polis-laravel/commit/7bbb5193692566f3068245fb657ec005270e0242))
+* **deps:** update dependency phpunit/phpunit to v13 ([4bd8862](https://github.com/PomeloProductions/polis-laravel/commit/4bd886258d50d02cf49c602303162e950fa50fd9))
+* **deps:** update dependency phpunit/phpunit to v13 ([5f46f88](https://github.com/PomeloProductions/polis-laravel/commit/5f46f88d29d8afdbee7432a1381d230489c0f06e))
+* **deps:** update googleapis/release-please-action action to v5 ([fc2b3ff](https://github.com/PomeloProductions/polis-laravel/commit/fc2b3ff5316b684389b49d657de40be6f5b2eb58))
+* **deps:** update googleapis/release-please-action action to v5 ([e178281](https://github.com/PomeloProductions/polis-laravel/commit/e178281f7750451eccfd627b6914d77199cd30f4))
+* **renovate:** hold phpunit major (gated by testbench/Laravel) ([d2802c0](https://github.com/PomeloProductions/polis-laravel/commit/d2802c0d11913c3789a5944e92e75b23b66545a5))
+* **renovate:** hold phpunit major (gated by testbench/Laravel) ([3f57b58](https://github.com/PomeloProductions/polis-laravel/commit/3f57b581835c0794ee91337553dfcef0dec9c147))
+
 ## [0.8.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.7.0...v0.8.0) (2026-08-30)
 
 
