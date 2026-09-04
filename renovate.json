@@ -1,12 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "packageRules": [
-    {
-      "matchPackageNames": ["phpunit/phpunit"],
-      "matchUpdateTypes": ["major"],
-      "enabled": false,
-      "description": "phpunit's major is gated by orchestra/testbench (Laravel's test harness): on Laravel 13, testbench ^11 requires phpunit ^12, so phpunit 13 can't install until a future Laravel/testbench. Hold the major until then; minor/patch still flow."
-    }
-  ]
+  "extends": ["config:recommended"]
 }
