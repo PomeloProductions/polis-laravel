@@ -7,6 +7,14 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.9.1](https://github.com/PomeloProductions/polis-laravel/compare/v0.9.0...v0.9.1) (2026-09-05)
+
+
+### Miscellaneous Chores
+
+* **renovate:** remove phpunit-major update-blocking rule ([b17c689](https://github.com/PomeloProductions/polis-laravel/commit/b17c689f1c55ac6a4b1228b2d03d7ff93ce00e9e))
+* **renovate:** remove phpunit-major update-blocking rule ([439fd06](https://github.com/PomeloProductions/polis-laravel/commit/439fd0649b3b7bbb453c7d63852ea1739907ebeb))
+
 ## [0.9.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.8.0...v0.9.0) (2026-09-03)
 
 
