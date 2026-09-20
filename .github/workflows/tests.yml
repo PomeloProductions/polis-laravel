@@ -34,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.3', '8.4']
+        php: ['8.3', '8.4', '8.5']
 
     steps:
       - name: Checkout
@@ -64,11 +64,11 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Composer audit
-        if: matrix.php == '8.4'
+        if: matrix.php == '8.5'
         run: composer audit
 
       - name: PHPStan static analysis
-        if: matrix.php == '8.4'
+        if: matrix.php == '8.5'
         run: php -d memory_limit=2G ./vendor/bin/phpstan analyse --no-progress
 
       - name: Run Unit tests with coverage
@@ -87,8 +87,8 @@ jobs:
             echo "- Lines covered: {$covered}/{$total} ({$pct}%)\n";
           ' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Unit coverage threshold check (PHP 8.4 only)
-        if: matrix.php == '8.4'
+      - name: Unit coverage threshold check (PHP 8.5 only)
+        if: matrix.php == '8.5'
         run: php tools/check-coverage-threshold.php coverage-unit.xml
 
       # Application suites (Feature + Integration): these run the ported
@@ -113,8 +113,8 @@ jobs:
       # This is the honest "how much of ./src does the whole corpus touch"
       # figure (~65%). The floor keeps Feature/Integration coverage from
       # silently regressing — the Unit-only gate above can't see it.
-      - name: Combined coverage gate (PHP 8.4 only)
-        if: matrix.php == '8.4'
+      - name: Combined coverage gate (PHP 8.5 only)
+        if: matrix.php == '8.5'
         run: |
           php tools/merge-coverage.php \
             --json coverage-combined.json \
