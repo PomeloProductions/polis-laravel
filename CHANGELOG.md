@@ -7,6 +7,19 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.9.1](https://github.com/PomeloProductions/polis-laravel/compare/v0.9.0...v0.9.1) (2026-09-20)
+
+
+### Miscellaneous Chores
+
+* add Renovate dependency-type labels ([5cd0479](https://github.com/PomeloProductions/polis-laravel/commit/5cd04797f569b3ecae0fca8c9b5fd92806b92e9b))
+* add Renovate dependency-type labels ([30b61a6](https://github.com/PomeloProductions/polis-laravel/commit/30b61a6d1d03c1af4817076aa206f201b915c54b))
+* bump PHP floor to 8.5 ([6327a16](https://github.com/PomeloProductions/polis-laravel/commit/6327a1698e3c3a135df239624accbeaf009e741c))
+* keep php constraint permissive (&gt;=8.3.0), test 8.3–8.5 ([1ffd566](https://github.com/PomeloProductions/polis-laravel/commit/1ffd566833ac40d8f3475bf7b35b847b88f26df2))
+* **renovate:** remove phpunit-major update-blocking rule ([b17c689](https://github.com/PomeloProductions/polis-laravel/commit/b17c689f1c55ac6a4b1228b2d03d7ff93ce00e9e))
+* **renovate:** remove phpunit-major update-blocking rule ([439fd06](https://github.com/PomeloProductions/polis-laravel/commit/439fd0649b3b7bbb453c7d63852ea1739907ebeb))
+* test PHP 8.3–8.5, keep require.php permissive (&gt;=8.3.0) ([c10169b](https://github.com/PomeloProductions/polis-laravel/commit/c10169bf381dacf2bd557d5a0fd1b30de9038c8e))
+
 ## [0.9.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.8.0...v0.9.0) (2026-09-03)
 
 
