@@ -7,6 +7,19 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.9.2](https://github.com/PomeloProductions/polis-laravel/compare/v0.9.1...v0.9.2) (2026-09-23)
+
+
+### Miscellaneous Chores
+
+* **ci:** concurrency + path gating for the Tests matrix ([fe77e53](https://github.com/PomeloProductions/polis-laravel/commit/fe77e536da001928f8d5b22290dd929ff97155dc))
+* **ci:** make Tests workflow efficient with concurrency + path gating ([54bcab8](https://github.com/PomeloProductions/polis-laravel/commit/54bcab87f6b3dc614eded1eb8f35a92bd58bd3ae))
+* **ci:** trim PR matrix, add draft skip + job timeout ([aa59e54](https://github.com/PomeloProductions/polis-laravel/commit/aa59e543e3632ab10eb4c6ed2617a8156ea44d7e))
+* **deps:** update dorny/paths-filter action to v4 ([4d4eb44](https://github.com/PomeloProductions/polis-laravel/commit/4d4eb4454e9a964a9a8a8b3121957482ed425913))
+* **deps:** update dorny/paths-filter action to v4 ([5b1d151](https://github.com/PomeloProductions/polis-laravel/commit/5b1d15185dc187f35a889e57d1f69b708f3dfaeb))
+* **renovate:** add PR volume + scheduling cost controls ([9a1ec8f](https://github.com/PomeloProductions/polis-laravel/commit/9a1ec8f4c4d037ae5c8e0e846a3071c67c89c290))
+* **renovate:** PR volume + scheduling cost controls ([e1b19fd](https://github.com/PomeloProductions/polis-laravel/commit/e1b19fd11b939020aef5cbeea35f65a88d06994b))
+
 ## [0.9.1](https://github.com/PomeloProductions/polis-laravel/compare/v0.9.0...v0.9.1) (2026-09-20)
 
 
