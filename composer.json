@@ -1,8 +1,31 @@
 {
     "name": "polis/polis-laravel",
-    "description": "Polis Laravel Package",
+    "description": "Athenia-derived Laravel base framework powering the Polis multi-tenant entity platform.",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/PomeloProductions/polis-laravel",
+    "keywords": [
+        "laravel",
+        "polis",
+        "pomelo",
+        "framework",
+        "entity",
+        "multi-tenant"
+    ],
+    "authors": [
+        {
+            "name": "Bryce Meyer",
+            "email": "bryce13950@gmail.com"
+        },
+        {
+            "name": "Pomelo Productions",
+            "homepage": "https://github.com/PomeloProductions"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/PomeloProductions/polis-laravel/issues",
+        "source": "https://github.com/PomeloProductions/polis-laravel"
+    },
     "autoload": {
         "psr-4": {
             "Polis\\": "src/"
