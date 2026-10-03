@@ -185,6 +185,8 @@
       <file>./tests/Unit/Support/CopyRuleSetTest.php</file>
       <file>./tests/Unit/Models/Traits/HasNodeTreeTest.php</file>
       <file>./tests/Unit/Validation/ValidationMatrixTest.php</file>
+      <!-- Plugin system (standalone-runnable). -->
+      <file>./tests/Unit/Plugins/PluginManagerTest.php</file>
     </testsuite>
 
     <!--
