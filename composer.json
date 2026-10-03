@@ -56,6 +56,13 @@
         "test:coverage": "phpunit --testsuite=Unit --coverage-clover=coverage.xml --coverage-html=coverage-html",
         "test:coverage:text": "phpunit --testsuite=Unit --coverage-text"
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Polis\\Plugins\\PluginServiceProvider"
+            ]
+        }
+    },
     "config": {
         "sort-packages": true
     },
