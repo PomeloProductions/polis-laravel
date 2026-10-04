@@ -7,6 +7,21 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.11.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.10.1...v0.11.0) (2026-10-04)
+
+
+### Features
+
+* **migrations:** ship invitation_tokens table from the package ([d38095e](https://github.com/PomeloProductions/polis-laravel/commit/d38095eaf881be9276c3c09dd129127de04bc069))
+* **migrations:** ship invitation_tokens table from the package ([e17b5e7](https://github.com/PomeloProductions/polis-laravel/commit/e17b5e70b344724cd1fea95a9cdbe521739d7f1d))
+
+
+### Miscellaneous Chores
+
+* rebrand Athenia to Polis (cosmetic + namespace aliases) ([695fdaf](https://github.com/PomeloProductions/polis-laravel/commit/695fdafc25dbda6989157ec66db3ab5e15fba95a))
+* rebrand Athenia to Polis (cosmetic + namespace aliases) ([79e9805](https://github.com/PomeloProductions/polis-laravel/commit/79e9805b3fc75d69a3d5bc33f9d8e6dd3014f3d1))
+* remove final Athenia mentions from docs and composer description ([5c35153](https://github.com/PomeloProductions/polis-laravel/commit/5c35153aac68b0d38ae18be9f45fe89a4ac44bb2))
+
 ## [0.10.1](https://github.com/PomeloProductions/polis-laravel/compare/v0.10.0...v0.10.1) (2026-10-04)
 
 
