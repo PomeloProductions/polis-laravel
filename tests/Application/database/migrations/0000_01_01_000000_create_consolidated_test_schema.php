@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Schema;
  *   - article_notes.owner_id / owner_type           (package 2026_08_06_000003)
  *   - external_account_connections table            (package 2026_06_08_000001)
  *   - sources table                                 (package 2026_06_19_000001)
+ *   - invitation_tokens table                        (package package-migrations/2026_10_04_000002)
  *
  * Foreign-key constraints are mostly omitted; SQLite does not need them for the
  * ORM under test and omitting them avoids create-order fragility. Plain columns
@@ -417,14 +418,12 @@ return new class extends Migration
             $table->primary(['feature_id', 'membership_plan_id']);
         });
 
-        Schema::create('invitation_tokens', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('token', 40)->unique();
-            $table->unsignedInteger('role_id')->nullable();
-            $table->timestamp('used_at')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
-        });
+        // invitation_tokens is OMITTED here: it is created by the package's
+        // own auto-loaded migration (database/package-migrations), which runs
+        // AFTER this file. Creating it here too would make the guarded package
+        // migration a silent no-op and so would NOT prove the shipped migration
+        // actually stands the table up — same convention as
+        // external_account_connections / sources below.
 
         Schema::create('collections', function (Blueprint $table) {
             $table->increments('id');
@@ -579,7 +578,6 @@ return new class extends Migration
         Schema::dropIfExists('collection_item_categories');
         Schema::dropIfExists('collection_items');
         Schema::dropIfExists('collections');
-        Schema::dropIfExists('invitation_tokens');
         Schema::dropIfExists('feature_membership_plan');
         Schema::dropIfExists('features');
         Schema::dropIfExists('article_category');

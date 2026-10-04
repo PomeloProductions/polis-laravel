@@ -181,6 +181,11 @@ abstract class ApplicationTestCase extends OrchestraTestCase
     {
         $this->loadMigrationsFrom(__DIR__.'/database/migrations');
         $this->loadMigrationsFrom(dirname(__DIR__, 2).'/database/migrations');
+        // The package's auto-loaded, consumer-shipped migrations (the ones
+        // BaseServiceProvider::boot() registers for every real consumer, e.g.
+        // invitation_tokens). Loading them here exercises the exact directory
+        // consumers get, proving the shipped migration stands up the table.
+        $this->loadMigrationsFrom(dirname(__DIR__, 2).'/database/package-migrations');
     }
 
     /**
