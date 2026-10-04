@@ -7,6 +7,22 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.10.1](https://github.com/PomeloProductions/polis-laravel/compare/v0.10.0...v0.10.1) (2026-10-04)
+
+
+### Bug Fixes
+
+* add [@property-read](https://github.com/property-read) docs for latest relations; refresh in ArticleViewTest ([18089ad](https://github.com/PomeloProductions/polis-laravel/commit/18089ad65750fef5210d644bdfb47dacd1956d93))
+* eager-load latest version/iteration/message to kill Article + Thread serialization N+1 ([598a3aa](https://github.com/PomeloProductions/polis-laravel/commit/598a3aa7b28424da05028491c187fcf4700ab5e4))
+* eager-load latest version/iteration/message to kill Article + Thread serialization N+1 ([f11d01e](https://github.com/PomeloProductions/polis-laravel/commit/f11d01eb41d9c20e99649f4c34a8f1d4ed35c54d))
+* scope latest-relation eager-loading to the index path, not global $with ([e51299e](https://github.com/PomeloProductions/polis-laravel/commit/e51299e5ff4a5dd70f866f0569be903ffbeb4a2a))
+
+
+### Miscellaneous Chores
+
+* enrich composer.json Packagist metadata ([af0fdf3](https://github.com/PomeloProductions/polis-laravel/commit/af0fdf33dd75870f6e84c2dc9cf427b50b796a79))
+* enrich composer.json Packagist metadata ([6cefd85](https://github.com/PomeloProductions/polis-laravel/commit/6cefd85ced1aa10d1013c317fa51c58d597631bf))
+
 ## [0.10.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.9.1...v0.10.0) (2026-10-03)
 
 
