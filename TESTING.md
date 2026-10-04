@@ -32,7 +32,7 @@ Put in Unit:
   rows, no DB.
 
 **Canonical Unit example — definition-level relation test**
-(`client-driver` → `tests/Athenia/Unit/Models/RoleTest.php`):
+(`client-driver` → `tests/Unit/Models/RoleTest.php`):
 
 ```php
 final class RoleTest extends TestCase
@@ -68,7 +68,7 @@ Runs against a **real DB** (migrated). Put in Integration:
 - **Observers** — model observer side effects.
 
 **Canonical Integration example — repository test**
-(`client-driver` → `tests/Athenia/Integration/Repositories/FeatureRepositoryTest.php`):
+(`client-driver` → `tests/Integration/Repositories/FeatureRepositoryTest.php`):
 
 ```php
 final class FeatureRepositoryTest extends TestCase
@@ -160,7 +160,7 @@ side effects) goes in the **same** endpoint file, **each as a single test.**
 
 **Canonical Feature example — create endpoint enumerating every validation
 error** (`client-driver` →
-`tests/Athenia/Feature/Http/Organization/OrganizationCreateTest.php`):
+`tests/Feature/Http/Organization/OrganizationCreateTest.php`):
 
 ```php
 final class OrganizationCreateTest extends TestCase
@@ -274,8 +274,7 @@ until all three suites pass. Do not disable, skip, or conditionally exclude a
 suite in CI.
 
 (Reference: `client-driver` `apps/api/code/phpunit.xml` declares the `Unit`,
-`Integration`, and `Feature` testsuites — mirrored here as `Athenia Unit`,
-`Athenia Integration`, `Athenia Feature` for the ported Athenia layer.)
+`Integration`, and `Feature` testsuites.)
 
 ---
 
