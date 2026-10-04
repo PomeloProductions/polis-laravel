@@ -10,6 +10,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Polis\Contracts\Models\HasPolicyContract;
@@ -82,11 +83,41 @@ class Thread extends BaseModelAbstract implements HasPolicyContract, HasValidati
     ];
 
     /**
+     * Relations eager-loaded by default so the `last_message` append does not
+     * trigger an N+1 (one messages query per thread) on the threads index.
+     *
+     * @var list<string>
+     */
+    protected $with = [
+        'latestMessage',
+    ];
+
+    /**
+     * Hide the eager-loaded relation from serialization; its value is surfaced
+     * through the `last_message` append, so the index JSON shape is unchanged.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'latestMessage',
+    ];
+
+    /**
      * All messages in this thread
      */
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * The most recent message in this thread. Declared as a single-record
+     * relation so it can be eager-loaded (one query for all threads) rather than
+     * loading every message of every thread to read ->first().
+     */
+    public function latestMessage(): HasOne
+    {
+        return $this->hasOne(Message::class)->latestOfMany('created_at');
     }
 
     /**
@@ -104,7 +135,9 @@ class Thread extends BaseModelAbstract implements HasPolicyContract, HasValidati
      */
     public function getLastMessageAttribute()
     {
-        return $this->messages ? $this->messages->first() : null;
+        // Read from the eager-loadable single-record relation so serializing a
+        // list of threads does not load every message of every thread.
+        return $this->latestMessage;
     }
 
     /**

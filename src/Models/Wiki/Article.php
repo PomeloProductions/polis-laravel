@@ -122,11 +122,59 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
     ];
 
     /**
+     * Eager-load the single-record relations the `content` and
+     * `last_iteration_content` appends read, so serializing a list of articles
+     * issues a bounded number of queries instead of ~3 per article (N+1).
+     *
+     * @var list<string>
+     */
+    protected $with = [
+        'latestVersion.articleIteration',
+        'latestIteration',
+    ];
+
+    /**
+     * Hide the helper relations from serialization; their values are surfaced via
+     * the appended `content` / `last_iteration_content` attributes, so the index
+     * JSON shape is unchanged.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'latestVersion',
+        'latestIteration',
+    ];
+
+    /**
      * The user that originally created this article
      */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_id');
+    }
+
+    /**
+     * The most recent version of this article, as a single-record relation so it
+     * (and its iteration) can be eager-loaded for the index.
+     */
+    public function latestVersion(): HasOne
+    {
+        return $this->hasOne(ArticleVersion::class)->latestOfMany(['created_at', 'id']);
+    }
+
+    /**
+     * The most recent iteration of this article, as a single-record relation so
+     * it can be eager-loaded for the index.
+     *
+     * ArticleIteration::newQuery() forces `order by created_at desc`, so a plain
+     * hasOne resolves (and eager-matches) to the newest iteration — matching the
+     * previous iterations()->limit(1) behavior. We intentionally avoid
+     * latestOfMany() here because its aggregate subquery collides with that forced
+     * ordering under MySQL's only_full_group_by.
+     */
+    public function latestIteration(): HasOne
+    {
+        return $this->hasOne(ArticleIteration::class);
     }
 
     /**
@@ -195,7 +243,9 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
      */
     public function getCurrentVersionAttribute(): ?ArticleVersion
     {
-        return $this->versions()->limit(1)->get()->first();
+        // Read from the eager-loadable single-record relation so this does not
+        // fire a fresh versions() query every time the `content` append renders.
+        return $this->latestVersion;
     }
 
     /**
@@ -206,10 +256,12 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
         if (isset($this->attributes['last_iteration_content'])) {
             return $this->attributes['last_iteration_content'];
         }
+        // Read from the eager-loadable single-record relation instead of an
+        // iterations() query per article.
         /** @var ArticleIteration|null $iteration */
-        $iteration = $this->iterations()->limit(1)->get()->first();
+        $iteration = $this->latestIteration;
 
-        return $iteration ? $iteration->content : null;
+        return $iteration?->content;
     }
 
     public function morphRelationName(): string
