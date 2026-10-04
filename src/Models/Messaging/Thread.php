@@ -136,7 +136,8 @@ class Thread extends BaseModelAbstract implements HasPolicyContract, HasValidati
     public function getLastMessageAttribute()
     {
         // Read from the eager-loadable single-record relation so serializing a
-        // list of threads does not load every message of every thread.
+        // list of threads does not load every message of every thread. Eager-
+        // loaded via $with on any index/listing retrieval.
         return $this->latestMessage;
     }
 

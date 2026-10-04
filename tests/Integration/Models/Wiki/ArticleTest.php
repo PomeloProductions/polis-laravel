@@ -46,6 +46,11 @@ final class ArticleTest extends ApplicationTestCase
             'article_id' => $article->id,
         ]);
 
+        // Re-fetch so the eager-loaded ($with) latestVersion reflects the rows
+        // created after $article was first materialized — i.e. how the article
+        // is actually loaded for an index/view response.
+        $article->refresh();
+
         $this->assertEquals($expected->id, $article->current_version->id);
     }
 
@@ -64,6 +69,8 @@ final class ArticleTest extends ApplicationTestCase
             'article_id' => $article->id,
             'article_iteration_id' => $iteration->id,
         ]);
+
+        $article->refresh();
 
         $this->assertEquals('Hello', $article->content);
     }
@@ -96,6 +103,8 @@ final class ArticleTest extends ApplicationTestCase
             'article_iteration_id' => $iteration->id,
             'created_at' => Carbon::now()->subDay(),
         ]);
+
+        $article->refresh();
 
         $this->assertEquals('Hello', $article->content);
     }

@@ -245,6 +245,7 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
     {
         // Read from the eager-loadable single-record relation so this does not
         // fire a fresh versions() query every time the `content` append renders.
+        // Eager-loaded via $with on any index/listing retrieval.
         return $this->latestVersion;
     }
 
@@ -257,7 +258,8 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
             return $this->attributes['last_iteration_content'];
         }
         // Read from the eager-loadable single-record relation instead of an
-        // iterations() query per article.
+        // iterations() query per article. Eager-loaded via $with on any
+        // index/listing retrieval.
         /** @var ArticleIteration|null $iteration */
         $iteration = $this->latestIteration;
 
