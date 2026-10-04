@@ -9,6 +9,7 @@ use App\Models\Wiki\ArticleIteration;
 use App\Models\Wiki\ArticleVersion;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Polis\Contracts\Repositories\Wiki\ArticleRepositoryContract;
 use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
 
@@ -46,11 +47,9 @@ final class ArticleTest extends ApplicationTestCase
             'article_id' => $article->id,
         ]);
 
-        // Re-fetch so the eager-loaded ($with) latestVersion reflects the rows
-        // created after $article was first materialized — i.e. how the article
-        // is actually loaded for an index/view response.
-        $article->refresh();
-
+        // latestVersion was not eager-loaded on this instance, so the accessor
+        // falls back to the original lazy versions() query and still resolves
+        // the newest version.
         $this->assertEquals($expected->id, $article->current_version->id);
     }
 
@@ -70,8 +69,8 @@ final class ArticleTest extends ApplicationTestCase
             'article_iteration_id' => $iteration->id,
         ]);
 
-        $article->refresh();
-
+        // latestVersion/latestIteration not eager-loaded here: accessor lazy
+        // fallback still resolves the content.
         $this->assertEquals('Hello', $article->content);
     }
 
@@ -103,8 +102,6 @@ final class ArticleTest extends ApplicationTestCase
             'article_iteration_id' => $iteration->id,
             'created_at' => Carbon::now()->subDay(),
         ]);
-
-        $article->refresh();
 
         $this->assertEquals('Hello', $article->content);
     }
@@ -150,11 +147,20 @@ final class ArticleTest extends ApplicationTestCase
      * latest iteration that the `content` / `last_iteration_content` appends
      * read. Before the fix those appends lazy-loaded per article (~3 queries
      * each), so serializing a list of N articles scaled with N. After the fix
-     * the relations are eager-loaded via `$with`, so the query count is bounded
-     * and does not grow with the number of articles.
+     * the index repository (ArticleRepository::findAll) eager-loads the latest
+     * version/iteration relations, so the query count is bounded and does not
+     * grow with the number of articles.
+     *
+     * We go through the repository's findAll (the actual index/listing path),
+     * NOT a bare Article::query()->get(), because the eager-loading is scoped to
+     * that path rather than forced globally via the model's `$with` (which would
+     * break minimal loads and the EmailTemplate/PushTemplate subclasses).
      */
     public function test_serializing_article_list_is_bounded_and_does_not_grow_with_count(): void
     {
+        /** @var ArticleRepositoryContract $repository */
+        $repository = $this->app->make(ArticleRepositoryContract::class);
+
         $makeArticle = function (): void {
             /** @var Article $article */
             $article = Article::factory()->create();
@@ -170,7 +176,7 @@ final class ArticleTest extends ApplicationTestCase
             ]);
         };
 
-        $countQueriesForListingOf = function (int $articleCount) use ($makeArticle): int {
+        $countQueriesForListingOf = function (int $articleCount) use ($makeArticle, $repository): int {
             Article::query()->forceDelete();
 
             for ($i = 0; $i < $articleCount; $i++) {
@@ -180,9 +186,10 @@ final class ArticleTest extends ApplicationTestCase
             DB::flushQueryLog();
             DB::enableQueryLog();
 
-            // Serializing the index exercises the `content` +
+            // Exercise the real index/listing path. Passing limit=0 returns a
+            // plain collection. Serializing exercises the `content` +
             // `last_iteration_content` appends on every row.
-            Article::query()->get()->toArray();
+            $repository->findAll(limit: 0)->toArray();
 
             $count = count(DB::getQueryLog());
             DB::disableQueryLog();
@@ -198,7 +205,7 @@ final class ArticleTest extends ApplicationTestCase
         $this->assertSame(
             $queriesForOne,
             $queriesForMany,
-            'Serializing an article list must not issue more queries as the row count grows (N+1 regression).'
+            'The article index must not issue more queries as the row count grows (N+1 regression).'
         );
 
         // Guard the absolute ceiling too: base select + the eager-loaded
@@ -206,16 +213,18 @@ final class ArticleTest extends ApplicationTestCase
         $this->assertLessThanOrEqual(
             5,
             $queriesForMany,
-            'Serializing an article list should take a small, bounded number of queries.'
+            'The article index should take a small, bounded number of queries.'
         );
     }
 
     /**
-     * Asserts the N+1 fix is actually wired: the helper relations exist, are
-     * declared in `$with`, and are hidden from the serialized shape (their data
-     * is surfaced through the appends instead).
+     * Asserts the N+1 fix is actually wired on the INDEX path: the index
+     * repository eager-loads the latest version/iteration relations, they are
+     * hidden from the serialized shape, and their data is surfaced through the
+     * appends. A bare model load (not the index path) does NOT eager-load them
+     * (the relations are intentionally not on the model's `$with`).
      */
-    public function test_latest_relations_are_eager_loaded_hidden_and_feed_the_appends(): void
+    public function test_latest_relations_are_eager_loaded_on_index_hidden_and_feed_the_appends(): void
     {
         /** @var Article $article */
         $article = Article::factory()->create();
@@ -230,10 +239,19 @@ final class ArticleTest extends ApplicationTestCase
             'article_iteration_id' => $iteration->id,
         ]);
 
-        /** @var Article $fresh */
-        $fresh = Article::query()->findOrFail($article->id);
+        // A bare model load must NOT eager-load the helper relations: they are
+        // scoped to the index path, not forced globally via `$with`.
+        /** @var Article $bare */
+        $bare = Article::query()->findOrFail($article->id);
+        $this->assertFalse($bare->relationLoaded('latestVersion'));
+        $this->assertFalse($bare->relationLoaded('latestIteration'));
 
-        // Eager-loaded by default via $with.
+        // The index path eager-loads them.
+        /** @var ArticleRepositoryContract $repository */
+        $repository = $this->app->make(ArticleRepositoryContract::class);
+        /** @var Article $fresh */
+        $fresh = $repository->findAll(limit: 0)->firstOrFail();
+
         $this->assertTrue($fresh->relationLoaded('latestVersion'));
         $this->assertTrue($fresh->relationLoaded('latestIteration'));
 

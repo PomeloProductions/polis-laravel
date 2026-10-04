@@ -7,6 +7,8 @@ namespace Polis\Repositories\Wiki;
 use App\Models\Statistic\Statistic;
 use App\Models\User\User;
 use App\Models\Wiki\Article;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Polis\Contracts\Repositories\Statistic\StatisticRepositoryContract;
 use Polis\Contracts\Repositories\Wiki\ArticleRepositoryContract;
 use Polis\Models\BaseModelAbstract;
@@ -32,6 +34,31 @@ class ArticleRepository extends BaseRepositoryAbstract implements ArticleReposit
         private readonly StatisticRepositoryContract $statisticRepository
     ) {
         parent::__construct($model, $log);
+    }
+
+    /**
+     * The single-record relations the `content` / `last_iteration_content`
+     * appends read. Eager-loaded ONLY on the listing path so serializing an
+     * article index is a bounded number of queries instead of ~3 per row (N+1).
+     * They are intentionally NOT on the model's `$with`, so single/minimal loads
+     * (and the EmailTemplate / PushTemplate subclasses) never trigger them.
+     *
+     * @var list<string>
+     */
+    private const INDEX_EAGER_LOADS = [
+        'latestVersion.articleIteration',
+        'latestIteration',
+    ];
+
+    /**
+     * Override findAll to eager-load the latest version/iteration relations that
+     * the appends read, scoping the N+1 fix to the listing path only.
+     */
+    public function findAll(array $filters = [], array $searches = [], array $orderBy = [], array $with = [], $limit = 10, array $belongsToArray = [], int $page = 1): LengthAwarePaginator|Collection
+    {
+        $with = array_values(array_unique([...self::INDEX_EAGER_LOADS, ...$with]));
+
+        return parent::findAll($filters, $searches, $orderBy, $with, $limit, $belongsToArray, $page);
     }
 
     /**

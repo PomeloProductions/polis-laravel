@@ -124,21 +124,18 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
     ];
 
     /**
-     * Eager-load the single-record relations the `content` and
-     * `last_iteration_content` appends read, so serializing a list of articles
-     * issues a bounded number of queries instead of ~3 per article (N+1).
-     *
-     * @var list<string>
-     */
-    protected $with = [
-        'latestVersion.articleIteration',
-        'latestIteration',
-    ];
-
-    /**
      * Hide the helper relations from serialization; their values are surfaced via
      * the appended `content` / `last_iteration_content` attributes, so the index
      * JSON shape is unchanged.
+     *
+     * NOTE: we deliberately do NOT declare these relations in `$with`. Forcing
+     * them to eager-load on every retrieval breaks any context where the
+     * `article_versions` / `article_iterations` tables are not present or should
+     * not be touched — notably the Unit suite's `:memory:` sqlite DB and the
+     * EmailTemplate / PushTemplate models (which extend Article but are stored in
+     * the shared `article_versions` table). Eager-loading is instead scoped to
+     * the actual listing query sites (see ArticleRepository::findAll), so the
+     * index N+1 is batched without forcing the relation everywhere.
      *
      * @var array
      */
@@ -245,10 +242,19 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
      */
     public function getCurrentVersionAttribute(): ?ArticleVersion
     {
-        // Read from the eager-loadable single-record relation so this does not
-        // fire a fresh versions() query every time the `content` append renders.
-        // Eager-loaded via $with on any index/listing retrieval.
-        return $this->latestVersion;
+        // Prefer the eager-loaded single-record relation (populated on the
+        // index/listing path via ArticleRepository::findAll) so the `content`
+        // append does not fire a fresh query per row. When the relation was not
+        // eager-loaded (single/minimal loads), fall back to the original lazy
+        // behavior so nothing breaks.
+        if ($this->relationLoaded('latestVersion')) {
+            /** @var ArticleVersion|null $version */
+            $version = $this->getRelation('latestVersion');
+
+            return $version;
+        }
+
+        return $this->versions()->limit(1)->get()->first();
     }
 
     /**
@@ -259,11 +265,20 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
         if (isset($this->attributes['last_iteration_content'])) {
             return $this->attributes['last_iteration_content'];
         }
-        // Read from the eager-loadable single-record relation instead of an
-        // iterations() query per article. Eager-loaded via $with on any
-        // index/listing retrieval.
+
+        // Prefer the eager-loaded single-record relation (populated on the
+        // index/listing path via ArticleRepository::findAll) so this does not
+        // fire an iterations() query per row. When it was not eager-loaded, fall
+        // back to the original lazy behavior.
+        if ($this->relationLoaded('latestIteration')) {
+            /** @var ArticleIteration|null $iteration */
+            $iteration = $this->getRelation('latestIteration');
+
+            return $iteration?->content;
+        }
+
         /** @var ArticleIteration|null $iteration */
-        $iteration = $this->latestIteration;
+        $iteration = $this->iterations()->limit(1)->get()->first();
 
         return $iteration?->content;
     }

@@ -84,18 +84,14 @@ class Thread extends BaseModelAbstract implements HasPolicyContract, HasValidati
     ];
 
     /**
-     * Relations eager-loaded by default so the `last_message` append does not
-     * trigger an N+1 (one messages query per thread) on the threads index.
+     * Hide the helper relation from serialization; its value is surfaced through
+     * the `last_message` append, so the index JSON shape is unchanged.
      *
-     * @var list<string>
-     */
-    protected $with = [
-        'latestMessage',
-    ];
-
-    /**
-     * Hide the eager-loaded relation from serialization; its value is surfaced
-     * through the `last_message` append, so the index JSON shape is unchanged.
+     * NOTE: we deliberately do NOT declare this relation in `$with`. Forcing it
+     * to eager-load on every retrieval touches the messages table in contexts
+     * that should not need it; eager-loading is instead scoped to the listing
+     * query site (see ThreadRepository::findAll), batching the index N+1 without
+     * forcing the relation on every model load.
      *
      * @var array
      */
@@ -136,10 +132,16 @@ class Thread extends BaseModelAbstract implements HasPolicyContract, HasValidati
      */
     public function getLastMessageAttribute()
     {
-        // Read from the eager-loadable single-record relation so serializing a
-        // list of threads does not load every message of every thread. Eager-
-        // loaded via $with on any index/listing retrieval.
-        return $this->latestMessage;
+        // Prefer the eager-loaded single-record relation (populated on the
+        // index/listing path via ThreadRepository::findAll) so serializing a
+        // list of threads does not load every message of every thread. When it
+        // was not eager-loaded, fall back to the original lazy behavior of
+        // reading the first (most recent) message.
+        if ($this->relationLoaded('latestMessage')) {
+            return $this->getRelation('latestMessage');
+        }
+
+        return $this->messages ? $this->messages->first() : null;
     }
 
     /**
