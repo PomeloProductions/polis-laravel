@@ -143,7 +143,6 @@
       <file>./tests/Unit/Repositories/ThinWrapperRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/ArticleNoteRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/ContactRepositoryTest.php</file>
-      <file>./tests/Unit/Repositories/User/ExternalAccountConnectionRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/InvitationTokenRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/PasswordTokenRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/User/ProfileImageRepositoryTest.php</file>
