@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Polis\Tests\Application;
 
-use App\Models\Role;
 use App\Models\User\User;
 use App\Providers\AppRepositoryProvider;
 use App\Providers\AppServiceProvider;
@@ -14,7 +13,6 @@ use App\Providers\EventServiceProvider;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider;
 use Polis\Exceptions\Handler;
@@ -24,6 +22,8 @@ use Polis\Http\Middleware\JWTGetUserFromTokenProtectedRouteMiddleware;
 use Polis\Http\Middleware\JWTGetUserFromTokenUnprotectedRouteMiddleware;
 use Polis\Http\Middleware\LogMiddleware;
 use Polis\Http\Middleware\SearchFilterParsingMiddleware;
+use Polis\Testing\AuthorizesWithGuard;
+use Polis\Testing\SeedsRoles;
 use Polis\Tests\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -41,12 +41,12 @@ use Psr\Log\LoggerInterface;
  */
 abstract class ApplicationTestCase extends OrchestraTestCase
 {
-    /**
-     * The user the current test is authenticated as.
-     *
-     * @var User
-     */
-    protected $actingAs;
+    // Shipped testable-authorization helpers. These are the same traits
+    // consuming applications inherit from the package (src/Testing/*), so this
+    // base and every consumer's Feature base share one source of truth for
+    // actAs()/actAsUser()/$actingAs and seedRoles().
+    use AuthorizesWithGuard;
+    use SeedsRoles;
 
     /**
      * Register the consumer application's service providers, mirroring the
@@ -174,33 +174,6 @@ abstract class ApplicationTestCase extends OrchestraTestCase
     }
 
     /**
-     * Seed the fixed role rows the policies + factories reference. The
-     * consolidated schema migration is create-only (no data), and the
-     * PolisOS historical role seeds live inside migrations we don't replay,
-     * so seed the canonical role ids here.
-     */
-    protected function seedRoles(): void
-    {
-        $roles = [
-            Role::APP_USER => 'A Basic App User',
-            Role::SUPER_ADMIN => 'A Super Admin',
-            Role::ARTICLE_VIEWER => 'An Article Viewer',
-            Role::ARTICLE_EDITOR => 'An Article Editor',
-            Role::ADMINISTRATOR => 'Organization Admin',
-            Role::MANAGER => 'Organization Manager',
-            Role::CONTENT_EDITOR => 'Content Editor',
-            Role::SUPPORT_STAFF => 'Support Staff',
-        ];
-
-        foreach ($roles as $id => $name) {
-            DB::table('roles')->insertOrIgnore([
-                'id' => $id,
-                'name' => $name,
-            ]);
-        }
-    }
-
-    /**
      * Load every migration the ported tests touch: the PolisOS base schema
      * plus the package's own incremental migrations.
      */
@@ -221,24 +194,6 @@ abstract class ApplicationTestCase extends OrchestraTestCase
         // Intentionally empty: defineDatabaseMigrations() runs migrations and
         // Testbench wraps each test in a transaction via RefreshDatabase-style
         // in-memory sqlite. Kept so ported tests can call it without error.
-    }
-
-    /**
-     * Authenticate as a freshly created user.
-     */
-    protected function actAsUser($data = []): void
-    {
-        $this->actingAs = User::factory()->create($data);
-        $this->actingAs($this->actingAs);
-    }
-
-    /**
-     * Authenticate as a freshly created user carrying the given role.
-     */
-    protected function actAs(int $roleId): void
-    {
-        $this->actAsUser();
-        $this->actingAs->addRole($roleId);
     }
 
     /**
