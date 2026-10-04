@@ -2,50 +2,51 @@
 
 declare(strict_types=1);
 
-namespace Polis\Tests\Unit\Repositories;
+namespace Polis\Tests\Integration\Repositories;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
+use Polis\Models\BaseModelAbstract;
 use Polis\Repositories\BaseRepositoryAbstract;
+use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Fixtures\Repository\RepoBelongsToManyModel;
 use Polis\Tests\Fixtures\Repository\RepoChildModel;
 use Polis\Tests\Fixtures\Repository\RepoHasOneModel;
 use Polis\Tests\Fixtures\Repository\RepoParentModel;
-use Polis\Tests\Fixtures\Repository\RepositoryTestCase;
 
 /**
  * Comprehensive Eloquent-backed tests for BaseRepositoryAbstract.
  *
- * The original tests/Unit/Repositories/BaseRepositoryAbstractTest.php (kept
- * in the Consumer-Only bucket) is reflection-only and was written before
- * the `update()`/`delete()` signatures required a BaseModelAbstract — it
- * no longer runs cleanly with the current source. These tests replace it
- * with end-to-end exercise of every public method against real Eloquent
- * fixture models and an in-memory sqlite database.
+ * These exercise every public method of the generic base repository against
+ * real Eloquent fixture models and an in-memory sqlite database, driving the
+ * SQL-level branches no mock-based test reaches: the findAll() where-clause
+ * variants (whereIn / whereNotIn / whereNull / whereNotNull / operator
+ * arrays), the search orWhere variants, the create() relationship branches
+ * (BelongsTo / BelongsToMany / HasMany / HasOne), forcedValues forceFill,
+ * and the update()/delete() DomainException failure paths.
  *
- * Branches covered here:
- *  - create() with no parent
- *  - create() with BelongsTo parent (foreign key set on new model)
- *  - create() with BelongsToMany parent (save then attach via pivot)
- *  - create() with HasMany parent (save then set FK on related model)
- *  - create() with HasOne parent (same branch as HasMany)
- *  - create() with forcedValues (assign post-newInstance)
- *  - getRelationshipFunctionName() plural-success path
- *  - getRelationshipFunctionName() singular-fallback path
- *  - update() happy path
- *  - update() with forcedValues -> forceFill called
- *  - update() failure -> DomainException
- *  - delete() happy path
- *  - delete() failure -> DomainException
- *  - findOrFail() happy path + with-relations
- *  - findOrFail() missing -> ModelNotFoundException
- *  - findAll() with no filters (paginated)
- *  - findAll() with limit=0 (returns collection)
- *  - findAll() filter variants: equality, in, not in, IS NULL, IS NOT NULL, operator
- *  - findAll() searches (orWhere variants)
- *  - findAll() with orderBy
- *  - findAll() with belongsToArray (BelongsTo + BelongsToMany)
+ * Previously lived in the Unit suite
+ * (tests/Unit/Repositories/BaseRepositoryAbstractFixtureTest) against the
+ * Testbench-only RepositoryTestCase. DB-backed repository coverage belongs in
+ * the Integration harness (Unit = pure / no-DB), so it was relocated here
+ * verbatim. The tiny fixture schema (repo_parent_models, repo_child_models,
+ * repo_has_one_models, repo_belongs_to_many_models + the pivot) is loaded on
+ * top of the normal application migrations in setUp().
  */
-final class BaseRepositoryAbstractFixtureTest extends RepositoryTestCase
+final class BaseRepositoryAbstractTest extends ApplicationTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Load the test-only fixture schema (parent/child/has-one/
+        // belongs-to-many tables) on top of the application migrations.
+        $this->loadMigrationsFrom(
+            dirname(__DIR__, 2).'/Fixtures/database/migrations/repo-test-tables',
+        );
+    }
+
     /**
      * Build a concrete anonymous repository wrapping a model instance.
      */
@@ -178,7 +179,7 @@ final class BaseRepositoryAbstractFixtureTest extends RepositoryTestCase
     {
         $log = $this->getGenericLogMock();
 
-        $modelMock = \Mockery::mock(\Polis\Models\BaseModelAbstract::class)->makePartial();
+        $modelMock = \Mockery::mock(BaseModelAbstract::class)->makePartial();
         $modelMock->shouldReceive('update')->once()->with(['name' => 'x'])->andReturn(false);
         $modelMock->shouldReceive('getAttribute')->andReturn(7);
 
@@ -203,7 +204,7 @@ final class BaseRepositoryAbstractFixtureTest extends RepositoryTestCase
     {
         $log = $this->getGenericLogMock();
 
-        $modelMock = \Mockery::mock(\Polis\Models\BaseModelAbstract::class)->makePartial();
+        $modelMock = \Mockery::mock(BaseModelAbstract::class)->makePartial();
         $modelMock->shouldReceive('delete')->once()->andReturn(false);
         $modelMock->shouldReceive('getAttribute')->andReturn(7);
 
@@ -227,7 +228,7 @@ final class BaseRepositoryAbstractFixtureTest extends RepositoryTestCase
     {
         $repo = $this->buildRepository(new RepoParentModel);
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
         $repo->findOrFail(99999);
     }
 
@@ -254,7 +255,7 @@ final class BaseRepositoryAbstractFixtureTest extends RepositoryTestCase
         $repo = $this->buildRepository(new RepoParentModel);
         $result = $repo->findAll();
 
-        $this->assertInstanceOf(\Illuminate\Contracts\Pagination\LengthAwarePaginator::class, $result);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
         $this->assertSame(2, $result->total());
     }
 
@@ -265,7 +266,7 @@ final class BaseRepositoryAbstractFixtureTest extends RepositoryTestCase
         $repo = $this->buildRepository(new RepoParentModel);
         $result = $repo->findAll([], [], [], [], 0);
 
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+        $this->assertInstanceOf(Collection::class, $result);
         $this->assertCount(1, $result);
     }
 
@@ -450,7 +451,7 @@ final class BaseRepositoryAbstractFixtureTest extends RepositoryTestCase
         $repo = $this->buildRepository(new RepoParentModel);
         $page2 = $repo->findAll([], [], [], [], 10, [], 2);
 
-        $this->assertInstanceOf(\Illuminate\Contracts\Pagination\LengthAwarePaginator::class, $page2);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $page2);
         $this->assertSame(15, $page2->total());
         $this->assertSame(2, $page2->currentPage());
         $this->assertCount(5, $page2->items());

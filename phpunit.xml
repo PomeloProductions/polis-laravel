@@ -125,13 +125,10 @@
       <file>./tests/Unit/Push/DefaultPushTemplatesTest.php</file>
       <file>./tests/Unit/Push/RenderedPushNotificationTest.php</file>
       <file>./tests/Unit/Repositories/AssetRepositoryTest.php</file>
-      <file>./tests/Unit/Repositories/BaseRepositoryAbstractFixtureTest.php</file>
       <file>./tests/Unit/Repositories/BaseRepositoryAbstractTest.php</file>
       <file>./tests/Unit/Repositories/Collection/CollectionRepositoryTest.php</file>
-      <file>./tests/Unit/Repositories/Messaging/EmailTemplateRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Messaging/MessageRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Messaging/PushNotificationKeyRepositoryTest.php</file>
-      <file>./tests/Unit/Repositories/Messaging/PushTemplateRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Messaging/ThreadRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/Payment/PaymentRepositoryTest.php</file>
       <file>./tests/Unit/Repositories/RoleRepositoryTest.php</file>
@@ -300,15 +297,12 @@
       <exclude>./tests/Unit/Providers/BaseServiceProviderResolveTest.php</exclude>
       <exclude>./tests/Unit/Providers/BaseValidatorProviderTest.php</exclude>
       <exclude>./tests/Unit/Push/RenderedPushNotificationTest.php</exclude>
-      <exclude>./tests/Unit/Repositories/BaseRepositoryAbstractFixtureTest.php</exclude>
       <exclude>./tests/Unit/Repositories/BaseRepositoryAbstractTest.php</exclude>
       <exclude>./tests/Unit/Repositories/RoleRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Repositories/ThinWrapperRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Repositories/Collection/CollectionRepositoryTest.php</exclude>
-      <exclude>./tests/Unit/Repositories/Messaging/EmailTemplateRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Repositories/Messaging/MessageRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Repositories/Messaging/PushNotificationKeyRepositoryTest.php</exclude>
-      <exclude>./tests/Unit/Repositories/Messaging/PushTemplateRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Repositories/Messaging/ThreadRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Repositories/Payment/PaymentRepositoryTest.php</exclude>
       <exclude>./tests/Unit/Repositories/Statistic/StatisticRepositoryTest.php</exclude>
