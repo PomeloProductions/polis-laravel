@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use Polis\Models\User\PasswordToken as AtheniaPasswordToken;
+use Polis\Models\User\PasswordToken as PolisPasswordToken;
 
 /**
  * Class PasswordToken
@@ -47,6 +47,6 @@ use Polis\Models\User\PasswordToken as AtheniaPasswordToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PasswordToken withoutTrashed()
  * @mixin \Eloquent
  */
-class PasswordToken extends AtheniaPasswordToken
+class PasswordToken extends PolisPasswordToken
 {
 }

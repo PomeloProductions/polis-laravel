@@ -28,7 +28,7 @@ final class SignUpListenerTest extends TestCase
 
         $repository->shouldReceive('sendEmailToUser')->once()->with(
             $user,
-            'Welcome to Project Athenia!',
+            'Welcome to Polis!',
             'sign-up',
             [],
             'Ralph Nadar,',

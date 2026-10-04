@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Organization;
 
-use Polis\Models\Organization\OrganizationManager as AtheniaOrganizationManager;
+use Polis\Models\Organization\OrganizationManager as PolisOrganizationManager;
 
 /**
  * Class OrganizationManager
@@ -51,6 +51,6 @@ use Polis\Models\Organization\OrganizationManager as AtheniaOrganizationManager;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationManager withoutTrashed()
  * @mixin \Eloquent
  */
-class OrganizationManager extends AtheniaOrganizationManager
+class OrganizationManager extends PolisOrganizationManager
 {
 }

@@ -64,7 +64,7 @@ final class ChargeRenewalTest extends ApplicationTestCase
             )
         );
         $config = mock(Repository::class);
-        $config->shouldReceive('get')->once()->with('app.name')->andReturn('Athenia');
+        $config->shouldReceive('get')->once()->with('app.name')->andReturn('Polis');
 
         $command = new ChargeRenewal($paymentService, $subscriptionRepository, $messageRepository, $config);
 
@@ -84,7 +84,7 @@ final class ChargeRenewalTest extends ApplicationTestCase
             \Mockery::on(function ($user) use ($stripeSubscription) {
                 return $user->id == $stripeSubscription->subscriber_id;
             }),
-            'Athenia Membership Successfully Renewed',
+            'Polis Membership Successfully Renewed',
             'membership-renewed',
             \Mockery::on(function ($data) use ($stripeSubscription) {
 
@@ -110,7 +110,7 @@ final class ChargeRenewalTest extends ApplicationTestCase
             \Mockery::on(function ($user) use ($nonRecurringSubscription) {
                 return $user->id == $nonRecurringSubscription->subscriber_id;
             }),
-            'Athenia Membership Expired',
+            'Polis Membership Expired',
             'membership-expired',
             \Mockery::on(function ($data) {
 

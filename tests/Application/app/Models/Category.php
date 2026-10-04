@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Polis\Models\Category as AtheniaCategory;
+use Polis\Models\Category as PolisCategory;
 
 /**
  * Class Category
@@ -48,6 +48,6 @@ use Polis\Models\Category as AtheniaCategory;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Category withoutTrashed()
  * @mixin \Eloquent
  */
-class Category extends AtheniaCategory
+class Category extends PolisCategory
 {
 }

@@ -75,10 +75,10 @@ final class EmailTemplateRenderingServiceTest extends TestCase
 
         $rendered = $service->render('welcome', [
             'user' => ['first_name' => 'Ada'],
-            'app' => ['name' => 'Athenia'],
+            'app' => ['name' => 'Polis'],
         ]);
 
-        $this->assertSame('Welcome to Athenia!', $rendered->subject);
+        $this->assertSame('Welcome to Polis!', $rendered->subject);
         $this->assertSame('<p>Hi Ada,</p>', $rendered->bodyHtml);
     }
 

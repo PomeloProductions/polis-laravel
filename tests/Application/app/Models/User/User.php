@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use Polis\Models\User\User as AtheniaUser;
+use Polis\Models\User\User as PolisUser;
 
 /**
  * Class User
@@ -95,7 +95,7 @@ use Polis\Models\User\User as AtheniaUser;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
  * @mixin \Eloquent
  */
-class User extends AtheniaUser
+class User extends PolisUser
 {
     public function buildModelValidationRules(...$params): array
     {

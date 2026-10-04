@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use Polis\Models\User\Contact as AtheniaContact;
+use Polis\Models\User\Contact as PolisContact;
 
 /**
  * Class Contact
@@ -52,6 +52,6 @@ use Polis\Models\User\Contact as AtheniaContact;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Contact withoutTrashed()
  * @mixin \Eloquent
  */
-class Contact extends AtheniaContact
+class Contact extends PolisContact
 {
 }

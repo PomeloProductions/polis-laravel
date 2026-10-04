@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Payment;
 
-use Polis\Models\Payment\Payment as AtheniaPayment;
+use Polis\Models\Payment\Payment as PolisPayment;
 
 /**
  * Class Payment
@@ -58,6 +58,6 @@ use Polis\Models\Payment\Payment as AtheniaPayment;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment withoutTrashed()
  * @mixin \Eloquent
  */
-class Payment extends AtheniaPayment
+class Payment extends PolisPayment
 {
 }

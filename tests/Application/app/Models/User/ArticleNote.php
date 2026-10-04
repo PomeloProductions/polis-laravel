@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use Polis\Models\User\ArticleNote as AtheniaArticleNote;
+use Polis\Models\User\ArticleNote as PolisArticleNote;
 
 /**
  * Class ArticleNote
@@ -52,6 +52,6 @@ use Polis\Models\User\ArticleNote as AtheniaArticleNote;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleNote withoutTrashed()
  * @mixin \Eloquent
  */
-class ArticleNote extends AtheniaArticleNote
+class ArticleNote extends PolisArticleNote
 {
 }

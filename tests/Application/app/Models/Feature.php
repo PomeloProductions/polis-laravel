@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Polis\Models\Feature as AtheniaFeature;
+use Polis\Models\Feature as PolisFeature;
 
 /**
  * Class Feature
@@ -48,6 +48,6 @@ use Polis\Models\Feature as AtheniaFeature;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature withoutTrashed()
  * @mixin \Eloquent
  */
-class Feature extends AtheniaFeature
+class Feature extends PolisFeature
 {
 }

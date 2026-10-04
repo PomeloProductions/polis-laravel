@@ -1,6 +1,6 @@
 {
     "name": "polis/polis-laravel",
-    "description": "Athenia-derived Laravel base framework powering the Polis multi-tenant entity platform.",
+    "description": "Polis Laravel base framework (formerly Athenia) powering the Polis multi-tenant entity platform.",
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/PomeloProductions/polis-laravel",

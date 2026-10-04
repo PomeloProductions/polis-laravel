@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Collection;
 
-use Polis\Models\Collection\CollectionItem as AtheniaCollectionItem;
+use Polis\Models\Collection\CollectionItem as PolisCollectionItem;
 
 /**
  * Class CollectionItem
@@ -54,6 +54,6 @@ use Polis\Models\Collection\CollectionItem as AtheniaCollectionItem;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CollectionItem withoutTrashed()
  * @mixin \Eloquent
  */
-class CollectionItem extends AtheniaCollectionItem
+class CollectionItem extends PolisCollectionItem
 {
 }

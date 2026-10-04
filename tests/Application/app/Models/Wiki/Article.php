@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Wiki;
 
-use Polis\Models\Wiki\Article as AtheniaArticle;
+use Polis\Models\Wiki\Article as PolisArticle;
 
 /**
  * Class Article
@@ -69,6 +69,6 @@ use Polis\Models\Wiki\Article as AtheniaArticle;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Article withoutTrashed()
  * @mixin \Eloquent
  */
-class Article extends AtheniaArticle
+class Article extends PolisArticle
 {
 }

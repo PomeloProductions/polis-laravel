@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Subscription;
 
-use Polis\Models\Subscription\Subscription as AtheniaSubscription;
+use Polis\Models\Subscription\Subscription as PolisSubscription;
 
 /**
  * Class Subscription
@@ -71,6 +71,6 @@ use Polis\Models\Subscription\Subscription as AtheniaSubscription;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Subscription withoutTrashed()
  * @mixin \Eloquent
  */
-class Subscription extends AtheniaSubscription
+class Subscription extends PolisSubscription
 {
 }

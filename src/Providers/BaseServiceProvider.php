@@ -134,7 +134,7 @@ abstract class BaseServiceProvider extends ServiceProvider
      *
      * Why this exists
      * ---------------
-     * The Athenia-based consumer apps ship a stripped `config/database.php`
+     * The Polis-based consumer apps ship a stripped `config/database.php`
      * whose `redis` section defines ONLY a `default` connection and has no
      * `options.prefix`. But Laravel's stock `config/cache.php` hardcodes the
      * redis cache store to the `cache` connection. So the moment the platform
@@ -146,7 +146,7 @@ abstract class BaseServiceProvider extends ServiceProvider
      * requests. On top of that `REDIS_PREFIX` was silently ignored (no
      * `options.prefix`), so tenant keys were NOT isolated inside the shared
      * redis. PolisOS was hotfixed directly in its own config/database.php
-     * (PolisOS #40), but that is per-app — every other Athenia tenant would
+     * (PolisOS #40), but that is per-app — every other Polis tenant would
      * hit the same wall. This fixes it once, in the package.
      *
      * How it behaves
@@ -167,7 +167,7 @@ abstract class BaseServiceProvider extends ServiceProvider
      */
     public static function applyRedisConfigGapFill($config): void
     {
-        // 1. Key prefix for tenant isolation in the shared redis. The Athenia
+        // 1. Key prefix for tenant isolation in the shared redis. The Polis
         //    stripped config has no `options.prefix`, so REDIS_PREFIX was
         //    ignored. Fill it only when the app hasn't set one (null/empty).
         $existingPrefix = $config->get('database.redis.options.prefix');
@@ -192,7 +192,7 @@ abstract class BaseServiceProvider extends ServiceProvider
         }
 
         // 3. Safety net: ensure a `default` redis connection exists (used by
-        //    sessions/queues). The Athenia config usually ships this, but fill
+        //    sessions/queues). The Polis config usually ships this, but fill
         //    it if it's somehow missing. Never clobber an existing one.
         if ($config->get('database.redis.default') === null) {
             $config->set('database.redis.default', [

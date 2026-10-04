@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Wiki;
 
-use Polis\Models\Wiki\ArticleSummary as AtheniaArticleSummary;
+use Polis\Models\Wiki\ArticleSummary as PolisArticleSummary;
 
 /**
  * Class ArticleSummary
@@ -42,6 +42,6 @@ use Polis\Models\Wiki\ArticleSummary as AtheniaArticleSummary;
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|ArticleSummary whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ArticleSummary extends AtheniaArticleSummary
+class ArticleSummary extends PolisArticleSummary
 {
 }

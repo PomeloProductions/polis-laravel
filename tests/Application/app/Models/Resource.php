@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Polis\Models\Resource as AtheniaResource;
+use Polis\Models\Resource as PolisResource;
 
 /**
  * Class Resource
@@ -49,6 +49,6 @@ use Polis\Models\Resource as AtheniaResource;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
  * @mixin \Eloquent
  */
-class Resource extends AtheniaResource
+class Resource extends PolisResource
 {
 }

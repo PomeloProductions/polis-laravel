@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Wiki;
 
-use Polis\Models\Wiki\ArticleVersion as AtheniaArticleVersion;
+use Polis\Models\Wiki\ArticleVersion as PolisArticleVersion;
 
 /**
  * Class ArticleVersion
@@ -50,6 +50,6 @@ use Polis\Models\Wiki\ArticleVersion as AtheniaArticleVersion;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleVersion withoutTrashed()
  * @mixin \Eloquent
  */
-class ArticleVersion extends AtheniaArticleVersion
+class ArticleVersion extends PolisArticleVersion
 {
 }
