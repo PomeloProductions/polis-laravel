@@ -253,11 +253,38 @@ abstract class BaseServiceProvider extends ServiceProvider
     }
 
     /**
+     * Absolute path to the package's auto-loaded migrations directory.
+     *
+     * This directory holds ONLY genuinely package-owned tables that consumers
+     * are not expected to hand-write (currently `invitation_tokens`). It is
+     * deliberately SEPARATE from `database/migrations/`, whose table-ALTER
+     * migrations touch consumer-owned schema and must NOT be auto-run on every
+     * consumer. Everything here is idempotent (guarded with Schema::hasTable)
+     * so loading it is safe even for consumers that already created the table
+     * in their own migration history.
+     */
+    private function packageMigrationsPath(): string
+    {
+        return dirname(__DIR__, 2).'/database/package-migrations';
+    }
+
+    /**
      * Publish the package's config file so consumers can override the
-     * defaults via their own `config/polis.php`.
+     * defaults via their own `config/polis.php`, and auto-load the package's
+     * own migrations so consumers get package-owned tables on `migrate`.
      */
     public function boot(): void
     {
+        // Auto-load genuinely package-owned migrations so every consumer gets
+        // these tables (e.g. invitation_tokens) on `php artisan migrate`
+        // without copying anything. Historically consumers hand-added the
+        // invitation_tokens table — and a missing table 500'd the
+        // OrganizationManager invite-a-new-email flow fleet-wide. Shipping it
+        // from here fixes that once. The directory is idempotent (each
+        // migration guards with Schema::hasTable), so consumers that already
+        // own the table are unaffected.
+        $this->loadMigrationsFrom($this->packageMigrationsPath());
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 $this->packageConfigPath() => $this->app->configPath('polis.php'),

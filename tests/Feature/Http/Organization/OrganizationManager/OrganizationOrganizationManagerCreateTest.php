@@ -7,8 +7,10 @@ namespace Polis\Tests\Feature\Http\Organization\OrganizationManager;
 use App\Models\Organization\Organization;
 use App\Models\Organization\OrganizationManager;
 use App\Models\Role;
+use App\Models\User\InvitationToken;
 use App\Models\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\Facades\Schema;
 use Polis\Events\Organization\OrganizationManagerCreatedEvent;
 use Polis\Tests\Application\ApplicationTestCase;
 use Polis\Tests\Traits\MocksApplicationLog;
@@ -164,6 +166,59 @@ final class OrganizationOrganizationManagerCreateTest extends ApplicationTestCas
             'role_id' => Role::MANAGER,
         ]);
         $this->assertNotNull(User::whereEmail('newuser@test.com'));
+    }
+
+    /**
+     * Regression guard for the fleet-wide 500 fixed by shipping the
+     * invitation_tokens table from polis-laravel itself
+     * (database/package-migrations auto-loaded by BaseServiceProvider).
+     *
+     * Inviting a brand-new email makes OrganizationManagerController::store()
+     * call InvitationTokenRepository::create(), which writes to the
+     * invitation_tokens table. Before the package shipped the migration,
+     * consumers that had not hand-added the table 500'd here with
+     * "no such table: invitation_tokens". This test proves (a) the table the
+     * package migration creates exists, and (b) the invite path now persists a
+     * token carrying the invited role and returns 201.
+     */
+    public function test_invite_new_email_persists_invitation_token_from_package_table(): void
+    {
+        // The table must exist purely from the package-shipped migration
+        // (the consolidated harness schema deliberately omits it).
+        $this->assertTrue(
+            Schema::hasTable('invitation_tokens'),
+            'invitation_tokens table should be created by the package-shipped migration'
+        );
+
+        $this->actAs(Role::ADMINISTRATOR);
+        $organization = Organization::factory()->create();
+        OrganizationManager::factory()->create([
+            'organization_id' => $organization->id,
+            'user_id' => $this->actingAs->id,
+            'role_id' => Role::ADMINISTRATOR,
+        ]);
+        $this->setupRoute($organization->id);
+
+        $this->assertSame(0, InvitationToken::query()->count());
+
+        $properties = [
+            'email' => 'brand-new-invitee@test.com',
+            'role_id' => Role::MANAGER,
+        ];
+
+        $response = $this->json('POST', $this->route, $properties);
+
+        // The store() path that previously 500'd now succeeds.
+        $response->assertStatus(201);
+
+        // A token was minted and persisted into the package-owned table,
+        // carrying the invited role.
+        $this->assertSame(1, InvitationToken::query()->count());
+        $token = InvitationToken::query()->first();
+        $this->assertNotNull($token);
+        $this->assertSame(Role::MANAGER, $token->role_id);
+        $this->assertNull($token->used_at);
+        $this->assertNotEmpty($token->token);
     }
 
     public function test_create_fails_missing_required_fields(): void
