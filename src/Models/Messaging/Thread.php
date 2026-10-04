@@ -29,6 +29,7 @@ use Polis\Models\Traits\HasValidationRules;
  * @property mixed|null $created_at
  * @property mixed|null $updated_at
  * @property-read null|string $last_message
+ * @property-read Message|null $latestMessage
  * @property-read Collection|Message[] $messages
  * @property-read int|null $messages_count
  * @property-read Collection|User[] $users

@@ -72,6 +72,11 @@ final class ArticleViewTest extends ApplicationTestCase
 
         $response->assertStatus(200);
 
+        // Re-fetch so the in-memory article reflects the iteration/version
+        // created above (its eager-loaded $with relations were materialized
+        // before those rows existed), matching how the endpoint loads it.
+        $this->article->refresh();
+
         $data = $this->article->toArray();
         unset($data['resource']);
 

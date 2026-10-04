@@ -51,6 +51,8 @@ use Polis\Models\Traits\IsOwnedByEntity;
  * @property-read User $createdBy
  * @property-read null|string $content
  * @property-read null|ArticleVersion $current_version
+ * @property-read null|ArticleVersion $latestVersion
+ * @property-read null|ArticleIteration $latestIteration
  * @property-read null|string $last_iteration_content
  * @property-read Collection|ArticleIteration[] $iterations
  * @property-read int|null $iterations_count
