@@ -263,10 +263,23 @@ Route::group(['middleware' => 'jwt.auth.protected'], function () {
             ],
         ]);
 
+        Route::get('email-templates', 'Organization\Messaging\EmailTemplateController@index')
+            ->name('email-templates.index');
+        Route::get('email-templates/{key}', 'Organization\Messaging\EmailTemplateController@show')
+            ->name('email-templates.show');
         Route::put('email-templates/{key}', 'Organization\Messaging\EmailTemplateController@update')
             ->name('email-templates.update');
+        Route::delete('email-templates/{key}', 'Organization\Messaging\EmailTemplateController@destroy')
+            ->name('email-templates.destroy');
+
+        Route::get('push-templates', 'Organization\Messaging\PushTemplateController@index')
+            ->name('push-templates.index');
+        Route::get('push-templates/{key}', 'Organization\Messaging\PushTemplateController@show')
+            ->name('push-templates.show');
         Route::put('push-templates/{key}', 'Organization\Messaging\PushTemplateController@update')
             ->name('push-templates.update');
+        Route::delete('push-templates/{key}', 'Organization\Messaging\PushTemplateController@destroy')
+            ->name('push-templates.destroy');
     });
 
     /**
