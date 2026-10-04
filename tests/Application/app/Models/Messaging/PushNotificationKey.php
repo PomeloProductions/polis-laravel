@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Messaging;
 
-use Polis\Models\Messaging\PushNotificationKey as AtheniaPushNotificationKey;
+use Polis\Models\Messaging\PushNotificationKey as PolisPushNotificationKey;
 
 /**
  * Class PushNotificationKey
@@ -49,6 +49,6 @@ use Polis\Models\Messaging\PushNotificationKey as AtheniaPushNotificationKey;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PushNotificationKey withoutTrashed()
  * @mixin \Eloquent
  */
-class PushNotificationKey extends AtheniaPushNotificationKey
+class PushNotificationKey extends PolisPushNotificationKey
 {
 }

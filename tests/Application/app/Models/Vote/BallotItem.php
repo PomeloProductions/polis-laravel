@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Vote;
 
-use Polis\Models\Vote\BallotItem as AtheniaBallotItem;
+use Polis\Models\Vote\BallotItem as PolisBallotItem;
 
 /**
  * Class BallotItem
@@ -51,6 +51,6 @@ use Polis\Models\Vote\BallotItem as AtheniaBallotItem;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BallotItem withoutTrashed()
  * @mixin \Eloquent
  */
-class BallotItem extends AtheniaBallotItem
+class BallotItem extends PolisBallotItem
 {
 }

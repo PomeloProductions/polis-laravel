@@ -12,7 +12,7 @@ use Polis\Tests\TestCase;
 /**
  * Tests for {@see BaseServiceProvider::applyRedisConfigGapFill()}.
  *
- * The gap-fill exists because the Athenia-based consumer apps ship a
+ * The gap-fill exists because the Polis-based consumer apps ship a
  * stripped config/database.php whose `redis` section has ONLY a `default`
  * connection and NO options.prefix, while config/cache.php points the redis
  * cache store at a `cache` connection. Without the gap-fill, setting
@@ -77,7 +77,7 @@ final class BaseServiceProviderRedisGapFillTest extends TestCase
 
     public function test_fills_cache_connection_and_prefix_when_app_only_has_default(): void
     {
-        // Simulate the Athenia stripped config: only a `default` redis
+        // Simulate the Polis stripped config: only a `default` redis
         // connection, no options.prefix, no `cache` connection.
         $config = new Repository([
             'database' => [

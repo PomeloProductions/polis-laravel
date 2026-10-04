@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Subscription;
 
-use Polis\Models\Subscription\MembershipPlanRate as AtheniaMembershipPlanRate;
+use Polis\Models\Subscription\MembershipPlanRate as PolisMembershipPlanRate;
 
 /**
  * Class MembershipPlanRate
@@ -51,6 +51,6 @@ use Polis\Models\Subscription\MembershipPlanRate as AtheniaMembershipPlanRate;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MembershipPlanRate withoutTrashed()
  * @mixin \Eloquent
  */
-class MembershipPlanRate extends AtheniaMembershipPlanRate
+class MembershipPlanRate extends PolisMembershipPlanRate
 {
 }

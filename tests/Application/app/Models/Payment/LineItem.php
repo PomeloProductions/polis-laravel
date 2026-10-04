@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Payment;
 
-use Polis\Models\Payment\LineItem as AtheniaLineItem;
+use Polis\Models\Payment\LineItem as PolisLineItem;
 
 /**
  * Class LineItem
@@ -52,6 +52,6 @@ use Polis\Models\Payment\LineItem as AtheniaLineItem;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LineItem withoutTrashed()
  * @mixin \Eloquent
  */
-class LineItem extends AtheniaLineItem
+class LineItem extends PolisLineItem
 {
 }

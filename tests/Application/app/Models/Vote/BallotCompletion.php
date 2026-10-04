@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Vote;
 
-use Polis\Models\Vote\BallotCompletion as AtheniaBallotCompletion;
+use Polis\Models\Vote\BallotCompletion as PolisBallotCompletion;
 
 /**
  * Class BallotCompletion
@@ -54,6 +54,6 @@ use Polis\Models\Vote\BallotCompletion as AtheniaBallotCompletion;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BallotCompletion withoutTrashed()
  * @mixin \Eloquent
  */
-class BallotCompletion extends AtheniaBallotCompletion
+class BallotCompletion extends PolisBallotCompletion
 {
 }

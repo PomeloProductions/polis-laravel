@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use Polis\Models\User\ProfileImage as AtheniaProfileImage;
+use Polis\Models\User\ProfileImage as PolisProfileImage;
 
 /**
  * Class ProfileImage
@@ -62,6 +62,6 @@ use Polis\Models\User\ProfileImage as AtheniaProfileImage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProfileImage withoutTrashed()
  * @mixin \Eloquent
  */
-class ProfileImage extends AtheniaProfileImage
+class ProfileImage extends PolisProfileImage
 {
 }

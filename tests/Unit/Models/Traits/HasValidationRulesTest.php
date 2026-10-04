@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Test\Athenia\Unit\Models\Traits;
+namespace Polis\Tests\Unit\Models\Traits;
 
 use Polis\Contracts\Models\HasValidationRulesContract;
 use Polis\Models\Traits\HasValidationRules;

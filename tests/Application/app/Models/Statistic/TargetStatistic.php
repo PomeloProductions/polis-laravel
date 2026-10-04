@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Statistic;
 
-use Polis\Models\Statistic\TargetStatistic as AtheniaTargetStatistic;
+use Polis\Models\Statistic\TargetStatistic as PolisTargetStatistic;
 
 /**
  * Class TargetStatistic
@@ -56,6 +56,6 @@ use Polis\Models\Statistic\TargetStatistic as AtheniaTargetStatistic;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TargetStatistic withoutTrashed()
  * @mixin \Eloquent
  */
-class TargetStatistic extends AtheniaTargetStatistic
+class TargetStatistic extends PolisTargetStatistic
 {
 }

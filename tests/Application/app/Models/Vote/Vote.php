@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Vote;
 
-use Polis\Models\Vote\Vote as AtheniaVote;
+use Polis\Models\Vote\Vote as PolisVote;
 
 /**
  * Class Vote
@@ -50,6 +50,6 @@ use Polis\Models\Vote\Vote as AtheniaVote;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Vote withoutTrashed()
  * @mixin \Eloquent
  */
-class Vote extends AtheniaVote
+class Vote extends PolisVote
 {
 }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use Polis\Models\User\InvitationToken as AtheniaInvitationToken;
+use Polis\Models\User\InvitationToken as PolisInvitationToken;
 
 /**
  * Class InvitationToken
@@ -49,6 +49,6 @@ use Polis\Models\User\InvitationToken as AtheniaInvitationToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InvitationToken withoutTrashed()
  * @mixin \Eloquent
  */
-class InvitationToken extends AtheniaInvitationToken
+class InvitationToken extends PolisInvitationToken
 {
 }

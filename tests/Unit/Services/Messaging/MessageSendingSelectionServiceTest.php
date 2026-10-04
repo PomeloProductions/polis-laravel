@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Athenia\Unit\Services\Messaging;
+namespace Polis\Tests\Unit\Services\Messaging;
 
 use App\Models\Messaging\Message;
 use Polis\Contracts\Services\Messaging\SendSlackNotificationServiceContract;

@@ -14,14 +14,14 @@ use Illuminate\Routing\Controller;
  *
  * @SWG\Swagger(
  *     schemes={"https"},
- *     host="dev-api.projectathenia.com",
+ *     host="dev-api.polis.pomeloproductions.com",
  *     basePath="/v1",
  *     produces={"application/json"},
  *     consumes={"application/json"},
  *
  *     @SWG\Info(
  *         version="v1",
- *         title="Project Athenia API"
+ *         title="Polis API"
  *     )
  * )
  *

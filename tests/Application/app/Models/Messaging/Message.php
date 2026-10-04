@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Messaging;
 
-use Polis\Models\Messaging\Message as AtheniaMessage;
+use Polis\Models\Messaging\Message as PolisMessage;
 
 /**
  * Class Message
@@ -77,6 +77,6 @@ use Polis\Models\Messaging\Message as AtheniaMessage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Message withoutTrashed()
  * @mixin \Eloquent
  */
-class Message extends AtheniaMessage
+class Message extends PolisMessage
 {
 }

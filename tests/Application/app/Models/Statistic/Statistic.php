@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Statistic;
 
-use Polis\Models\Statistic\Statistic as AtheniaStatistic;
+use Polis\Models\Statistic\Statistic as PolisStatistic;
 
 /**
  * Class Statistic
@@ -56,6 +56,6 @@ use Polis\Models\Statistic\Statistic as AtheniaStatistic;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Statistic withoutTrashed()
  * @mixin \Eloquent
  */
-class Statistic extends AtheniaStatistic
+class Statistic extends PolisStatistic
 {
 }

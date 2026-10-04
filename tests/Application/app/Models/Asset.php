@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Polis\Models\Asset as AtheniaAsset;
+use Polis\Models\Asset as PolisAsset;
 
 /**
  * Class Asset
@@ -61,6 +61,6 @@ use Polis\Models\Asset as AtheniaAsset;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Asset withoutTrashed()
  * @mixin \Eloquent
  */
-class Asset extends AtheniaAsset
+class Asset extends PolisAsset
 {
 }

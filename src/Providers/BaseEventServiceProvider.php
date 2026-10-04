@@ -130,7 +130,7 @@ abstract class BaseEventServiceProvider extends ServiceProvider
     abstract public function getAppListenerMapping(): array;
 
     /**
-     * Gets all application specific listeners for when a user is merged within the Athenia pipeline
+     * Gets all application specific listeners for when a user is merged within the Polis pipeline
      */
     abstract public function getAppUserMergeListeners(): array;
 

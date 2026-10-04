@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Organization;
 
-use Polis\Models\Organization\Organization as AtheniaOrganization;
+use Polis\Models\Organization\Organization as PolisOrganization;
 
 /**
  * Class Organization
@@ -62,6 +62,6 @@ use Polis\Models\Organization\Organization as AtheniaOrganization;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization withoutTrashed()
  * @mixin \Eloquent
  */
-class Organization extends AtheniaOrganization
+class Organization extends PolisOrganization
 {
 }

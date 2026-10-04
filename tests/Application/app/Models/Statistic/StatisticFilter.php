@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Statistic;
 
-use Polis\Models\Statistic\StatisticFilter as AtheniaStatisticFilter;
+use Polis\Models\Statistic\StatisticFilter as PolisStatisticFilter;
 
 /**
  * Class StatisticFilter
@@ -51,6 +51,6 @@ use Polis\Models\Statistic\StatisticFilter as AtheniaStatisticFilter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|StatisticFilter withoutTrashed()
  * @mixin \Eloquent
  */
-class StatisticFilter extends AtheniaStatisticFilter
+class StatisticFilter extends PolisStatisticFilter
 {
 }

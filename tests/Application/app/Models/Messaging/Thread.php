@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Messaging;
 
-use Polis\Models\Messaging\Thread as AtheniaThread;
+use Polis\Models\Messaging\Thread as PolisThread;
 
 /**
  * Class Thread
@@ -53,6 +53,6 @@ use Polis\Models\Messaging\Thread as AtheniaThread;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Thread withoutTrashed()
  * @mixin \Eloquent
  */
-class Thread extends AtheniaThread
+class Thread extends PolisThread
 {
 }

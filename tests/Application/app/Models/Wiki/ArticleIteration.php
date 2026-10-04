@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Wiki;
 
-use Polis\Models\Wiki\ArticleIteration as AtheniaArticleIteration;
+use Polis\Models\Wiki\ArticleIteration as PolisArticleIteration;
 
 /**
  * Class ArticleIteration
@@ -54,6 +54,6 @@ use Polis\Models\Wiki\ArticleIteration as AtheniaArticleIteration;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ArticleIteration withoutTrashed()
  * @mixin \Eloquent
  */
-class ArticleIteration extends AtheniaArticleIteration
+class ArticleIteration extends PolisArticleIteration
 {
 }

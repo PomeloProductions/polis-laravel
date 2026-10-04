@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Polis\Models\Role as AtheniaRole;
+use Polis\Models\Role as PolisRole;
 
 /**
  * Class Role
@@ -45,6 +45,6 @@ use Polis\Models\Role as AtheniaRole;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Role withoutTrashed()
  * @mixin \Eloquent
  */
-class Role extends AtheniaRole
+class Role extends PolisRole
 {
 }
