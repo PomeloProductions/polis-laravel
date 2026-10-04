@@ -234,4 +234,21 @@ final class MembershipPlanCreateTest extends ApplicationTestCase
             ],
         ]);
     }
+
+    public function test_create_fails_current_cost_too_high(): void
+    {
+        $this->actAs(Role::SUPER_ADMIN);
+
+        $response = $this->json('POST', $this->route, [
+            'current_cost' => 1000000,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Sorry, something went wrong.',
+            'errors' => [
+                'current_cost' => ['The current cost may not be greater than 999999.99.'],
+            ],
+        ]);
+    }
 }

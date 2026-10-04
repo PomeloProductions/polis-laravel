@@ -272,4 +272,23 @@ final class MembershipPlanUpdateTest extends ApplicationTestCase
             ],
         ]);
     }
+
+    public function test_patch_fails_current_cost_too_high(): void
+    {
+        $membershipPlan = MembershipPlan::factory()->create();
+
+        $this->actAs(Role::SUPER_ADMIN);
+
+        $response = $this->json('PATCH', self::BASE_ROUTE.$membershipPlan->id, [
+            'current_cost' => 1000000,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Sorry, something went wrong.',
+            'errors' => [
+                'current_cost' => ['The current cost may not be greater than 999999.99.'],
+            ],
+        ]);
+    }
 }
