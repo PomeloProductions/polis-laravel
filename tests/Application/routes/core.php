@@ -262,6 +262,11 @@ Route::group(['middleware' => 'jwt.auth.protected'], function () {
                 'index',
             ],
         ]);
+
+        Route::put('email-templates/{key}', 'Organization\Messaging\EmailTemplateController@update')
+            ->name('email-templates.update');
+        Route::put('push-templates/{key}', 'Organization\Messaging\PushTemplateController@update')
+            ->name('push-templates.update');
     });
 
     /**

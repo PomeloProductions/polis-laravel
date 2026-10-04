@@ -191,4 +191,294 @@ class UserPageUpdateTest extends ApplicationTestCase
 
         $response->assertStatus(422);
     }
+
+    public function test_update_fails_display_order_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'display_order' => 'abc',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'display_order' => ['The display order must be an integer.'],
+            ],
+        ]);
+    }
+
+    public function test_update_fails_display_order_negative()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'display_order' => -1,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'display_order' => ['The display order must be at least 0.'],
+            ],
+        ]);
+    }
+
+    public function test_update_fails_page_type_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'page_type' => 5,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'page_type' => ['The page type must be a string.'],
+            ],
+        ]);
+    }
+
+    public function test_update_fails_name_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'name' => 5,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'name' => ['The name must be a string.'],
+            ],
+        ]);
+    }
+
+    public function test_update_fails_slug_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'slug' => 5,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'slug' => ['The slug must be a string.'],
+            ],
+        ]);
+    }
+
+    public function test_update_fails_slug_too_long()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'slug' => str_repeat('a', 51),
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'slug' => ['The slug may not be greater than 50 characters.'],
+            ],
+        ]);
+    }
+
+    public function test_update_fails_slug_regex_violation()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'slug' => 'INVALID SLUG!',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'slug' => ['The slug format is invalid.'],
+            ],
+        ]);
+    }
+
+    public function test_update_fails_icon_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'icon' => 5,
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_update_fails_icon_too_long()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'icon' => str_repeat('a', 51),
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_update_fails_color_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'color' => 5,
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_update_fails_color_too_long()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'color' => str_repeat('a', 8),
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_update_fails_color_regex_violation()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'color' => 'red',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_update_fails_parent_page_id_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'parent_page_id' => 'abc',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_update_fails_config_json_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'config_json' => 'not_array',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_update_fails_is_visible_wrong_type()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $page = UserPage::factory()->create([
+            'user_id' => $user->id,
+            'is_required' => false,
+        ]);
+
+        $response = $this->json('PUT', $this->path.$user->id.'/pages/'.$page->id, [
+            'is_visible' => 'notbool',
+        ]);
+
+        $response->assertStatus(422);
+    }
 }

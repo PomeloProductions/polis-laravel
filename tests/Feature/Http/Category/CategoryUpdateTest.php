@@ -110,4 +110,80 @@ final class CategoryUpdateTest extends ApplicationTestCase
             ],
         ]);
     }
+
+    public function test_patch_fails_parent_id_wrong_type(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->actAs(Role::SUPER_ADMIN);
+
+        $response = $this->json('PATCH', self::BASE_ROUTE.$category->id, [
+            'parent_id' => 'abc',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Sorry, something went wrong.',
+            'errors' => [
+                'parent_id' => ['The parent id must be an integer.'],
+            ],
+        ]);
+    }
+
+    public function test_patch_fails_parent_id_nonexistent(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->actAs(Role::SUPER_ADMIN);
+
+        $response = $this->json('PATCH', self::BASE_ROUTE.$category->id, [
+            'parent_id' => 99999,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Sorry, something went wrong.',
+            'errors' => [
+                'parent_id' => ['The selected parent id is invalid.'],
+            ],
+        ]);
+    }
+
+    public function test_patch_fails_color_wrong_type(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->actAs(Role::SUPER_ADMIN);
+
+        $response = $this->json('PATCH', self::BASE_ROUTE.$category->id, [
+            'color' => 5,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Sorry, something went wrong.',
+            'errors' => [
+                'color' => ['The color must be a string.'],
+            ],
+        ]);
+    }
+
+    public function test_patch_fails_color_too_long(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->actAs(Role::SUPER_ADMIN);
+
+        $response = $this->json('PATCH', self::BASE_ROUTE.$category->id, [
+            'color' => str_repeat('a', 17),
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Sorry, something went wrong.',
+            'errors' => [
+                'color' => ['The color may not be greater than 16 characters.'],
+            ],
+        ]);
+    }
 }

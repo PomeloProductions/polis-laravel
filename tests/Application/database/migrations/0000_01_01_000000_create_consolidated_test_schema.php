@@ -292,10 +292,14 @@ return new class extends Migration
         });
 
         // article_versions: iteration_id renamed to article_iteration_id (2021_08_08)
+        // email_template_id + push_template_id: nullable FKs for EmailTemplate/PushTemplate
+        // subtypes (which extend Article and inherit Article::versions() hasMany).
         Schema::create('article_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('article_id');
             $table->unsignedInteger('article_iteration_id');
+            $table->unsignedInteger('email_template_id')->nullable();
+            $table->unsignedInteger('push_template_id')->nullable();
             $table->string('name', 20)->nullable();
             $table->softDeletes();
             $table->timestamps();
