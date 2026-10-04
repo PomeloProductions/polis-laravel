@@ -30,6 +30,24 @@ final class UserThreadIndexTest extends ApplicationTestCase
         User::unsetEventDispatcher();
     }
 
+    /**
+     * The keys an index row is serialized with. We derive these from a thread
+     * loaded the way the index loads it (latestMessage eager-loaded + hidden,
+     * surfaced via the `last_message` append) rather than from a bare
+     * `new Thread`, whose `last_message` accessor would lazy-fall-back and add a
+     * spurious `messages` relation key that the batched index response does not
+     * include.
+     *
+     * @return list<string>
+     */
+    private function indexThreadKeys(): array
+    {
+        /** @var Thread $thread */
+        $thread = Thread::query()->with('latestMessage')->firstOrNew();
+
+        return array_keys($thread->toArray());
+    }
+
     public function test_not_logged_in_user_blocked(): void
     {
         $user = User::factory()->create();
@@ -103,7 +121,7 @@ final class UserThreadIndexTest extends ApplicationTestCase
         ])
             ->assertJsonStructure([
                 'data' => [
-                    '*' => array_keys((new Thread)->toArray()),
+                    '*' => $this->indexThreadKeys(),
                 ],
             ]);
         $this->assertNotNull($response->original[0]['last_message']);
@@ -121,7 +139,7 @@ final class UserThreadIndexTest extends ApplicationTestCase
         ])
             ->assertJsonStructure([
                 'data' => [
-                    '*' => array_keys((new Thread)->toArray()),
+                    '*' => $this->indexThreadKeys(),
                 ],
             ]);
 
@@ -138,7 +156,7 @@ final class UserThreadIndexTest extends ApplicationTestCase
         ])
             ->assertJsonStructure([
                 'data' => [
-                    '*' => array_keys((new Thread)->toArray()),
+                    '*' => $this->indexThreadKeys(),
                 ],
             ]);
     }
@@ -174,7 +192,7 @@ final class UserThreadIndexTest extends ApplicationTestCase
         ])
             ->assertJsonStructure([
                 'data' => [
-                    '*' => array_keys((new Thread)->toArray()),
+                    '*' => $this->indexThreadKeys(),
                 ],
             ]);
     }
