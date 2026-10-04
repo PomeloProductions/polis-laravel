@@ -51,6 +51,8 @@ use Polis\Models\Traits\IsOwnedByEntity;
  * @property-read User $createdBy
  * @property-read null|string $content
  * @property-read null|ArticleVersion $current_version
+ * @property-read null|ArticleVersion $latestVersion
+ * @property-read null|ArticleIteration $latestIteration
  * @property-read null|string $last_iteration_content
  * @property-read Collection|ArticleIteration[] $iterations
  * @property-read int|null $iterations_count
@@ -122,11 +124,56 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
     ];
 
     /**
+     * Hide the helper relations from serialization; their values are surfaced via
+     * the appended `content` / `last_iteration_content` attributes, so the index
+     * JSON shape is unchanged.
+     *
+     * NOTE: we deliberately do NOT declare these relations in `$with`. Forcing
+     * them to eager-load on every retrieval breaks any context where the
+     * `article_versions` / `article_iterations` tables are not present or should
+     * not be touched — notably the Unit suite's `:memory:` sqlite DB and the
+     * EmailTemplate / PushTemplate models (which extend Article but are stored in
+     * the shared `article_versions` table). Eager-loading is instead scoped to
+     * the actual listing query sites (see ArticleRepository::findAll), so the
+     * index N+1 is batched without forcing the relation everywhere.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'latestVersion',
+        'latestIteration',
+    ];
+
+    /**
      * The user that originally created this article
      */
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_id');
+    }
+
+    /**
+     * The most recent version of this article, as a single-record relation so it
+     * (and its iteration) can be eager-loaded for the index.
+     */
+    public function latestVersion(): HasOne
+    {
+        return $this->hasOne(ArticleVersion::class)->latestOfMany(['created_at', 'id']);
+    }
+
+    /**
+     * The most recent iteration of this article, as a single-record relation so
+     * it can be eager-loaded for the index.
+     *
+     * ArticleIteration::newQuery() forces `order by created_at desc`, so a plain
+     * hasOne resolves (and eager-matches) to the newest iteration — matching the
+     * previous iterations()->limit(1) behavior. We intentionally avoid
+     * latestOfMany() here because its aggregate subquery collides with that forced
+     * ordering under MySQL's only_full_group_by.
+     */
+    public function latestIteration(): HasOne
+    {
+        return $this->hasOne(ArticleIteration::class);
     }
 
     /**
@@ -195,6 +242,18 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
      */
     public function getCurrentVersionAttribute(): ?ArticleVersion
     {
+        // Prefer the eager-loaded single-record relation (populated on the
+        // index/listing path via ArticleRepository::findAll) so the `content`
+        // append does not fire a fresh query per row. When the relation was not
+        // eager-loaded (single/minimal loads), fall back to the original lazy
+        // behavior so nothing breaks.
+        if ($this->relationLoaded('latestVersion')) {
+            /** @var ArticleVersion|null $version */
+            $version = $this->getRelation('latestVersion');
+
+            return $version;
+        }
+
         return $this->versions()->limit(1)->get()->first();
     }
 
@@ -206,10 +265,22 @@ class Article extends BaseModelAbstract implements BelongsToOrganizationContract
         if (isset($this->attributes['last_iteration_content'])) {
             return $this->attributes['last_iteration_content'];
         }
+
+        // Prefer the eager-loaded single-record relation (populated on the
+        // index/listing path via ArticleRepository::findAll) so this does not
+        // fire an iterations() query per row. When it was not eager-loaded, fall
+        // back to the original lazy behavior.
+        if ($this->relationLoaded('latestIteration')) {
+            /** @var ArticleIteration|null $iteration */
+            $iteration = $this->getRelation('latestIteration');
+
+            return $iteration?->content;
+        }
+
         /** @var ArticleIteration|null $iteration */
         $iteration = $this->iterations()->limit(1)->get()->first();
 
-        return $iteration ? $iteration->content : null;
+        return $iteration?->content;
     }
 
     public function morphRelationName(): string

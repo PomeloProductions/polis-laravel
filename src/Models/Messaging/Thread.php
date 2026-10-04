@@ -10,6 +10,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Polis\Contracts\Models\HasPolicyContract;
@@ -28,6 +29,7 @@ use Polis\Models\Traits\HasValidationRules;
  * @property mixed|null $created_at
  * @property mixed|null $updated_at
  * @property-read null|string $last_message
+ * @property-read Message|null $latestMessage
  * @property-read Collection|Message[] $messages
  * @property-read int|null $messages_count
  * @property-read Collection|User[] $users
@@ -82,11 +84,37 @@ class Thread extends BaseModelAbstract implements HasPolicyContract, HasValidati
     ];
 
     /**
+     * Hide the helper relation from serialization; its value is surfaced through
+     * the `last_message` append, so the index JSON shape is unchanged.
+     *
+     * NOTE: we deliberately do NOT declare this relation in `$with`. Forcing it
+     * to eager-load on every retrieval touches the messages table in contexts
+     * that should not need it; eager-loading is instead scoped to the listing
+     * query site (see ThreadRepository::findAll), batching the index N+1 without
+     * forcing the relation on every model load.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'latestMessage',
+    ];
+
+    /**
      * All messages in this thread
      */
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * The most recent message in this thread. Declared as a single-record
+     * relation so it can be eager-loaded (one query for all threads) rather than
+     * loading every message of every thread to read ->first().
+     */
+    public function latestMessage(): HasOne
+    {
+        return $this->hasOne(Message::class)->latestOfMany('created_at');
     }
 
     /**
@@ -104,6 +132,15 @@ class Thread extends BaseModelAbstract implements HasPolicyContract, HasValidati
      */
     public function getLastMessageAttribute()
     {
+        // Prefer the eager-loaded single-record relation (populated on the
+        // index/listing path via ThreadRepository::findAll) so serializing a
+        // list of threads does not load every message of every thread. When it
+        // was not eager-loaded, fall back to the original lazy behavior of
+        // reading the first (most recent) message.
+        if ($this->relationLoaded('latestMessage')) {
+            return $this->getRelation('latestMessage');
+        }
+
         return $this->messages ? $this->messages->first() : null;
     }
 
