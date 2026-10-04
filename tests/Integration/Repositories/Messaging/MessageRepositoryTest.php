@@ -221,6 +221,40 @@ class MessageRepositoryTest extends ApplicationTestCase
         $this->assertEquals('To whom it may concern,', $result->data['greeting']);
     }
 
+    public function test_send_direct_email(): void
+    {
+        $dispatcher = mock(Dispatcher::class);
+
+        $dispatcher->shouldAllowMockingMethod('fire');
+
+        $dispatcher->shouldReceive('until');
+        $dispatcher->shouldReceive('dispatch')
+            ->with(\Mockery::on(function (string $eventName) {
+                return true;
+            }),
+                \Mockery::on(function (Message $message) {
+                    return true;
+                })
+            );
+        $dispatcher->shouldReceive('dispatch')->once()
+            ->with(\Mockery::on(function (MessageCreatedEvent $event) {
+                return true;
+            })
+            );
+
+        Message::setEventDispatcher($dispatcher);
+
+        $result = $this->repository->sendDirectEmail('someone@example.com', 'A Subject', 'welcome', 'Hello there,', ['foo' => 'bar']);
+
+        $this->assertEquals('someone@example.com', $result->email);
+        $this->assertEquals('A Subject', $result->subject);
+        $this->assertEquals('welcome', $result->template);
+        $this->assertEquals('Hello there,', $result->data['greeting']);
+        $this->assertEquals('bar', $result->data['foo']);
+        $this->assertNotNull($result->id);
+        $this->assertDatabaseHas('messages', ['id' => $result->id]);
+    }
+
     public function test_send_email_to_super_admins(): void
     {
         Message::unsetEventDispatcher();
