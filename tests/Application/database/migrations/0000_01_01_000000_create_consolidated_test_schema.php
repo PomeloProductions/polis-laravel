@@ -259,7 +259,7 @@ return new class extends Migration
         // by package migrations).
         Schema::create('articles', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('created_by_id');
+            $table->unsignedInteger('created_by_id')->nullable();
             $table->string('title', 120);
             $table->string('url')->nullable();
             $table->text('authors')->nullable();
