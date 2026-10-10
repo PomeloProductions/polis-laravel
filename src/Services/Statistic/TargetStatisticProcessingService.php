@@ -7,6 +7,7 @@ namespace Polis\Services\Statistic;
 use App\Models\Statistic\StatisticFilter;
 use App\Models\Statistic\TargetStatistic;
 use Illuminate\Database\Eloquent\Collection;
+use Polis\Contracts\Models\CanAggregateViaQueryContract;
 use Polis\Contracts\Repositories\Statistic\TargetStatisticRepositoryContract;
 use Polis\Contracts\Services\Relations\RelationTraversalServiceContract;
 use Polis\Contracts\Services\Statistic\TargetStatisticProcessingServiceContract;
@@ -26,9 +27,26 @@ class TargetStatisticProcessingService implements TargetStatisticProcessingServi
      */
     public function processSingleTargetStatistic(TargetStatistic $targetStatistic): void
     {
+        $target = $targetStatistic->target;
+
+        // Opt-in SQL push-down path: if the target can aggregate itself via a
+        // query, delegate filtering + counting to SQL and skip the in-memory
+        // relation traversal entirely. The result shape is identical to the
+        // in-memory path, so downstream `target_statistics.result` consumers
+        // are unaffected. Targets that do not implement the contract (the vast
+        // majority — Collection, Article, etc.) fall through to the unchanged
+        // in-memory behavior below.
+        if ($target instanceof CanAggregateViaQueryContract) {
+            $this->targetStatisticRepository->update($targetStatistic, [
+                'result' => $target->aggregateForStatistic($targetStatistic->statistic, $target),
+            ]);
+
+            return;
+        }
+
         // Get all models at the end of the relation chain
         $models = $this->relationTraversalService->traverseRelations(
-            $targetStatistic->target,
+            $target,
             $targetStatistic->statistic->relation
         );
 
