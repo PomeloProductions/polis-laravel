@@ -6,6 +6,7 @@ namespace Polis\Tests\Integration\Repositories\Statistic;
 
 use App\Models\Statistic\Statistic;
 use App\Models\Statistic\StatisticFilter;
+use App\Models\User\User;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Collection;
 use Polis\Events\Statistic\StatisticCreatedEvent;
@@ -114,6 +115,47 @@ class StatisticRepositoryTest extends ApplicationTestCase
 
         $this->assertCount(0, $statistics);
         $this->assertInstanceOf(Collection::class, $statistics);
+    }
+
+    public function test_find_all_global_or_owned_by_returns_global_plus_owner()
+    {
+        foreach (Statistic::all() as $model) {
+            $model->delete();
+        }
+        User::unsetEventDispatcher();
+
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $global = Statistic::factory()->create();
+        $mine = Statistic::factory()->ownedByUser($user)->create();
+        Statistic::factory()->ownedByUser($otherUser)->create();
+
+        $results = $this->repository->findAllGlobalOrOwnedBy($user);
+
+        $ids = $results->pluck('id')->sort()->values()->all();
+        $this->assertSame(
+            collect([$global->id, $mine->id])->sort()->values()->all(),
+            $ids,
+        );
+    }
+
+    public function test_find_all_global_or_owned_by_without_owner_returns_only_global()
+    {
+        foreach (Statistic::all() as $model) {
+            $model->delete();
+        }
+        User::unsetEventDispatcher();
+
+        $user = User::factory()->create();
+
+        $global = Statistic::factory()->create();
+        Statistic::factory()->ownedByUser($user)->create();
+
+        $results = $this->repository->findAllGlobalOrOwnedBy(null);
+
+        $this->assertCount(1, $results);
+        $this->assertSame($global->id, $results->first()->id);
     }
 
     public function test_find_returns_model()

@@ -7,10 +7,14 @@ namespace Polis\Models\Statistic;
 use App\Models\Statistic\StatisticFilter;
 use App\Models\Statistic\TargetStatistic;
 use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Polis\Contracts\Models\HasValidationRulesContract;
+use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Models\BaseModelAbstract;
 use Polis\Models\Traits\HasValidationRules;
 
@@ -25,6 +29,9 @@ use Polis\Models\Traits\HasValidationRules;
  * @property \datetime|null $updated_at
  * @property string|null $name
  * @property bool $public
+ * @property int|null $owner_id
+ * @property string|null $owner_type
+ * @property-read Model|Eloquent|null $owner
  * @property-read Collection|StatisticFilter[] $statisticFilters
  * @property-read int|null $statistic_filters_count
  * @property-read Collection|TargetStatistic[] $targetStatistics
@@ -59,6 +66,8 @@ use Polis\Models\Traits\HasValidationRules;
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereModel($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereName($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereNotInJoin($column, $values, $boolean = 'and')
+ * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereOwnerId($value)
+ * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereOwnerType($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic wherePublic($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereRelation($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereUpdatedAt($value)
@@ -96,6 +105,67 @@ class Statistic extends BaseModelAbstract implements HasValidationRulesContract
     }
 
     /**
+     * The entity (User / Organization / …) that owns this statistic.
+     *
+     * A NULL owner means a GLOBAL / public statistic (the pre-owner
+     * behaviour); a resolved owner means a per-user (or, later, per-org)
+     * statistic. The `owner_type` column stores the morph alias returned by
+     * the entity's morphRelationName() (e.g. 'user', 'organization').
+     */
+    public function owner(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * Scope to statistics owned by the given entity.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeOwnedBy(Builder $query, IsAnEntityContract $owner): Builder
+    {
+        return $query
+            ->where('owner_type', $owner->morphRelationName())
+            ->where('owner_id', $owner->getKey());
+    }
+
+    /**
+     * Scope to the global (NULL-owner) statistics PLUS those owned by the
+     * given entity — the common "show shared + mine" query. When no owner is
+     * supplied this is just the global statistics.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeGlobalOrOwnedBy(Builder $query, ?IsAnEntityContract $owner = null): Builder
+    {
+        return $query->where(function (Builder $inner) use ($owner): void {
+            $inner->whereNull('owner_type')->whereNull('owner_id');
+
+            if ($owner !== null) {
+                $inner->orWhere(function (Builder $owned) use ($owner): void {
+                    $owned
+                        ->where('owner_type', $owner->morphRelationName())
+                        ->where('owner_id', $owner->getKey());
+                });
+            }
+        });
+    }
+
+    /**
+     * Scope to the global (NULL-owner) statistics only — the shared,
+     * public definitions.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopeGlobal(Builder $query): Builder
+    {
+        return $query->whereNull('owner_type')->whereNull('owner_id');
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function buildModelValidationRules(...$params): array
@@ -113,6 +183,14 @@ class Statistic extends BaseModelAbstract implements HasValidationRulesContract
                 ],
                 'public' => [
                     'boolean',
+                ],
+                'owner_type' => [
+                    'nullable',
+                    'string',
+                ],
+                'owner_id' => [
+                    'nullable',
+                    'integer',
                 ],
                 'statistic_filters' => [
                     'array',

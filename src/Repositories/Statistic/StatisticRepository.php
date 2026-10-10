@@ -7,6 +7,7 @@ namespace Polis\Repositories\Statistic;
 use App\Models\Statistic\Statistic;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
+use Polis\Contracts\Models\IsAnEntityContract;
 use Polis\Contracts\Repositories\Statistic\StatisticRepositoryContract;
 use Polis\Events\Statistic\StatisticCreatedEvent;
 use Polis\Events\Statistic\StatisticDeletedEvent;
@@ -100,5 +101,15 @@ class StatisticRepository extends BaseRepositoryAbstract implements StatisticRep
     {
         return $this->model->newQuery()
             ->where('model', $model)->get();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findAllGlobalOrOwnedBy(?IsAnEntityContract $owner = null): Collection
+    {
+        return $this->model->newQuery()
+            ->globalOrOwnedBy($owner)
+            ->get();
     }
 }
