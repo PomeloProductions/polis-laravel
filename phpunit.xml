@@ -165,6 +165,7 @@
       <file>./tests/Unit/Services/NoopStripeCustomerServiceTest.php</file>
       <file>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</file>
       <file>./tests/Unit/Services/ProratingCalculationServiceUpgradeChargeTest.php</file>
+      <file>./tests/Unit/Services/Statistic/StatisticFilterToQueryTest.php</file>
       <file>./tests/Unit/Services/StringHelperServiceTest.php</file>
       <file>./tests/Unit/Services/TokenGenerationServiceTest.php</file>
       <file>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</file>

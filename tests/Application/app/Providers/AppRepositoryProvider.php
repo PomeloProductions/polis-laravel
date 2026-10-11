@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Wiki\AggregatableArticle;
 use Polis\Providers\BaseRepositoryProvider;
 
 class AppRepositoryProvider extends BaseRepositoryProvider
@@ -15,7 +16,11 @@ class AppRepositoryProvider extends BaseRepositoryProvider
 
     public function appMorphMaps(): array
     {
-        return [];
+        return [
+            // Opt-in SQL push-down aggregation target used by the statistics
+            // parity integration test (shares the articles table).
+            'aggregatable_article' => AggregatableArticle::class,
+        ];
     }
 
     public function registerApp(): void
