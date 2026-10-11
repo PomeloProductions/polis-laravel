@@ -10,8 +10,11 @@ use App\Models\Statistic\StatisticFilter;
 use App\Models\Statistic\TargetStatistic;
 use Illuminate\Database\Eloquent\Collection as BaseCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Mockery;
 use Mockery\MockInterface;
+use Polis\Contracts\Models\CanAggregateViaQueryContract;
+use Polis\Contracts\Models\CanBeStatisticTargetContract;
 use Polis\Contracts\Repositories\Statistic\TargetStatisticRepositoryContract;
 use Polis\Contracts\Services\Relations\RelationTraversalServiceContract;
 use Polis\Services\Statistic\TargetStatisticProcessingService;
@@ -137,6 +140,80 @@ class TargetStatisticProcessingServiceTest extends TestCase
         $this->service->processSingleTargetStatistic($targetStatistic);
     }
 
+    public function test_ensure_and_recompute_single_finds_existing_row_computes_via_same_path_and_writes_result()
+    {
+        $statistic = new Statistic(['relation' => 'releases']);
+        $statistic->id = 7;
+
+        $target = new FakeAggregatingTarget(['total' => 3]);
+
+        $existing = new TargetStatistic([
+            'target_id' => 1,
+            'target_type' => 'year',
+            'statistic_id' => 7,
+        ]);
+
+        // An existing row is found — not re-created.
+        $this->targetStatisticRepository->shouldReceive('findForTarget')
+            ->once()
+            ->with($target, 7)
+            ->andReturn($existing);
+        $this->targetStatisticRepository->shouldReceive('createForTarget')->never();
+
+        // The result is computed through the SAME path the queued recount uses
+        // (the target's aggregateForStatistic push-down) and WRITTEN back.
+        $this->targetStatisticRepository->shouldReceive('update')
+            ->once()
+            ->with(
+                Mockery::type(TargetStatistic::class),
+                Mockery::subset(['result' => ['total' => 3]])
+            );
+
+        $returned = $this->service->ensureAndRecomputeSingle($target, $statistic);
+
+        $this->assertSame($existing, $returned);
+        // The push-down path owned the compute (same as the job), with this
+        // statistic + target — no second, separate implementation.
+        $this->assertCount(1, $target->aggregateCalls);
+        $this->assertSame($statistic, $target->aggregateCalls[0][0]);
+        $this->assertSame($target, $target->aggregateCalls[0][1]);
+    }
+
+    public function test_ensure_and_recompute_single_creates_missing_row_then_computes_and_writes()
+    {
+        $statistic = new Statistic(['relation' => 'releases']);
+        $statistic->id = 9;
+
+        $target = new FakeAggregatingTarget(['total' => 5]);
+
+        $created = new TargetStatistic([
+            'target_id' => 1,
+            'target_type' => 'year',
+            'statistic_id' => 9,
+        ]);
+
+        // No row yet — one is created for exactly this (target, statistic) pair.
+        $this->targetStatisticRepository->shouldReceive('findForTarget')
+            ->once()
+            ->with($target, 9)
+            ->andReturnNull();
+        $this->targetStatisticRepository->shouldReceive('createForTarget')
+            ->once()
+            ->with($target, ['statistic_id' => 9])
+            ->andReturn($created);
+
+        $this->targetStatisticRepository->shouldReceive('update')
+            ->once()
+            ->with(
+                Mockery::type(TargetStatistic::class),
+                Mockery::subset(['result' => ['total' => 5]])
+            );
+
+        $returned = $this->service->ensureAndRecomputeSingle($target, $statistic);
+
+        $this->assertSame($created, $returned);
+    }
+
     private function createModelWithValue(string $name, int $value): Model
     {
         $model = new CollectionModel;
@@ -150,5 +227,41 @@ class TargetStatisticProcessingServiceTest extends TestCase
     {
         Mockery::close();
         parent::tearDown();
+    }
+}
+
+/**
+ * A minimal statistic target that computes via the SQL push-down seam, used to
+ * prove ensureAndRecomputeSingle() routes through the SAME aggregateForStatistic
+ * path the queued recount uses (and never the in-memory traversal).
+ */
+class FakeAggregatingTarget extends Model implements CanBeStatisticTargetContract, CanAggregateViaQueryContract
+{
+    public int $id = 1;
+
+    /** @var array<int, array{0: Statistic, 1: Model}> */
+    public array $aggregateCalls = [];
+
+    /** @param array<array-key, int> $result */
+    public function __construct(private array $result = ['total' => 0])
+    {
+        parent::__construct();
+    }
+
+    public function morphRelationName(): string
+    {
+        return 'year';
+    }
+
+    public function targetStatistics(): MorphMany
+    {
+        return $this->morphMany(TargetStatistic::class, 'target');
+    }
+
+    public function aggregateForStatistic(Statistic $statistic, Model $target): array
+    {
+        $this->aggregateCalls[] = [$statistic, $target];
+
+        return $this->result;
     }
 }
