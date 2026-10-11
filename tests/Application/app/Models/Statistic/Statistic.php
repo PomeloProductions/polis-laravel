@@ -14,6 +14,9 @@ use Polis\Models\Statistic\Statistic as PolisStatistic;
  * @property string $model
  * @property string $relation
  * @property int $public
+ * @property int|null $owner_id
+ * @property string|null $owner_type
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent|null $owner
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -49,6 +52,8 @@ use Polis\Models\Statistic\Statistic as PolisStatistic;
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereModel($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereName($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereNotInJoin($column, $values, $boolean = 'and')
+ * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereOwnerId($value)
+ * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereOwnerType($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic wherePublic($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereRelation($value)
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|Statistic whereUpdatedAt($value)
