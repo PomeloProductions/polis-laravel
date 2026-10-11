@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Polis\Services\Statistic;
 
+use App\Models\Statistic\Statistic;
 use App\Models\Statistic\StatisticFilter;
 use App\Models\Statistic\TargetStatistic;
 use Illuminate\Database\Eloquent\Collection;
 use Polis\Contracts\Models\CanAggregateViaQueryContract;
+use Polis\Contracts\Models\CanBeStatisticTargetContract;
 use Polis\Contracts\Repositories\Statistic\TargetStatisticRepositoryContract;
 use Polis\Contracts\Services\Relations\RelationTraversalServiceContract;
 use Polis\Contracts\Services\Statistic\TargetStatisticProcessingServiceContract;
@@ -68,6 +70,39 @@ class TargetStatisticProcessingService implements TargetStatisticProcessingServi
 
         // Update the target statistic through the repository
         $this->targetStatisticRepository->update($targetStatistic, ['result' => $result]);
+    }
+
+    /**
+     * Ensure the (target, statistic) materialized row exists and (re)compute its
+     * result synchronously, returning the freshly persisted row.
+     *
+     * Finds (or creates) the TargetStatistic for exactly this pair, then runs
+     * processSingleTargetStatistic() on it so the value is computed through the
+     * SAME path as the queued recount AND written to `target_statistics.result`.
+     */
+    public function ensureAndRecomputeSingle(
+        CanBeStatisticTargetContract $target,
+        Statistic $statistic
+    ): TargetStatistic {
+        $targetStatistic = $this->targetStatisticRepository->findForTarget($target, $statistic->id);
+
+        if ($targetStatistic === null) {
+            $targetStatistic = $this->targetStatisticRepository->createForTarget($target, [
+                'statistic_id' => $statistic->id,
+            ]);
+        }
+
+        // processSingleTargetStatistic resolves the statistic + target off the
+        // row; make sure both are loaded so the compute path never re-queries or,
+        // for a just-created row, sees a null relation.
+        $targetStatistic->setRelation('statistic', $statistic);
+        if (! $targetStatistic->relationLoaded('target')) {
+            $targetStatistic->setRelation('target', $target);
+        }
+
+        $this->processSingleTargetStatistic($targetStatistic);
+
+        return $targetStatistic;
     }
 
     /**
