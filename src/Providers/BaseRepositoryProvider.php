@@ -28,6 +28,7 @@ use App\Models\User\ExternalAccountConnection;
 use App\Models\User\InvitationToken;
 use App\Models\User\PasswordToken;
 use App\Models\User\ProfileImage;
+use App\Models\User\TwoFactorSecret;
 use App\Models\User\User;
 use App\Models\User\UserPage;
 use App\Models\User\UserPageComponent;
@@ -74,6 +75,7 @@ use Polis\Contracts\Repositories\User\ExternalAccountConnectionRepositoryContrac
 use Polis\Contracts\Repositories\User\InvitationTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\PasswordTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\ProfileImageRepositoryContract;
+use Polis\Contracts\Repositories\User\TwoFactorSecretRepositoryContract;
 use Polis\Contracts\Repositories\User\UserPageComponentRepositoryContract;
 use Polis\Contracts\Repositories\User\UserPageRepositoryContract;
 use Polis\Contracts\Repositories\User\UserRepositoryContract;
@@ -119,6 +121,7 @@ use Polis\Repositories\User\ExternalAccountConnectionRepository;
 use Polis\Repositories\User\InvitationTokenRepository;
 use Polis\Repositories\User\PasswordTokenRepository;
 use Polis\Repositories\User\ProfileImageRepository;
+use Polis\Repositories\User\TwoFactorSecretRepository;
 use Polis\Repositories\User\UserPageComponentRepository;
 use Polis\Repositories\User\UserPageRepository;
 use Polis\Repositories\User\UserRepository;
@@ -198,6 +201,7 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             SubscriptionRepositoryContract::class,
             TargetStatisticRepositoryContract::class,
             ThreadRepositoryContract::class,
+            TwoFactorSecretRepositoryContract::class,
             UserPageRepositoryContract::class,
             UserPageComponentRepositoryContract::class,
             UserRepositoryContract::class,
@@ -335,6 +339,10 @@ abstract class BaseRepositoryProvider extends ServiceProvider
             'profileImage' => BaseServiceProvider::resolveConsumerOrPackage(
                 ProfileImage::class,
                 \Polis\Models\User\ProfileImage::class,
+            ),
+            'twoFactorSecret' => BaseServiceProvider::resolveConsumerOrPackage(
+                TwoFactorSecret::class,
+                \Polis\Models\User\TwoFactorSecret::class,
             ),
             'resource' => BaseServiceProvider::resolveConsumerOrPackage(
                 \App\Models\Resource::class,
@@ -496,6 +504,12 @@ abstract class BaseRepositoryProvider extends ServiceProvider
         $this->app->bind(ExternalAccountConnectionRepositoryContract::class, function () use ($models) {
             return new ExternalAccountConnectionRepository(
                 new $models['externalAccountConnection'],
+                $this->app->make('log')
+            );
+        });
+        $this->app->bind(TwoFactorSecretRepositoryContract::class, function () use ($models) {
+            return new TwoFactorSecretRepository(
+                new $models['twoFactorSecret'],
                 $this->app->make('log')
             );
         });

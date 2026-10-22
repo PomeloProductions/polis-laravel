@@ -24,6 +24,7 @@ use Polis\Contracts\Repositories\Payment\PaymentRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\StatisticRepositoryContract;
 use Polis\Contracts\Repositories\Statistic\TargetStatisticRepositoryContract;
 use Polis\Contracts\Repositories\Subscription\SubscriptionRepositoryContract;
+use Polis\Contracts\Repositories\User\TwoFactorSecretRepositoryContract;
 use Polis\Contracts\Repositories\User\UserPageRepositoryContract;
 use Polis\Contracts\Services\ArchiveHelperServiceContract;
 use Polis\Contracts\Services\Asset\AssetConfigurationServiceContract;
@@ -53,6 +54,7 @@ use Polis\Contracts\Services\StringHelperServiceContract;
 use Polis\Contracts\Services\StripeCustomerServiceContract;
 use Polis\Contracts\Services\StripePaymentServiceContract;
 use Polis\Contracts\Services\TokenGenerationServiceContract;
+use Polis\Contracts\Services\TwoFactorAuthenticationServiceContract;
 use Polis\Contracts\Services\Wiki\ArticleVersionCalculationServiceContract;
 use Polis\Http\Core\Requests\RequestResolver;
 use Polis\Mail\DefaultEmailTemplates;
@@ -84,7 +86,9 @@ use Polis\Services\Statistic\TargetStatisticProcessingService;
 use Polis\Services\StringHelperService;
 use Polis\Services\StripePaymentService;
 use Polis\Services\TokenGenerationService;
+use Polis\Services\TwoFactorAuthenticationService;
 use Polis\Services\Wiki\ArticleVersionCalculationService;
+use PragmaRX\Google2FA\Google2FA;
 
 /**
  * Base service provider for polis-laravel.
@@ -234,6 +238,7 @@ abstract class BaseServiceProvider extends ServiceProvider
             StripePaymentServiceContract::class,
             TargetStatisticProcessingServiceContract::class,
             TokenGenerationServiceContract::class,
+            TwoFactorAuthenticationServiceContract::class,
         ], $this->appProviders());
     }
 
@@ -484,6 +489,14 @@ abstract class BaseServiceProvider extends ServiceProvider
         )
         );
         $this->app->bind(TokenGenerationServiceContract::class, fn () => new TokenGenerationService
+        );
+        $this->app->bind(TwoFactorAuthenticationServiceContract::class, fn () => new TwoFactorAuthenticationService(
+            new Google2FA,
+            $this->app->make(TwoFactorSecretRepositoryContract::class),
+            $this->app->make('hash'),
+            $this->app->make('encrypter'),
+            $this->app->make('config'),
+        )
         );
 
         // Generic period / node-tree framework.

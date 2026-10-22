@@ -61,12 +61,33 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 
     Route::post('sign-up', 'AuthenticationController@signUp')
         ->name('sign-up');
+
+    /**
+     * Second step of a 2FA login: exchange the challenge token + code for a
+     * JWT. Public (the caller has no token yet).
+     */
+    Route::post('two-factor/verify', 'TwoFactorAuthenticationController@verify')
+        ->name('two-factor.verify');
 });
 
 /**
  * Routes that a user needs to be authenticated for in order to access
  */
 Route::group(['middleware' => 'jwt.auth.protected'], function () {
+
+    /**
+     * Two-factor (TOTP) management for the authenticated user.
+     */
+    Route::group(['prefix' => 'auth/two-factor', 'as' => 'auth.two-factor.'], function () {
+        Route::get('', 'TwoFactorAuthenticationController@status')
+            ->name('status');
+        Route::post('', 'TwoFactorAuthenticationController@enroll')
+            ->name('enroll');
+        Route::post('confirm', 'TwoFactorAuthenticationController@confirm')
+            ->name('confirm');
+        Route::delete('', 'TwoFactorAuthenticationController@disable')
+            ->name('disable');
+    });
 
     /**
      * Article Context

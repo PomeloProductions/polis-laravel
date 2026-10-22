@@ -13,6 +13,7 @@ use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\JWTAuth;
 use Polis\Contracts\Repositories\User\InvitationTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\UserRepositoryContract;
+use Polis\Contracts\Services\TwoFactorAuthenticationServiceContract;
 use Polis\Events\User\InvitationAcceptedEvent;
 use Polis\Events\User\SignUpEvent;
 use Polis\Models\User\InvitationToken as PolisInvitationToken;
@@ -30,11 +31,20 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
 {
     public function test_login_returns_jwt_on_valid_credentials(): void
     {
+        $user = Mockery::mock(UserFixture::class);
+
         $auth = Mockery::mock(JWTAuth::class);
+        // Password is validated WITHOUT minting a token (attempt(..., false));
+        // the JWT is only issued once the (absent) second factor clears.
         $auth->shouldReceive('attempt')
             ->once()
-            ->with(['email' => 'a@b.test', 'password' => 'pw'])
-            ->andReturn('jwt-token-xyz');
+            ->with(['email' => 'a@b.test', 'password' => 'pw'], false)
+            ->andReturn(true);
+        $auth->shouldReceive('user')->once()->andReturn($user);
+        $auth->shouldReceive('fromUser')->once()->with($user)->andReturn('jwt-token-xyz');
+
+        $twoFactor = Mockery::mock(TwoFactorAuthenticationServiceContract::class);
+        $twoFactor->shouldReceive('isEnabled')->once()->with($user)->andReturn(false);
 
         $request = $this->makeRequest(
             'Polis\\Http\\Core\\Requests\\Authentication\\LoginRequest',
@@ -47,12 +57,52 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             $auth,
             Mockery::mock(Dispatcher::class),
             Mockery::mock(InvitationTokenRepositoryContract::class),
+            $twoFactor,
         );
 
         $response = $controller->login($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(['token' => 'jwt-token-xyz'], json_decode($response->getContent(), true));
+    }
+
+    public function test_login_returns_challenge_when_two_factor_enabled(): void
+    {
+        $user = Mockery::mock(UserFixture::class);
+
+        $auth = Mockery::mock(JWTAuth::class);
+        $auth->shouldReceive('attempt')
+            ->once()
+            ->with(['email' => 'a@b.test', 'password' => 'pw'], false)
+            ->andReturn(true);
+        $auth->shouldReceive('user')->once()->andReturn($user);
+        // No token is minted when a second factor is required.
+        $auth->shouldNotReceive('fromUser');
+
+        $twoFactor = Mockery::mock(TwoFactorAuthenticationServiceContract::class);
+        $twoFactor->shouldReceive('isEnabled')->once()->with($user)->andReturn(true);
+        $twoFactor->shouldReceive('issueChallengeToken')->once()->with($user)->andReturn('challenge-abc');
+
+        $request = $this->makeRequest(
+            'Polis\\Http\\Core\\Requests\\Authentication\\LoginRequest',
+            ['email' => 'a@b.test', 'password' => 'pw'],
+        );
+
+        $controller = new AuthenticationController(
+            Mockery::mock(UserRepositoryContract::class),
+            Mockery::mock(Hasher::class),
+            $auth,
+            Mockery::mock(Dispatcher::class),
+            Mockery::mock(InvitationTokenRepositoryContract::class),
+            $twoFactor,
+        );
+
+        $response = $controller->login($request);
+
+        $this->assertSame(
+            ['two_factor_required' => true, 'challenge_token' => 'challenge-abc'],
+            json_decode($response->getContent(), true),
+        );
     }
 
     public function test_login_throws_jwt_exception_on_invalid_credentials(): void
@@ -71,6 +121,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             $auth,
             Mockery::mock(Dispatcher::class),
             Mockery::mock(InvitationTokenRepositoryContract::class),
+            Mockery::mock(TwoFactorAuthenticationServiceContract::class),
         );
 
         $this->expectException(JWTException::class);
@@ -108,7 +159,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             ['email' => 'ada@x.test', 'password' => 'plaintext'],
         );
 
-        $controller = new AuthenticationController($userRepo, $hasher, $auth, $dispatcher, $invitationTokenRepo);
+        $controller = new AuthenticationController($userRepo, $hasher, $auth, $dispatcher, $invitationTokenRepo, Mockery::mock(TwoFactorAuthenticationServiceContract::class));
         $response = $controller->signUp($request);
 
         $this->assertSame(201, $response->getStatusCode());
@@ -148,7 +199,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             ['email' => 'a@b.test', 'password' => 'pw', 'invitation_token' => 'invite-123'],
         );
 
-        $controller = new AuthenticationController($userRepo, $hasher, $auth, $dispatcher, $invitationTokenRepo);
+        $controller = new AuthenticationController($userRepo, $hasher, $auth, $dispatcher, $invitationTokenRepo, Mockery::mock(TwoFactorAuthenticationServiceContract::class));
         $controller->signUp($request);
 
         // assertions on the dispatcher expectations are auto-verified by Mockery on close()
@@ -170,6 +221,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             $auth,
             Mockery::mock(Dispatcher::class),
             Mockery::mock(InvitationTokenRepositoryContract::class),
+            Mockery::mock(TwoFactorAuthenticationServiceContract::class),
         );
 
         $response = $controller->refresh($request);
@@ -189,6 +241,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             $auth,
             Mockery::mock(Dispatcher::class),
             Mockery::mock(InvitationTokenRepositoryContract::class),
+            Mockery::mock(TwoFactorAuthenticationServiceContract::class),
         );
 
         $response = $controller->logout(new Request);
@@ -228,7 +281,7 @@ final class AuthenticationControllerAbstractTest extends ControllerTestCase
             ['email' => 'a@b.test', 'password' => 'pw', 'invitation_token' => 'stale'],
         );
 
-        $controller = new AuthenticationController($userRepo, $hasher, $auth, $dispatcher, $invitationTokenRepo);
+        $controller = new AuthenticationController($userRepo, $hasher, $auth, $dispatcher, $invitationTokenRepo, Mockery::mock(TwoFactorAuthenticationServiceContract::class));
         $controller->signUp($request);
 
         $this->addToAssertionCount(1);
