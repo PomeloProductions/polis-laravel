@@ -253,3 +253,8 @@ Tagged releases follow SemVer. Breaking changes bump the major; new
 features bump the minor; bug fixes bump the patch. Release automation is
 handled by `release-please`; conventional-commit prefixes drive the
 version bump and changelog entry.
+
+### Notable features
+
+- TOTP two-factor authentication support.
+- Reusable pairwise comparison coverage primitive.
