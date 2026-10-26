@@ -13,6 +13,7 @@ use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\JWTAuth;
 use Polis\Contracts\Repositories\User\InvitationTokenRepositoryContract;
 use Polis\Contracts\Repositories\User\UserRepositoryContract;
+use Polis\Contracts\Services\TwoFactorAuthenticationServiceContract;
 use Polis\Events\User\InvitationAcceptedEvent;
 use Polis\Events\User\SignUpEvent;
 use Polis\Http\Core\Requests;
@@ -59,15 +60,21 @@ abstract class AuthenticationControllerAbstract extends BaseControllerAbstract
     protected $invitationTokenRepository;
 
     /**
+     * @var TwoFactorAuthenticationServiceContract
+     */
+    protected $twoFactor;
+
+    /**
      * AuthenticationController constructor.
      */
-    public function __construct(UserRepositoryContract $userRepository, Hasher $hasher, JWTAuth $auth, Dispatcher $dispatcher, InvitationTokenRepositoryContract $invitationTokenRepository)
+    public function __construct(UserRepositoryContract $userRepository, Hasher $hasher, JWTAuth $auth, Dispatcher $dispatcher, InvitationTokenRepositoryContract $invitationTokenRepository, TwoFactorAuthenticationServiceContract $twoFactor)
     {
         $this->userRepository = $userRepository;
         $this->hasher = $hasher;
         $this->auth = $auth;
         $this->dispatcher = $dispatcher;
         $this->invitationTokenRepository = $invitationTokenRepository;
+        $this->twoFactor = $twoFactor;
     }
 
     /**
@@ -136,12 +143,30 @@ abstract class AuthenticationControllerAbstract extends BaseControllerAbstract
     public function login(Requests\Authentication\LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
-        if (! $token = $this->auth->attempt($credentials)) {
+
+        // Validate the password WITHOUT minting a session token yet: a
+        // 2FA-enabled user must clear the second factor before any JWT is
+        // issued. attempt(..., false) verifies the credentials and resolves
+        // the user but returns a token only when login may complete.
+        if (! $this->auth->attempt($credentials, false)) {
             throw new JWTException('Invalid login credentials.', 401);
         }
 
+        /** @var User $user */
+        $user = $this->auth->user();
+
+        // Second factor enabled: issue a short-lived challenge instead of a
+        // session token. The client echoes challenge_token back to
+        // /auth/two-factor/verify with the TOTP/recovery code to finish login.
+        if ($this->twoFactor->isEnabled($user)) {
+            return new JsonResponse([
+                'two_factor_required' => true,
+                'challenge_token' => $this->twoFactor->issueChallengeToken($user),
+            ]);
+        }
+
         return new JsonResponse([
-            'token' => $token,
+            'token' => $this->auth->fromUser($user),
         ]);
     }
 
