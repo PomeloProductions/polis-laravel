@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Polis\Models\Statistic;
 
+use App\Models\Statistic\StatisticDependency;
 use App\Models\Statistic\StatisticFilter;
 use App\Models\Statistic\TargetStatistic;
 use Eloquent;
@@ -81,11 +82,45 @@ class Statistic extends BaseModelAbstract implements HasValidationRulesContract
     use HasValidationRules;
 
     /**
+     * Multi-dimensional definition columns are cast to arrays. `dimensions`
+     * (extra axes), `measure` (the scalar aggregate) and `derived_definition`
+     * (a derived statistic's operation + operand ids) are all nullable json;
+     * NULL on an existing row reads as a plain single-target count statistic.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'public' => 'boolean',
+        'dimensions' => 'array',
+        'measure' => 'array',
+        'derived_definition' => 'array',
+    ];
+
+    /**
      * The filters that we use to determine what to count
      */
     public function filters(): HasMany
     {
         return $this->hasMany(StatisticFilter::class);
+    }
+
+    /**
+     * The operand edges of a DERIVED statistic — the base statistics this one is
+     * computed from, in operand order.
+     */
+    public function dependencies(): HasMany
+    {
+        return $this->hasMany(StatisticDependency::class, 'statistic_id');
+    }
+
+    /**
+     * The reverse edges: derived statistics that depend on THIS statistic. Used
+     * by the recompute trigger to find which derived cells to refresh when this
+     * statistic's cells change.
+     */
+    public function dependents(): HasMany
+    {
+        return $this->hasMany(StatisticDependency::class, 'depends_on_statistic_id');
     }
 
     /**
@@ -183,6 +218,22 @@ class Statistic extends BaseModelAbstract implements HasValidationRulesContract
                 ],
                 'public' => [
                     'boolean',
+                ],
+                'kind' => [
+                    'string',
+                    'in:count,derived',
+                ],
+                'dimensions' => [
+                    'nullable',
+                    'array',
+                ],
+                'measure' => [
+                    'nullable',
+                    'array',
+                ],
+                'derived_definition' => [
+                    'nullable',
+                    'array',
                 ],
                 'owner_type' => [
                     'nullable',

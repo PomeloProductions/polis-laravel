@@ -180,6 +180,10 @@
       <file>./tests/Unit/Validators/OwnedByValidatorStandaloneTest.php</file>
       <!-- Generic period/node-tree framework (standalone-runnable). -->
       <file>./tests/Unit/Support/CopyRuleSetTest.php</file>
+      <!-- Multi-dimensional intersection statistics (pure value objects). -->
+      <file>./tests/Unit/Support/Statistic/DimensionTupleTest.php</file>
+      <file>./tests/Unit/Support/Statistic/DerivedExpressionEvaluatorTest.php</file>
+      <file>./tests/Unit/Support/Statistic/DateBucketResolverTest.php</file>
       <file>./tests/Unit/Models/Traits/HasNodeTreeTest.php</file>
       <file>./tests/Unit/Validation/ValidationMatrixTest.php</file>
       <!-- Plugin system (standalone-runnable). -->

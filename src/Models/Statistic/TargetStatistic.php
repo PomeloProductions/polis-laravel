@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Polis\Models\Statistic;
 
 use App\Models\Statistic\Statistic;
+use App\Models\Statistic\TargetStatisticDimension;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Polis\Models\BaseModelAbstract;
 
@@ -17,6 +20,7 @@ use Polis\Models\BaseModelAbstract;
  * @property int $id
  * @property int $target_id
  * @property string $target_type
+ * @property string $dimension_key
  * @property int $statistic_id
  * @property float $value
  * @property array|null $filters
@@ -25,6 +29,7 @@ use Polis\Models\BaseModelAbstract;
  * @property Carbon|null $deleted_at
  * @property-read Statistic $statistic
  * @property-read Model $target
+ * @property-read Collection<int, TargetStatisticDimension> $dimensions
  * @property array<array-key, mixed>|null $result
  *
  * @method static \AdminUI\Laravel\EloquentJoin\EloquentJoinBuilder<static>|TargetStatistic getAggregateMethod()
@@ -88,5 +93,14 @@ class TargetStatistic extends BaseModelAbstract
     public function statistic(): BelongsTo
     {
         return $this->belongsTo(Statistic::class);
+    }
+
+    /**
+     * The EXTRA axis values that define this cell (empty for a back-compat
+     * single-target cell whose dimension_key is '').
+     */
+    public function dimensions(): HasMany
+    {
+        return $this->hasMany(TargetStatisticDimension::class);
     }
 }

@@ -18,7 +18,6 @@ use Polis\Tests\Application\ApplicationTestCase;
  */
 class TargetStatisticRepositoryTest extends ApplicationTestCase
 {
-    
     /**
      * @var TargetStatisticRepository
      */
@@ -195,5 +194,100 @@ class TargetStatisticRepositoryTest extends ApplicationTestCase
         $this->repository->delete($targetStatistic);
 
         $this->assertNull(TargetStatistic::find($targetStatistic->id));
+    }
+
+    public function test_upsert_cell_creates_cell_with_dimension_rows(): void
+    {
+        $statistic = Statistic::factory()->create();
+
+        $cell = $this->repository->upsertCell(
+            statisticId: $statistic->id,
+            targetType: 'user',
+            targetId: 5,
+            dimensionKey: 'abc',
+            values: ['value' => 3.0, 'result' => ['measure' => 3]],
+            dimensions: [
+                ['axis' => 'voting_type', 'value_scalar' => 'best'],
+                ['axis' => 'platform', 'value_type' => 'platform', 'value_id' => 9],
+            ],
+        );
+
+        $this->assertInstanceOf(TargetStatistic::class, $cell);
+        $this->assertEquals(3.0, $cell->value);
+        $this->assertSame('abc', $cell->dimension_key);
+        $this->assertCount(2, $cell->dimensions);
+    }
+
+    public function test_upsert_cell_is_idempotent_on_the_unique_tuple(): void
+    {
+        $statistic = Statistic::factory()->create();
+
+        $first = $this->repository->upsertCell(
+            $statistic->id, 'user', 5, 'abc',
+            ['value' => 1.0, 'result' => ['measure' => 1]],
+            [['axis' => 'x', 'value_scalar' => 'a']],
+        );
+
+        $second = $this->repository->upsertCell(
+            $statistic->id, 'user', 5, 'abc',
+            ['value' => 9.0, 'result' => ['measure' => 9]],
+            [['axis' => 'x', 'value_scalar' => 'a']],
+        );
+
+        // Same logical cell -> updated in place, not duplicated.
+        $this->assertSame($first->id, $second->id);
+        $this->assertEquals(9.0, $second->fresh()->value);
+        $this->assertSame(
+            1,
+            TargetStatistic::where('statistic_id', $statistic->id)
+                ->where('dimension_key', 'abc')->count(),
+        );
+        // Child rows are rewritten, not accumulated.
+        $this->assertCount(1, $second->fresh()->dimensions);
+    }
+
+    public function test_delete_stale_cells_removes_only_unlisted_keys(): void
+    {
+        $statistic = Statistic::factory()->create();
+
+        $this->repository->upsertCell($statistic->id, 'user', 5, 'keep', ['value' => 1.0, 'result' => []]);
+        $this->repository->upsertCell($statistic->id, 'user', 5, 'stale', ['value' => 1.0, 'result' => []]);
+
+        $removed = $this->repository->deleteStaleCells($statistic->id, ['keep']);
+
+        $this->assertSame(1, $removed);
+        $this->assertNotNull(
+            TargetStatistic::where('statistic_id', $statistic->id)->where('dimension_key', 'keep')->first(),
+        );
+        $this->assertNull(
+            TargetStatistic::where('statistic_id', $statistic->id)->where('dimension_key', 'stale')->first(),
+        );
+    }
+
+    public function test_delete_stale_cells_scopes_to_target(): void
+    {
+        $statistic = Statistic::factory()->create();
+
+        $this->repository->upsertCell($statistic->id, 'user', 5, 'k', ['value' => 1.0, 'result' => []]);
+        $this->repository->upsertCell($statistic->id, 'user', 6, 'k', ['value' => 1.0, 'result' => []]);
+
+        // Prune everything for target 5 (keep nothing); target 6 untouched.
+        $this->repository->deleteStaleCells($statistic->id, [], 'user', 5);
+
+        $this->assertNull(
+            TargetStatistic::where('statistic_id', $statistic->id)->where('target_id', 5)->first(),
+        );
+        $this->assertNotNull(
+            TargetStatistic::where('statistic_id', $statistic->id)->where('target_id', 6)->first(),
+        );
+    }
+
+    public function test_cell_value_reads_scalar_or_null(): void
+    {
+        $statistic = Statistic::factory()->create();
+        $this->repository->upsertCell($statistic->id, 'user', 5, 'k', ['value' => 7.0, 'result' => []]);
+
+        $this->assertEquals(7.0, $this->repository->cellValue($statistic->id, 'k', 'user', 5));
+        $this->assertNull($this->repository->cellValue($statistic->id, 'missing', 'user', 5));
     }
 }

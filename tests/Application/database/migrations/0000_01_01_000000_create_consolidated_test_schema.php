@@ -508,6 +508,25 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        // Harness-only base table that models a self-cross comparison ledger
+        // (the shape HSC's voting_pair_stats materializes): one row per recorded
+        // comparison of two platforms, by an owner, within a voting_type. Used by
+        // the multi-dimensional intersection-statistics integration tests
+        // (user × voting_type × platform-pair self-cross, date_bucket, soft-delete
+        // guard, count_distinct grain). NOT part of a real consumer's schema.
+        Schema::create('platform_comparisons', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('owner_id');
+            $table->string('voting_type');
+            $table->unsignedBigInteger('platform_a_id');
+            $table->unsignedBigInteger('platform_b_id');
+            $table->unsignedBigInteger('comparison_group_id')->nullable();
+            $table->timestamp('compared_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['owner_id', 'voting_type'], 'platform_comparisons_owner_type');
+        });
+
         // -----------------------------------------------------------------
         // User pages (2026_03_28). owner_id/owner_type OMITTED (package migration)
         // -----------------------------------------------------------------
@@ -570,6 +589,7 @@ return new class extends Migration
         Schema::dropIfExists('failed_jobs');
         Schema::dropIfExists('user_page_components');
         Schema::dropIfExists('user_pages');
+        Schema::dropIfExists('platform_comparisons');
         Schema::dropIfExists('target_statistics');
         Schema::dropIfExists('statistic_filters');
         Schema::dropIfExists('statistics');
