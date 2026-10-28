@@ -68,6 +68,102 @@ app(MultiDimensionalStatisticService::class)
   stays correct. Resolving in the configured tz is what fixes downstream
   midnight-drift.
 
+### Declarative joins (`joins`)
+
+By default the engine counts ONE base table with no joins. Declaring a `joins`
+list lets a statistic COUNT one base table while its **axes, static filters,
+measure, and primary target reference RELATED tables** — so you no longer need a
+bespoke per-shape SQL VIEW to flatten the data first.
+
+```php
+'joins' => [
+    [
+        'table' => 'release_dates',   // the related table to join
+        'alias' => 'rd',              // its alias (defaults to the table name)
+        'left'  => 'base.id',         // qualified `alias.column`
+        'right' => 'rd.release_id',   // `base` is the reserved base alias
+        'type'  => 'inner',           // inner | left ; default inner
+        'guard_soft_deletes' => true, // default true: exclude deleted_at rows
+        'on_extra' => [               // optional extra AND-ed ON conditions
+            ['ci.item_type', '=', 'release'],
+        ],
+    ],
+],
+```
+
+- **Ordering.** Joins apply in declaration order, so a later join may reference
+  an earlier join's alias (`release_dates` → `collection_items` → `collections`).
+- **Qualifying columns.** EVERY column reference in the definition is run through
+  a `qualify()` step: a bare name (`platform_id`) is prefixed with the `base`
+  alias; an already-qualified `alias.column` (`rd.release_date`, `c.owner_id`,
+  `cic.category_id`) is used as-is. A statistic that declares **no joins** has
+  only bare references, so the engine behaves exactly as before (back-compat).
+  This applies to the dimension column / entity id_column / type_column, the
+  date_bucket column, pair-axis columns, the measure column
+  (`count_distinct`/`sum`/`max`), the primary-target `id_column`, and static
+  filter `field`s.
+- **Soft-delete guard per join** (default on; auto-skipped when the joined table
+  has no `deleted_at`):
+  - `inner` → `alias.deleted_at IS NULL` is added to the WHERE clause.
+  - `left`  → it is added to the ON closure, so a LEFT join is NOT silently
+    narrowed into an inner join by excluding the unmatched (all-NULL) rows.
+- **`on_extra`.** A list of `[column, operator, value]` triples AND-ed into the
+  ON clause (e.g. the `collection_items.item_type = 'release'` morph guard).
+- **Fan-out.** A one-to-many join multiplies base rows; use a
+  `count_distinct` measure over the base id to keep counts correct (see below).
+
+#### Example: HSC "releases per year per platform" (no owner)
+
+`releases` has no date column — a release's (regional) dates live in a
+one-to-many `release_dates` table. Count DISTINCT releases, grouped by platform
+and by a year bucket off the JOINED date:
+
+```php
+Statistic::create([
+    'name'  => 'releases_per_year_per_platform',
+    'model' => 'release',             // base table = releases
+    'relation' => '',
+    'kind'  => 'count',
+    'dimensions' => [
+        ['name' => 'platform', 'kind' => 'scalar', 'column' => 'platform_id'],
+        ['name' => 'year', 'kind' => 'date_bucket', 'column' => 'rd.release_date',
+            'granularity' => 'year', 'timezone' => 'UTC'],
+    ],
+    'joins' => [
+        ['table' => 'release_dates', 'alias' => 'rd',
+            'left' => 'base.id', 'right' => 'rd.release_id'],
+    ],
+    // count DISTINCT releases so a release with multiple regional dates in a
+    // year is counted ONCE (the fan-out does not inflate "Total Releases").
+    'measure' => ['agg' => 'count_distinct', 'column' => 'base.id'],
+]);
+```
+
+#### Example: category variant (owner on a joined table)
+
+"Bucket List / Finished per year per platform" additionally joins
+`collection_items` → `collection_item_categories` → `collections`, binds the
+primary target owner to the JOINED `collections.owner_id`, and filters by
+category:
+
+```php
+'joins' => [
+    ['table' => 'collection_items', 'alias' => 'ci',
+        'left' => 'base.id', 'right' => 'ci.item_id',
+        'on_extra' => [['ci.item_type', '=', 'release']]],
+    ['table' => 'collection_item_categories', 'alias' => 'cic',
+        'left' => 'ci.id', 'right' => 'cic.collection_item_id'],
+    ['table' => 'collections', 'alias' => 'c',
+        'left' => 'ci.collection_id', 'right' => 'c.id'],
+],
+'measure' => [
+    'agg' => 'count_distinct', 'column' => 'base.id',
+    'target' => ['type' => 'user', 'id_column' => 'c.owner_id'], // owner on the join
+],
+// filter by a category via a qualified static filter field:
+//   StatisticFilter { field: 'cic.category_id', operator: '=', value: '3' }
+```
+
 ### Unordered self-cross pairs (`pair_group`)
 
 Two axes referencing the **same entity type** can be canonicalized into an
@@ -110,6 +206,13 @@ create/update/delete/restore of a base-table row. For each engine-backed
 statistic over that table it recomputes only the affected primary target's cells
 (a bounded `GROUP BY` scoped to that owner); an update that moves owners settles
 both the old and new scopes.
+
+When the primary target lives on a **joined** table (a qualified `id_column`
+such as `c.owner_id`), the changed base-table row does not carry that column, so
+a bounded per-target recompute cannot be scoped precisely from the row alone. In
+that case the maintenance path falls back to a FULL `recompute($statistic)` and
+logs the fallback rather than silently mis-scoping. A precise cross-join bounded
+recompute is a possible future refinement.
 
 ## Derived statistics (materialized)
 

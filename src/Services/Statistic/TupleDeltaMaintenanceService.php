@@ -8,6 +8,7 @@ use App\Models\Statistic\Statistic;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Log;
 use Polis\Jobs\Statistic\RecomputeDerivedStatisticJob;
 use Polis\Support\Statistic\StatisticDefinition;
 
@@ -52,6 +53,25 @@ class TupleDeltaMaintenanceService
             if ($primaryTarget === null) {
                 // No primary-axis binding: a single global-scope statistic; fall
                 // back to a full recompute (still bounded by its cardinality).
+                $this->multiDimensionalService->recompute($statistic);
+                $this->triggerDerived($statistic);
+
+                continue;
+            }
+
+            // The primary target may live on a JOINED table (e.g. the owner is
+            // `collections.owner_id`). The changed base-table row does not carry
+            // that column, so a bounded per-target recompute cannot be scoped
+            // precisely from the row alone. Fall back to a FULL recompute rather
+            // than silently mis-scope. (See spec §incremental-maintenance; a
+            // precise cross-join bounded recompute is a future refinement.)
+            if (str_contains($primaryTarget['id_column'], '.')) {
+                Log::info('Statistic maintenance: primary target lives on a joined table; '
+                    .'falling back to full recompute (cannot bound-scope from the base row).', [
+                        'statistic_id' => $statistic->id,
+                        'id_column' => $primaryTarget['id_column'],
+                    ]);
+
                 $this->multiDimensionalService->recompute($statistic);
                 $this->triggerDerived($statistic);
 

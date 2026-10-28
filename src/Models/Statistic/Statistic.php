@@ -83,15 +83,18 @@ class Statistic extends BaseModelAbstract implements HasValidationRulesContract
 
     /**
      * Multi-dimensional definition columns are cast to arrays. `dimensions`
-     * (extra axes), `measure` (the scalar aggregate) and `derived_definition`
-     * (a derived statistic's operation + operand ids) are all nullable json;
-     * NULL on an existing row reads as a plain single-target count statistic.
+     * (extra axes), `joins` (declarative joins so axes/filters/measure/target
+     * can reference related tables), `measure` (the scalar aggregate) and
+     * `derived_definition` (a derived statistic's operation + operand ids) are
+     * all nullable json; NULL on an existing row reads as a plain single-target
+     * count statistic (and no joins ⇒ the engine behaves exactly as before).
      *
      * @var array<string, string>
      */
     protected $casts = [
         'public' => 'boolean',
         'dimensions' => 'array',
+        'joins' => 'array',
         'measure' => 'array',
         'derived_definition' => 'array',
     ];
@@ -224,6 +227,10 @@ class Statistic extends BaseModelAbstract implements HasValidationRulesContract
                     'in:count,derived',
                 ],
                 'dimensions' => [
+                    'nullable',
+                    'array',
+                ],
+                'joins' => [
                     'nullable',
                     'array',
                 ],

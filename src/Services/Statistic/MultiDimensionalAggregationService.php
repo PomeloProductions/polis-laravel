@@ -13,6 +13,7 @@ use Polis\Support\Statistic\DateBucketResolver;
 use Polis\Support\Statistic\DimensionDefinition;
 use Polis\Support\Statistic\DimensionTuple;
 use Polis\Support\Statistic\DimensionValue;
+use Polis\Support\Statistic\JoinDefinition;
 use Polis\Support\Statistic\StatisticDefinition;
 use RuntimeException;
 
@@ -26,8 +27,17 @@ use RuntimeException;
  *
  *   SELECT <primary target cols>, <axis cols>, <measure aggregate>
  *   FROM <base table of statistic.model>
+ *   [JOIN <declared related tables>]
  *   WHERE <static filters> AND <deleted_at IS NULL baked in>
  *   GROUP BY <primary target cols>, <axis cols>
+ *
+ * Declarative `joins` let a statistic COUNT one base table while its axes /
+ * filters / measure / primary target reference RELATED tables (e.g. a year axis
+ * on a joined release_dates table, or an owner on a joined collections table),
+ * so no bespoke per-shape SQL VIEW is needed. EVERY column reference is run
+ * through {@see self::qualify()}, which defaults a bare name to the base alias
+ * and leaves an already-qualified `alias.column` untouched; with no joins
+ * declared every reference is bare and the engine behaves exactly as before.
  *
  * The soft-delete guard is written EXPLICITLY, not inherited from the global
  * scope, precisely because the scope does not survive the base-builder lowering.
@@ -74,8 +84,11 @@ class MultiDimensionalAggregationService
 
         $query = DB::table($baseTable.' as '.self::BASE_ALIAS);
 
+        // --- JOINS: apply declarative joins in declaration order ------------
+        $this->applyJoins($query, $definition->joins());
+
         if ($scopeTargetId !== null && $primaryTarget !== null) {
-            $query->where(self::BASE_ALIAS.'.'.$primaryTarget['id_column'], $scopeTargetId);
+            $query->where($this->qualify($primaryTarget['id_column']), $scopeTargetId);
         }
 
         // --- SELECT: measure + grouping columns -----------------------------
@@ -83,7 +96,7 @@ class MultiDimensionalAggregationService
         $groupBy = [];
 
         if ($primaryTarget !== null) {
-            $primaryCol = self::BASE_ALIAS.'.'.$primaryTarget['id_column'];
+            $primaryCol = $this->qualify($primaryTarget['id_column']);
             $selects[] = DB::raw($primaryCol.' as primary_target_id');
             $groupBy[] = $primaryCol;
         }
@@ -148,12 +161,12 @@ class MultiDimensionalAggregationService
         if (isset($pairExpressions[$axis])) {
             $columns['axis_'.$axis] = $pairExpressions[$axis];
         } elseif ($dimension->column() !== null) {
-            $columns['axis_'.$axis] = self::BASE_ALIAS.'.'.$dimension->column();
+            $columns['axis_'.$axis] = $this->qualify($dimension->column());
         }
 
         // An entity axis whose morph type is resolved per-row from a column.
         if ($dimension->kind() === DimensionDefinition::KIND_ENTITY && $dimension->entityTypeColumn() !== null) {
-            $columns['axistype_'.$axis] = self::BASE_ALIAS.'.'.$dimension->entityTypeColumn();
+            $columns['axistype_'.$axis] = $this->qualify($dimension->entityTypeColumn());
         }
 
         return $columns;
@@ -192,8 +205,8 @@ class MultiDimensionalAggregationService
             }
 
             [$first, $second] = $members;
-            $colA = self::BASE_ALIAS.'.'.$first->column();
-            $colB = self::BASE_ALIAS.'.'.$second->column();
+            $colA = $this->qualify($first->column());
+            $colB = $this->qualify($second->column());
 
             $expressions[$first->name()] = "{$least}({$colA}, {$colB})";
             $expressions[$second->name()] = "{$greatest}({$colA}, {$colB})";
@@ -212,7 +225,7 @@ class MultiDimensionalAggregationService
     private function dateBucketSqlExpression(DimensionDefinition $dimension): string
     {
         $driver = DB::connection()->getDriverName();
-        $column = self::BASE_ALIAS.'.'.$dimension->column();
+        $column = $this->qualify($dimension->column());
         $granularity = $dimension->granularity();
         $timezone = $dimension->timezone();
         $weekStart = $dimension->weekStart();
@@ -364,9 +377,75 @@ class MultiDimensionalAggregationService
      */
     private function applySoftDeleteGuard(QueryBuilder $query, string $baseTable): void
     {
-        if (DB::connection()->getSchemaBuilder()->hasColumn($baseTable, 'deleted_at')) {
+        if ($this->hasDeletedAt($baseTable)) {
             $query->whereNull(self::BASE_ALIAS.'.deleted_at');
         }
+    }
+
+    /**
+     * Apply the statistic's declarative joins in declaration order so a later
+     * join may reference an earlier join's alias. Each join carries its own
+     * soft-delete guard:
+     *   - INNER → `alias.deleted_at IS NULL` added to the WHERE clause.
+     *   - LEFT  → added to the ON closure, so a LEFT join is NOT silently
+     *     narrowed into an inner one by excluding the all-NULL unmatched rows.
+     * The guard auto-skips when the joined table has no `deleted_at` column.
+     *
+     * @param  array<int, JoinDefinition>  $joins
+     */
+    private function applyJoins(QueryBuilder $query, array $joins): void
+    {
+        foreach ($joins as $join) {
+            $guard = $join->guardsSoftDeletes() && $this->hasDeletedAt($join->table());
+            $method = $join->isLeft() ? 'leftJoin' : 'join';
+
+            $query->{$method}(
+                $join->tableWithAlias(),
+                function ($clause) use ($join, $guard): void {
+                    $clause->on($join->left(), '=', $join->right());
+
+                    foreach ($join->onExtra() as [$col, $op, $val]) {
+                        $clause->where($col, $op, $val);
+                    }
+
+                    // LEFT join: guard IN the ON clause so unmatched rows survive.
+                    if ($join->isLeft() && $guard) {
+                        $clause->whereNull($join->alias().'.deleted_at');
+                    }
+                },
+            );
+
+            // INNER join: guard in the WHERE clause (equivalent to the ON guard
+            // for an inner join, and keeps the join condition readable).
+            if (! $join->isLeft() && $guard) {
+                $query->whereNull($join->alias().'.deleted_at');
+            }
+        }
+    }
+
+    /**
+     * Qualify a bare column reference with the base alias; an already-qualified
+     * reference (containing a dot, e.g. `rd.release_date` or `c.owner_id`) is
+     * returned untouched so axes/filters/measure/target can point at a joined
+     * table. With no joins declared every reference is bare, so this reproduces
+     * the previous `base.<column>` behavior byte-for-byte.
+     */
+    private function qualify(string $reference): string
+    {
+        if (str_contains($reference, '.')) {
+            return $reference;
+        }
+
+        return self::BASE_ALIAS.'.'.$reference;
+    }
+
+    /**
+     * Whether a physical table has a `deleted_at` column (so the soft-delete
+     * guard is only applied where it is meaningful).
+     */
+    private function hasDeletedAt(string $table): bool
+    {
+        return DB::connection()->getSchemaBuilder()->hasColumn($table, 'deleted_at');
     }
 
     /**

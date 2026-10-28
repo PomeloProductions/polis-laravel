@@ -63,6 +63,24 @@ final class StatisticDefinition
     }
 
     /**
+     * The parsed declarative joins, in declaration order. A join lets the
+     * statistic count one base table while axes / filters / measure / primary
+     * target reference RELATED tables. No `joins` declared ⇒ empty array ⇒ the
+     * engine behaves exactly as before (back-compat).
+     *
+     * @return array<int, JoinDefinition>
+     */
+    public function joins(): array
+    {
+        $raw = $this->decode($this->statistic->getAttribute('joins'));
+
+        return array_map(
+            static fn (array $join): JoinDefinition => JoinDefinition::fromArray($join),
+            array_values($raw),
+        );
+    }
+
+    /**
      * The parsed extra axes, in declaration order.
      *
      * @return array<int, DimensionDefinition>
