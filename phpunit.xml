@@ -166,6 +166,7 @@
       <file>./tests/Unit/Services/ProratingCalculationServiceStandaloneTest.php</file>
       <file>./tests/Unit/Services/ProratingCalculationServiceUpgradeChargeTest.php</file>
       <file>./tests/Unit/Services/Statistic/StatisticFilterToQueryTest.php</file>
+      <file>./tests/Unit/Services/Statistic/QualifyColumnReferenceTest.php</file>
       <file>./tests/Unit/Services/StringHelperServiceTest.php</file>
       <file>./tests/Unit/Services/TokenGenerationServiceTest.php</file>
       <file>./tests/Unit/Services/Wiki/ArticleVersionCalculationServiceTest.php</file>
@@ -184,6 +185,7 @@
       <file>./tests/Unit/Support/Statistic/DimensionTupleTest.php</file>
       <file>./tests/Unit/Support/Statistic/DerivedExpressionEvaluatorTest.php</file>
       <file>./tests/Unit/Support/Statistic/DateBucketResolverTest.php</file>
+      <file>./tests/Unit/Support/Statistic/JoinDefinitionTest.php</file>
       <file>./tests/Unit/Models/Traits/HasNodeTreeTest.php</file>
       <file>./tests/Unit/Validation/ValidationMatrixTest.php</file>
       <!-- Plugin system (standalone-runnable). -->

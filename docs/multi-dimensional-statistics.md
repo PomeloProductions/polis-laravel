@@ -111,6 +111,8 @@ bespoke per-shape SQL VIEW to flatten the data first.
   ON clause (e.g. the `collection_items.item_type = 'release'` morph guard).
 - **Fan-out.** A one-to-many join multiplies base rows; use a
   `count_distinct` measure over the base id to keep counts correct (see below).
+- **Sub-select joins.** Instead of `table` a join may carry a `table_raw` raw-SQL
+  sub-select (aliased derived table) — see *Sub-select joins (`table_raw`)* below.
 
 #### Example: HSC "releases per year per platform" (no owner)
 
@@ -135,6 +137,73 @@ Statistic::create([
     ],
     // count DISTINCT releases so a release with multiple regional dates in a
     // year is counted ONCE (the fan-out does not inflate "Total Releases").
+    'measure' => ['agg' => 'count_distinct', 'column' => 'base.id'],
+]);
+```
+
+#### Sub-select joins (`table_raw`)
+
+Instead of a physical `table`, a join may carry a **`table_raw`** — a raw SQL
+sub-select (WITHOUT the surrounding parens or alias) that the engine wraps as
+`(<table_raw>) as <alias>` and joins to. This lets a statistic join to an
+**aliased derived table**: derive a per-parent column (e.g. a MIN/MAX-per-parent
+aggregate) and then group by it, without a physical view.
+
+```php
+'joins' => [
+    [
+        // Derive ONE earliest_year per release from its many regional dates.
+        'table_raw' => 'SELECT release_id, YEAR(MIN(release_date)) AS earliest_year '
+            .'FROM release_dates '
+            .'WHERE release_date IS NOT NULL AND deleted_at IS NULL '
+            .'GROUP BY release_id',
+        'alias' => 'ey',          // REQUIRED for a table_raw join (no table name to fall back to)
+        'left'  => 'base.id',     // join the derived table to the base release
+        'right' => 'ey.release_id',
+        'type'  => 'inner',       // inner | left ; default inner
+    ],
+],
+```
+
+Rules and semantics:
+
+- **Exactly one** of `table` / `table_raw` must be present (validated — both or
+  neither throws). `alias` is **required** for a `table_raw` join; `left` / `right`
+  / `type` / `on_extra` behave exactly as for a physical-table join, and the
+  derived column (`ey.earliest_year`) is referenced like any other
+  `alias.column` in axes / filters / measure / target.
+- **No automatic soft-delete guard.** The engine applies NO `deleted_at IS NULL`
+  and does NO `deleted_at` column lookup for a `table_raw` join — the alias is
+  not a physical table, and the sub-select is responsible for its own filtering
+  (note the `deleted_at IS NULL` *inside* the sub-select's own `WHERE` above).
+- **⚠ SECURITY — raw SQL.** `table_raw` is spliced directly into the query with
+  **no escaping or parameterization**. It is for **TRUSTED, system-SEEDED
+  statistic configuration ONLY** and must **never** contain or be built from user
+  input. Treat it like a migration string, not a request parameter.
+
+##### Example: HSC "earliest year" (MIN release date per release)
+
+Bucket each release by the **earliest** of its many regional release dates, then
+count releases per earliest year. A grouped sub-select derives one
+`earliest_year` per release; the engine groups by that derived column:
+
+```php
+Statistic::create([
+    'name'  => 'releases_by_earliest_year',
+    'model' => 'release',             // base table = releases
+    'relation' => '',
+    'kind'  => 'count',
+    'dimensions' => [
+        ['name' => 'earliest_year', 'kind' => 'scalar', 'column' => 'ey.earliest_year'],
+    ],
+    'joins' => [
+        ['table_raw' => 'SELECT release_id, YEAR(MIN(release_date)) AS earliest_year '
+            .'FROM release_dates WHERE release_date IS NOT NULL AND deleted_at IS NULL '
+            .'GROUP BY release_id',
+            'alias' => 'ey', 'left' => 'base.id', 'right' => 'ey.release_id'],
+    ],
+    // count DISTINCT releases (the sub-select already collapses to one row per
+    // release, so each release contributes to exactly one earliest-year bucket).
     'measure' => ['agg' => 'count_distinct', 'column' => 'base.id'],
 ]);
 ```

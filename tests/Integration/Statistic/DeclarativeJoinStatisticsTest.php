@@ -298,6 +298,74 @@ final class DeclarativeJoinStatisticsTest extends ApplicationTestCase
         $this->assertEquals(1.0, $cell->value);
     }
 
+    public function test_sub_select_join_derives_and_groups_by_earliest_year(): void
+    {
+        // The HSC "earliest year" shape: a release has MANY regional dates; we
+        // want to bucket each release by the EARLIEST (MIN) of its release dates.
+        // A grouped sub-select derives one earliest_year per release, then the
+        // engine groups by that derived column.
+        //
+        //   r1 (platform 1): 2020-06, 2021-01       -> earliest 2020
+        //   r2 (platform 1): 2020-11                 -> earliest 2020
+        //   r3 (platform 2): 2022-03, 2019-12        -> earliest 2019
+        $r1 = $this->release(['platform_id' => 1]);
+        $r2 = $this->release(['platform_id' => 1]);
+        $r3 = $this->release(['platform_id' => 2]);
+        $this->addDate($r1->id, '2020-06-01 00:00:00');
+        $this->addDate($r1->id, '2021-01-01 00:00:00');
+        $this->addDate($r2->id, '2020-11-01 00:00:00');
+        $this->addDate($r3->id, '2022-03-01 00:00:00');
+        $this->addDate($r3->id, '2019-12-01 00:00:00');
+
+        // A soft-deleted EARLIER date on r1 that the sub-select's own WHERE must
+        // exclude (proving the sub-select owns its filtering — no engine guard).
+        DB::table('release_dates')->insert([
+            'release_id' => $r1->id, 'release_date' => '2015-01-01 00:00:00',
+            'region' => 'jp', 'deleted_at' => now(),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        // Driver-aware YEAR(MIN(...)): SQLite has no YEAR(); use strftime.
+        $driver = DB::connection()->getDriverName();
+        $earliestYear = $driver === 'sqlite'
+            ? "CAST(strftime('%Y', MIN(release_date)) AS INTEGER)"
+            : 'YEAR(MIN(release_date))';
+
+        $subSelect = "SELECT release_id, {$earliestYear} AS earliest_year "
+            .'FROM release_dates '
+            .'WHERE release_date IS NOT NULL AND deleted_at IS NULL '
+            .'GROUP BY release_id';
+
+        $statistic = $this->makeStatistic(
+            dimensions: [
+                ['name' => 'earliest_year', 'kind' => 'scalar', 'column' => 'ey.earliest_year'],
+            ],
+            measure: ['agg' => 'count_distinct', 'column' => 'base.id'],
+            joins: [
+                ['table_raw' => $subSelect, 'alias' => 'ey',
+                    'left' => 'base.id', 'right' => 'ey.release_id'],
+            ],
+        );
+
+        $this->service->recompute($statistic);
+
+        $cells = TargetStatistic::where('statistic_id', $statistic->id)->get();
+        // Two earliest-year groups: 2020 (r1 + r2 = 2) and 2019 (r3 = 1).
+        $this->assertCount(2, $cells);
+
+        $y2020 = $cells->first(
+            fn ($c) => (int) $c->result['tuple']['earliest_year']['value'] === 2020
+        );
+        $this->assertNotNull($y2020, 'Expected a 2020 earliest-year cell.');
+        $this->assertEquals(2.0, $y2020->value);
+
+        $y2019 = $cells->first(
+            fn ($c) => (int) $c->result['tuple']['earliest_year']['value'] === 2019
+        );
+        $this->assertNotNull($y2019, 'Expected a 2019 earliest-year cell.');
+        $this->assertEquals(1.0, $y2019->value);
+    }
+
     public function test_qualified_static_filter_on_a_joined_column(): void
     {
         // Confirm a static filter on a QUALIFIED joined column works end-to-end:

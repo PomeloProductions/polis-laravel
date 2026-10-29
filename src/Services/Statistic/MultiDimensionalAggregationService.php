@@ -391,16 +391,34 @@ class MultiDimensionalAggregationService
      *     narrowed into an inner one by excluding the all-NULL unmatched rows.
      * The guard auto-skips when the joined table has no `deleted_at` column.
      *
+     * A `table_raw` join targets a raw SQL sub-select wrapped as
+     * `(<table_raw>) as <alias>` (DB::raw): it SKIPS the automatic soft-delete
+     * guard and the `deleted_at` column lookup entirely, because the alias is
+     * not a physical table and the sub-select is responsible for its own
+     * filtering (it already carries its own WHERE). Physical-table joins keep the
+     * guard behavior unchanged.
+     *
+     * SECURITY: `table_raw` is spliced in as raw SQL — it is TRUSTED,
+     * system-seeded config only and must never be built from user input.
+     *
      * @param  array<int, JoinDefinition>  $joins
      */
     private function applyJoins(QueryBuilder $query, array $joins): void
     {
         foreach ($joins as $join) {
-            $guard = $join->guardsSoftDeletes() && $this->hasDeletedAt($join->table());
+            // A sub-select join owns its own filtering; never auto-guard it (and
+            // never run hasDeletedAt against an alias that is not a real table).
+            $guard = ! $join->isSubSelect()
+                && $join->guardsSoftDeletes()
+                && $this->hasDeletedAt((string) $join->table());
             $method = $join->isLeft() ? 'leftJoin' : 'join';
 
+            $target = $join->isSubSelect()
+                ? DB::raw('('.$join->tableRaw().') as '.$join->alias())
+                : $join->tableWithAlias();
+
             $query->{$method}(
-                $join->tableWithAlias(),
+                $target,
                 function ($clause) use ($join, $guard): void {
                     $clause->on($join->left(), '=', $join->right());
 
