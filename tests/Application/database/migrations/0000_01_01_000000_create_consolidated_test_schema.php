@@ -501,11 +501,58 @@ return new class extends Migration
         Schema::create('target_statistics', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('statistic_id');
-            $table->morphs('target');
+            // Nullable morph: a multi-dimensional cell may have NO primary target
+            // (a single global cell keyed only by the extra axes — e.g. the HSC
+            // "Total Releases per year per platform" view with no owner).
+            $table->nullableMorphs('target');
             $table->json('result')->nullable();
             $table->float('value')->default(0);
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        // Harness-only base table that models a self-cross comparison ledger
+        // (the shape HSC's voting_pair_stats materializes): one row per recorded
+        // comparison of two platforms, by an owner, within a voting_type. Used by
+        // the multi-dimensional intersection-statistics integration tests
+        // (user × voting_type × platform-pair self-cross, date_bucket, soft-delete
+        // guard, count_distinct grain). NOT part of a real consumer's schema.
+        Schema::create('platform_comparisons', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('owner_id');
+            $table->string('voting_type');
+            $table->unsignedBigInteger('platform_a_id');
+            $table->unsignedBigInteger('platform_b_id');
+            $table->unsignedBigInteger('comparison_group_id')->nullable();
+            $table->timestamp('compared_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index(['owner_id', 'voting_type'], 'platform_comparisons_owner_type');
+        });
+
+        // Harness-only tables for the DECLARATIVE JOINS tests: a `releases`
+        // base table (no date column) joined to `release_dates` (one release has
+        // many regional dates — a one-to-many fan-out), which is the HSC "year
+        // view" shape. Category variants reuse the collections/collection_items/
+        // collection_item_categories tables above. NOT a real consumer schema.
+        Schema::create('releases', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('game_id')->nullable();
+            $table->unsignedBigInteger('platform_id');
+            $table->integer('score')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index('platform_id');
+        });
+
+        Schema::create('release_dates', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('release_id');
+            $table->timestamp('release_date')->nullable();
+            $table->string('region', 16)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->index('release_id');
         });
 
         // -----------------------------------------------------------------
@@ -570,6 +617,9 @@ return new class extends Migration
         Schema::dropIfExists('failed_jobs');
         Schema::dropIfExists('user_page_components');
         Schema::dropIfExists('user_pages');
+        Schema::dropIfExists('release_dates');
+        Schema::dropIfExists('releases');
+        Schema::dropIfExists('platform_comparisons');
         Schema::dropIfExists('target_statistics');
         Schema::dropIfExists('statistic_filters');
         Schema::dropIfExists('statistics');
