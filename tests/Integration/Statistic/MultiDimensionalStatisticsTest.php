@@ -292,4 +292,119 @@ final class MultiDimensionalStatisticsTest extends ApplicationTestCase
 
         $this->assertSame(0, TargetStatistic::where('statistic_id', $statistic->id)->count());
     }
+
+    public function test_recompute_restores_a_soft_deleted_cell_when_its_group_reappears_full_path(): void
+    {
+        $row = PlatformComparison::factory()->create(['owner_id' => 1, 'voting_type' => 'best']);
+
+        $statistic = $this->makeStatistic(
+            dimensions: [
+                ['name' => 'voting_type', 'kind' => 'scalar', 'column' => 'voting_type'],
+            ],
+            measure: ['agg' => 'count', 'target' => ['type' => 'user', 'id_column' => 'owner_id']],
+        );
+
+        // First recompute materializes the (owner 1, best) cell.
+        $this->service->recompute($statistic);
+        $cell = TargetStatistic::where('statistic_id', $statistic->id)->sole();
+
+        // Simulate a legacy soft-deleted "zombie" cell occupying the unique tuple:
+        // the pre-fix deleteStaleCells left exactly such a row behind. (New code
+        // hard-deletes stale cells, so we re-create the hazard explicitly to prove
+        // upsertCell survives a reappearing group regardless of how the cell was
+        // soft-deleted.)
+        $cell->delete();
+        $this->assertSoftDeleted('target_statistics', ['id' => $cell->id]);
+
+        // The group still exists, so a recompute must RESTORE the same row — not
+        // insert a duplicate that collides on the unique index (SQLSTATE 1062).
+        $this->service->recompute($statistic);
+
+        $live = TargetStatistic::where('statistic_id', $statistic->id)->get();
+        $this->assertCount(1, $live, 'the reappearing tuple must have exactly one live row');
+        $this->assertSame($cell->id, $live->first()->id, 'the soft-deleted cell must be restored, not duplicated');
+        $this->assertEquals(1.0, $live->first()->value);
+        $this->assertNull($live->first()->deleted_at);
+
+        // And truly one physical row for the tuple — no zombie left behind.
+        $this->assertSame(
+            1,
+            TargetStatistic::withTrashed()
+                ->where('statistic_id', $statistic->id)
+                ->where('target_type', 'user')
+                ->where('target_id', 1)
+                ->where('dimension_key', $cell->dimension_key)
+                ->count(),
+        );
+
+        $this->assertNotNull($row->fresh());
+    }
+
+    public function test_recompute_for_target_restores_a_soft_deleted_cell_when_its_group_reappears_bounded_path(): void
+    {
+        PlatformComparison::factory()->create(['owner_id' => 1, 'voting_type' => 'best']);
+        PlatformComparison::factory()->create(['owner_id' => 2, 'voting_type' => 'best']);
+
+        $statistic = $this->makeStatistic(
+            dimensions: [
+                ['name' => 'voting_type', 'kind' => 'scalar', 'column' => 'voting_type'],
+            ],
+            measure: ['agg' => 'count', 'target' => ['type' => 'user', 'id_column' => 'owner_id']],
+        );
+
+        $this->service->recompute($statistic);
+
+        $owner1Cell = TargetStatistic::where('statistic_id', $statistic->id)
+            ->where('target_id', 1)->sole();
+        $owner2Cell = TargetStatistic::where('statistic_id', $statistic->id)
+            ->where('target_id', 2)->sole();
+
+        // Plant a soft-deleted zombie on owner 1's tuple.
+        $owner1Cell->delete();
+        $this->assertSoftDeleted('target_statistics', ['id' => $owner1Cell->id]);
+
+        // Bounded recompute for ONLY owner 1 must restore owner 1's cell and leave
+        // owner 2 untouched — no 1062, no duplicate.
+        $this->service->recomputeForTarget($statistic, 'user', 1);
+
+        $owner1Live = TargetStatistic::where('statistic_id', $statistic->id)
+            ->where('target_id', 1)->get();
+        $this->assertCount(1, $owner1Live);
+        $this->assertSame($owner1Cell->id, $owner1Live->first()->id);
+        $this->assertNull($owner1Live->first()->deleted_at);
+        $this->assertEquals(1.0, $owner1Live->first()->value);
+
+        // Owner 2 is still exactly as it was.
+        $this->assertNotNull($owner2Cell->fresh());
+        $this->assertNull($owner2Cell->fresh()->deleted_at);
+    }
+
+    public function test_stale_cells_are_hard_deleted_not_soft_deleted(): void
+    {
+        $best = PlatformComparison::factory()->create(['owner_id' => 1, 'voting_type' => 'best']);
+        PlatformComparison::factory()->create(['owner_id' => 1, 'voting_type' => 'worst']);
+
+        $statistic = $this->makeStatistic(
+            dimensions: [
+                ['name' => 'voting_type', 'kind' => 'scalar', 'column' => 'voting_type'],
+            ],
+            measure: ['agg' => 'count', 'target' => ['type' => 'user', 'id_column' => 'owner_id']],
+        );
+
+        $this->service->recompute($statistic);
+        $bestCell = TargetStatistic::where('statistic_id', $statistic->id)
+            ->whereJsonContains('result->tuple->voting_type->value', 'best')
+            ->sole();
+
+        // The "best" group vanishes -> its cell is now stale.
+        $best->forceDelete();
+        $this->service->recompute($statistic);
+
+        // Stale cells are PHYSICALLY gone (no soft-deleted zombie left to collide
+        // with a future reappearance of the same tuple).
+        $this->assertSame(
+            0,
+            TargetStatistic::withTrashed()->whereKey($bestCell->id)->count(),
+        );
+    }
 }
