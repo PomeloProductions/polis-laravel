@@ -282,6 +282,60 @@ class TargetStatisticRepositoryTest extends ApplicationTestCase
         );
     }
 
+    public function test_upsert_cell_restores_a_soft_deleted_cell_on_the_same_tuple(): void
+    {
+        $statistic = Statistic::factory()->create();
+
+        $first = $this->repository->upsertCell(
+            $statistic->id, 'user', 5, 'abc',
+            ['value' => 1.0, 'result' => ['measure' => 1]],
+            [['axis' => 'x', 'value_scalar' => 'a']],
+        );
+
+        // Soft-delete the cell (mirrors a stale-prune under the old soft-delete
+        // behavior). The row still occupies the unique tuple in the index.
+        $first->delete();
+        $this->assertSoftDeleted('target_statistics', ['id' => $first->id]);
+
+        // The group reappears: upsert must RESTORE the same row, not INSERT a
+        // duplicate that collides with the zombie on the unique index (1062).
+        $restored = $this->repository->upsertCell(
+            $statistic->id, 'user', 5, 'abc',
+            ['value' => 4.0, 'result' => ['measure' => 4]],
+            [['axis' => 'x', 'value_scalar' => 'a']],
+        );
+
+        $this->assertSame($first->id, $restored->id);
+        $this->assertNull($restored->fresh()->deleted_at);
+        $this->assertEquals(4.0, $restored->fresh()->value);
+
+        // Exactly one physical row for the tuple, trashed or not.
+        $this->assertSame(
+            1,
+            TargetStatistic::withTrashed()
+                ->where('statistic_id', $statistic->id)
+                ->where('target_type', 'user')
+                ->where('target_id', 5)
+                ->where('dimension_key', 'abc')
+                ->count(),
+        );
+        // Child rows rewritten, not accumulated.
+        $this->assertCount(1, $restored->fresh()->dimensions);
+    }
+
+    public function test_delete_stale_cells_hard_deletes(): void
+    {
+        $statistic = Statistic::factory()->create();
+
+        $this->repository->upsertCell($statistic->id, 'user', 5, 'keep', ['value' => 1.0, 'result' => []]);
+        $stale = $this->repository->upsertCell($statistic->id, 'user', 5, 'stale', ['value' => 1.0, 'result' => []]);
+
+        $this->repository->deleteStaleCells($statistic->id, ['keep']);
+
+        // Stale cell is physically gone — not a soft-deleted zombie.
+        $this->assertSame(0, TargetStatistic::withTrashed()->whereKey($stale->id)->count());
+    }
+
     public function test_cell_value_reads_scalar_or_null(): void
     {
         $statistic = Statistic::factory()->create();

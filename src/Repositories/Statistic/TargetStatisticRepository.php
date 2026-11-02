@@ -92,19 +92,39 @@ class TargetStatisticRepository extends BaseRepositoryAbstract implements Target
             $values,
             $dimensions,
         ): TargetStatistic {
-            // updateOrCreate on the DB-unique cell tuple — the dup-key-500 fix:
-            // concurrent writers converge on one row instead of inserting a
-            // duplicate.
-            /** @var TargetStatistic $cell */
-            $cell = $this->model->newQuery()->updateOrCreate(
-                [
+            // Resolve the cell on its DB-unique tuple INCLUDING soft-deleted rows.
+            // The uniqueness index counts soft-deleted rows, so a trashed-blind
+            // updateOrCreate — which only sees live rows — would INSERT when a
+            // previously-stale group reappears and collide with the soft-deleted
+            // zombie that still holds the tuple (SQLSTATE 1062). Looking up
+            // withTrashed() lets us restore + update the existing row instead, so
+            // the cell keeps a stable id and the write is idempotent regardless of
+            // how the cell was soft-deleted. This is the dup-key-500 fix.
+            /** @var TargetStatistic|null $cell */
+            $cell = $this->model->newQuery()
+                ->withTrashed()
+                ->where('statistic_id', $statisticId)
+                ->where('target_type', $targetType)
+                ->where('target_id', $targetId)
+                ->where('dimension_key', $dimensionKey)
+                ->first();
+
+            if ($cell === null) {
+                /** @var TargetStatistic $cell */
+                $cell = $this->model->newQuery()->create(array_merge([
                     'statistic_id' => $statisticId,
                     'target_type' => $targetType,
                     'target_id' => $targetId,
                     'dimension_key' => $dimensionKey,
-                ],
-                $values,
-            );
+                ], $values));
+            } else {
+                // A reappearing group: revive the soft-deleted cell and refresh it.
+                if ($cell->trashed()) {
+                    $cell->restore();
+                }
+
+                $cell->fill($values)->save();
+            }
 
             // Rewrite the normalized axis child rows for this cell.
             $cell->dimensions()->delete();
@@ -152,13 +172,22 @@ class TargetStatisticRepository extends BaseRepositoryAbstract implements Target
         $stale = $query->get();
 
         foreach ($stale as $cell) {
-            // Hard-delete the child axis rows (they cascade on a hard delete, but
-            // the cell soft-deletes, so remove them explicitly to keep slice
-            // reads clean).
+            // Hard-delete the child axis rows so slice reads stay clean. (They
+            // cascade with the forceDelete below too, but removing them explicitly
+            // keeps the intent obvious.)
             $cell->dimensions()->delete();
         }
 
-        return $query->delete();
+        // FORCE (hard) delete the stale cells rather than soft-deleting them. A
+        // stale cell is a GROUP BY group that no longer produces rows — there is
+        // no value to retain. Soft-deleting instead left a "zombie" row that still
+        // occupied the (statistic_id, target_type, target_id, dimension_key)
+        // unique index; if that group ever reappeared, the index rejected the new
+        // insert with SQLSTATE 1062. Hard-deleting removes the collision source at
+        // the root while keeping the delete scoped to this statistic (and target,
+        // when supplied) so no unrelated rows are touched. upsertCell's
+        // restore-on-reappear still covers any cell soft-deleted by other paths.
+        return $query->forceDelete();
     }
 
     /**
