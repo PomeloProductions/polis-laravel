@@ -7,6 +7,16 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.15.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.14.0...v0.15.0) (2026-11-02)
+
+
+### Features
+
+* declarative joins for the multi-dimensional statistics engine ([a440ec3](https://github.com/PomeloProductions/polis-laravel/commit/a440ec32b026bfe191ad24ea2085c42235a177f6))
+* multi-dimensional intersection statistics (GROUP BY engine, time axis, derived, self-cross) ([317f92d](https://github.com/PomeloProductions/polis-laravel/commit/317f92d40f41015bba246a34db642b827231540b))
+* multi-dimensional intersection statistics (GROUP BY engine, time axis, derived, self-cross) ([174e193](https://github.com/PomeloProductions/polis-laravel/commit/174e19359f0d21de7784098b75a40da3d9b192c9))
+* sub-select (table_raw) joins for the multi-dimensional statistics engine ([bd84b5d](https://github.com/PomeloProductions/polis-laravel/commit/bd84b5d3c9e482dfc5004e9958244df0f6eeb7ab))
+
 ## [0.14.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.13.0...v0.14.0) (2026-10-26)
 
 
