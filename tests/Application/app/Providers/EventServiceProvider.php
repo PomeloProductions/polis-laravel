@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\PlatformComparison;
+use Polis\Observers\AggregatedModelObserver;
 use Polis\Providers\BaseEventServiceProvider;
 
 /**
@@ -23,7 +25,8 @@ class EventServiceProvider extends BaseEventServiceProvider
 
     public function registerObservers(): void
     {
-        // No app-specific observers in the dummy consumer app. The Todo
-        // balance-log / page-component observers are PolisOS-specific.
+        // Observe the self-cross comparison ledger so the incremental tuple-delta
+        // maintenance path (multi-dimensional statistics) is exercised on writes.
+        PlatformComparison::observe(AggregatedModelObserver::class);
     }
 }
