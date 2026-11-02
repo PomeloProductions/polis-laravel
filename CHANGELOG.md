@@ -7,6 +7,14 @@
 * **dashboard:** map expired/invalid JWTs to an explicit 401 in the exception handler, placed before the generic JWTException case so the 401 contract is regression-proof against future reordering of the switch
 * **dashboard:** allow `expand[user]` on the organization-managers index request so the dashboard can list managers alongside their user in a single call (previously any expand threw an AuthorizationException / 403)
 
+## [0.15.1](https://github.com/PomeloProductions/polis-laravel/compare/v0.15.0...v0.15.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* make statistic cell upsert trashed-aware to stop duplicate-key 500 ([8be90ff](https://github.com/PomeloProductions/polis-laravel/commit/8be90ff332a2212ec99e67fc181754f6b6127ed8))
+* make statistic cell upsert trashed-aware to stop duplicate-key 500 ([f4a8cec](https://github.com/PomeloProductions/polis-laravel/commit/f4a8cec5ea626a2ce456c95d2c6d51ff0c6338d6))
+
 ## [0.15.0](https://github.com/PomeloProductions/polis-laravel/compare/v0.14.0...v0.15.0) (2026-11-02)
 
 
