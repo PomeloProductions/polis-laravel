@@ -398,6 +398,14 @@ class MultiDimensionalAggregationService
      * filtering (it already carries its own WHERE). Physical-table joins keep the
      * guard behavior unchanged.
      *
+     * SOFT-DELETE CONTRACT: the engine auto-guards `deleted_at IS NULL` only on
+     * the base table ({@see self::applySoftDeleteGuard()}) and on PHYSICAL-table
+     * joins (the `$guard` branch below). A `table_raw` sub-select is author-owned
+     * SQL that the engine CANNOT introspect or auto-guard, so sub-select authors
+     * MUST add their own `deleted_at IS NULL` (and any other scope) guards inside
+     * the sub-select's own WHERE — otherwise that sub-select will count
+     * soft-deleted rows and inflate every consuming statistic.
+     *
      * SECURITY: `table_raw` is spliced in as raw SQL — it is TRUSTED,
      * system-seeded config only and must never be built from user input.
      *
