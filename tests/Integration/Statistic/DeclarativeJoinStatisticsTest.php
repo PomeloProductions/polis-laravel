@@ -219,6 +219,68 @@ final class DeclarativeJoinStatisticsTest extends ApplicationTestCase
         $this->assertSame('2021', $cells->first()->result['tuple']['year']['value']);
     }
 
+    public function test_soft_deleted_base_row_and_soft_deleted_joined_row_both_excluded_from_one_cell(): void
+    {
+        // Locks the engine's soft-delete contract at BOTH levels inside a SINGLE
+        // materialized cell: applySoftDeleteGuard() on the base table AND the
+        // per-join guard in applyJoins(). The aggregator lowers relations to the
+        // base query builder, where Eloquent's SoftDeletes global scope does NOT
+        // apply, so without these EXPLICIT guards every consumer (not just HSC)
+        // would be count-inflated. The base-only and join-only guards are each
+        // covered elsewhere; this pins them TOGETHER so a future refactor cannot
+        // silently drop one and still stay green.
+        //
+        // Cell under test: (platform 1, year 2021), measure = COUNT(*) of the
+        // joined release_dates rows.
+        //
+        //   r1 (LIVE base)         : one LIVE 2021 date          -> counts (1)
+        //                          + one SOFT-DELETED 2021 date  -> join guard must drop
+        //   r2 (SOFT-DELETED base) : one LIVE 2021 date          -> base guard must drop the whole row
+        //
+        // Correct count = 1. Drop the base guard -> 2; drop the join guard -> 2;
+        // drop both -> 3.
+        $r1 = $this->release(['platform_id' => 1]);
+        $r2 = $this->release(['platform_id' => 1]);
+
+        // r1: a LIVE joined date and a SOFT-DELETED joined date on a LIVE base row.
+        $this->addDate($r1->id, '2021-01-01 00:00:00', 'na');
+        DB::table('release_dates')->insert([
+            'release_id' => $r1->id, 'release_date' => '2021-06-01 00:00:00',
+            'region' => 'eu', 'deleted_at' => now(),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        // r2: a LIVE joined date, but the BASE row itself is soft-deleted.
+        $this->addDate($r2->id, '2021-03-01 00:00:00', 'na');
+        $r2->delete();
+
+        $statistic = $this->makeStatistic(
+            dimensions: [
+                ['name' => 'platform', 'kind' => 'scalar', 'column' => 'platform_id'],
+                ['name' => 'year', 'kind' => 'date_bucket', 'column' => 'rd.release_date',
+                    'granularity' => 'year', 'timezone' => 'UTC'],
+            ],
+            measure: ['agg' => 'count'],
+            joins: [
+                ['table' => 'release_dates', 'alias' => 'rd',
+                    'left' => 'base.id', 'right' => 'rd.release_id', 'type' => 'inner'],
+            ],
+        );
+
+        $this->service->recompute($statistic);
+
+        $cells = TargetStatistic::where('statistic_id', $statistic->id)->get();
+        // Exactly one surviving cell: (platform 1, 2021).
+        $this->assertCount(1, $cells);
+
+        $cell = $cells->first();
+        $this->assertEquals(1, (int) $cell->result['tuple']['platform']['value']);
+        $this->assertSame('2021', $cell->result['tuple']['year']['value']);
+        // Neither the soft-deleted base row nor the soft-deleted joined row
+        // inflated the count — both guards held.
+        $this->assertEquals(1.0, $cell->value);
+    }
+
     public function test_left_join_keeps_unmatched_rows_with_guard_in_on_clause(): void
     {
         // Release A has a 2021 date; release B has ONLY a soft-deleted date. With
