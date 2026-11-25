@@ -46,9 +46,9 @@ jobs:
         id: matrix
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            echo 'php=["8.3","8.4","8.5"]' >> "$GITHUB_OUTPUT"
+            echo 'php=["8.3","8.4","8.5","8.6"]' >> "$GITHUB_OUTPUT"
           else
-            echo 'php=["8.3","8.5"]' >> "$GITHUB_OUTPUT"
+            echo 'php=["8.3","8.5","8.6"]' >> "$GITHUB_OUTPUT"
           fi
 
   phpunit:
