@@ -39,16 +39,16 @@ jobs:
               - '.github/workflows/**'
 
       # Full PHP matrix on push to main (protect every supported version);
-      # trimmed to min+max on PRs to save runner minutes. 8.6 stays in BOTH
-      # sets so the PHPStan / coverage hard-gate steps (if: matrix.php == '8.6')
+      # trimmed to min+max on PRs to save runner minutes. 8.5 stays in BOTH
+      # sets so the PHPStan / coverage hard-gate steps (if: matrix.php == '8.5')
       # always run.
       - name: Compute PHP matrix
         id: matrix
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            echo 'php=["8.4","8.5","8.6"]' >> "$GITHUB_OUTPUT"
+            echo 'php=["8.4","8.5"]' >> "$GITHUB_OUTPUT"
           else
-            echo 'php=["8.5","8.6"]' >> "$GITHUB_OUTPUT"
+            echo 'php=["8.5"]' >> "$GITHUB_OUTPUT"
           fi
 
   phpunit:
@@ -93,11 +93,11 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Composer audit
-        if: matrix.php == '8.6'
+        if: matrix.php == '8.5'
         run: composer audit
 
       - name: PHPStan static analysis
-        if: matrix.php == '8.6'
+        if: matrix.php == '8.5'
         run: php -d memory_limit=2G ./vendor/bin/phpstan analyse --no-progress
 
       - name: Run Unit tests with coverage
@@ -116,8 +116,8 @@ jobs:
             echo "- Lines covered: {$covered}/{$total} ({$pct}%)\n";
           ' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Unit coverage threshold check (PHP 8.6 only)
-        if: matrix.php == '8.6'
+      - name: Unit coverage threshold check (PHP 8.5 only)
+        if: matrix.php == '8.5'
         run: php tools/check-coverage-threshold.php coverage-unit.xml
 
       # Application suites (Feature + Integration): these run the ported
@@ -142,8 +142,8 @@ jobs:
       # This is the honest "how much of ./src does the whole corpus touch"
       # figure (~65%). The floor keeps Feature/Integration coverage from
       # silently regressing — the Unit-only gate above can't see it.
-      - name: Combined coverage gate (PHP 8.6 only)
-        if: matrix.php == '8.6'
+      - name: Combined coverage gate (PHP 8.5 only)
+        if: matrix.php == '8.5'
         run: |
           php tools/merge-coverage.php \
             --json coverage-combined.json \
